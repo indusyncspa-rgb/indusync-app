@@ -1,52 +1,58 @@
-import React from 'react';
-import { useSystem } from '@/context/SystemContext';
+import React, { useState, useEffect } from 'react';
+import { telemetryService } from '@/services/telemetryService';
 
 export default function Telemetry() {
-  const { equipoSeleccionado, setEquipoSeleccionado, alertaActiva, procesandoIA, dispararAlertaPredictiva } = useSystem();
+  const [metrics, setMetrics] = useState(telemetryService.getCurrentData());
+
+  useEffect(() => {
+    const unsubscribe = telemetryService.subscribe((newData) => {
+      setMetrics(newData);
+    });
+    return () => unsubscribe();
+  }, []);
 
   return (
-    <section style={{ backgroundColor: '#1e293b', padding: '20px', borderRadius: '12px', border: '1px solid #334155' }}>
-      <h2 style={{ fontSize: '16px', color: '#f1f5f9', marginTop: 0, marginBottom: '15px' }}>Control de Activos en Faena</h2>
-      
-      <div style={{ marginBottom: '15px' }}>
-        <label style={{ display: 'block', color: '#94a3b8', fontSize: '12px', marginBottom: '6px' }}>Seleccionar Equipo Crítico:</label>
-        <select 
-          value={equipoSeleccionado} 
-          onChange={(e) => setEquipoSeleccionado(e.target.value)}
-          style={{ width: '100%', padding: '10px', backgroundColor: '#0f172a', color: '#fff', border: '1px solid #475569', borderRadius: '6px', fontSize: '13px' }}
-        >
-          <option value="Camión CAEX 04">Camión CAEX 04 (Flota Norte)</option>
-          <option value="Pala Hidráulica P&H 02">Pala Hidráulica P&H 02 (Planta)</option>
-          <option value="Perforadora Pit Viper 01">Perforadora Pit Viper 01 (Rajo)</option>
-        </select>
+    <div className="p-6 bg-slate-900/80 border border-slate-800 rounded-2xl shadow-xl space-y-6">
+      <div className="flex justify-between items-center border-b border-slate-800 pb-4">
+        <div>
+          <h2 className="text-xl font-bold text-cyan-400">⚡ Telemetría SCADA & IoT Edge</h2>
+          <p className="text-xs text-slate-400">Lecturas en tiempo real mediante capa Pub/Sub</p>
+        </div>
+        <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-3 py-1 rounded-full text-xs font-mono">
+          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+          EN VIVO ({metrics.networkLatency}ms)
+        </div>
       </div>
 
-      <div style={{ backgroundColor: '#0f172a', padding: '12px', borderRadius: '8px', marginBottom: '15px', border: '1px solid #334155' }}>
-        <p style={{ margin: '0 0 4px 0', fontSize: '11px', color: '#94a3b8' }}>TELEMETRÍA EN TIEMPO REAL:</p>
-        <p style={{ margin: 0, fontSize: '14px', fontWeight: 'bold', color: '#38bdf8' }}>{equipoSeleccionado}</p>
-        <p style={{ margin: '6px 0 0 0', fontSize: '12px', color: alertaActiva ? '#ef4444' : '#10b981' }}>
-          {alertaActiva ? 'Falla Detectada por IA' : 'Parámetros Normales'}
-        </p>
-      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="p-4 bg-slate-950/60 border border-slate-800 rounded-xl">
+          <span className="text-xs text-slate-400 font-medium">Presión Hidráulica</span>
+          <div className="text-2xl font-bold text-cyan-300 font-mono mt-1">
+            {metrics.pressure} <span className="text-xs text-slate-500">PSI</span>
+          </div>
+        </div>
 
-      <button 
-        onClick={dispararAlertaPredictiva}
-        disabled={procesandoIA}
-        style={{ 
-          width: '100%', 
-          padding: '12px', 
-          backgroundColor: procesandoIA ? '#475569' : (alertaActiva ? '#b91c1c' : '#0284c7'), 
-          color: '#fff', 
-          border: 'none', 
-          borderRadius: '6px', 
-          cursor: procesandoIA ? 'not-allowed' : 'pointer',
-          fontWeight: 'bold',
-          fontSize: '13px'
-        }}
-      >
-        {procesandoIA ? '🤖 Motor IA Calculando RUTA ÓPTIMA...' : (alertaActiva ? '🔄 Alerta Activa - Recalcular IA' : '⚡ Simular Alerta Predictiva')}
-      </button>
-    </section>
+        <div className="p-4 bg-slate-950/60 border border-slate-800 rounded-xl">
+          <span className="text-xs text-slate-400 font-medium">Temperatura Motor</span>
+          <div className="text-2xl font-bold text-amber-300 font-mono mt-1">
+            {metrics.temperature} <span className="text-xs text-slate-500">°C</span>
+          </div>
+        </div>
+
+        <div className="p-4 bg-slate-950/60 border border-slate-800 rounded-xl">
+          <span className="text-xs text-slate-400 font-medium">Flujo de Pulpa</span>
+          <div className="text-2xl font-bold text-emerald-300 font-mono mt-1">
+            {metrics.flowRate} <span className="text-xs text-slate-500">L/s</span>
+          </div>
+        </div>
+
+        <div className="p-4 bg-slate-950/60 border border-slate-800 rounded-xl">
+          <span className="text-xs text-slate-400 font-medium">Flota CAEX Activa</span>
+          <div className="text-2xl font-bold text-purple-300 font-mono mt-1">
+            {metrics.activeCaex} <span className="text-xs text-slate-500">Unidades</span>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
-
