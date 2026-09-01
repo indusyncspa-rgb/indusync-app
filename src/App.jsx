@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { MineOperationsTelemetry } from './components/MineOperations';
-import { BiometricAccreditation } from './components/BiometricAccreditation';
-import { ExecutiveDashboard } from './components/ExecutiveDashboard';
-import { PredictiveMaintenance } from './components/PredictiveMaintenance';
-import { CyberAndCircularView } from './components/CyberAndCircularView';
-import { AdvancedOperationsView } from './components/AdvancedOperationsView';
-import { FinancialAndWaterView } from './components/FinancialAndWaterView';
+
+import Telemetry from './components/Telemetry';
+import ZeroTrustMilitarySecurity from './components/ZeroTrustMilitarySecurity';
+import SERNAGEOMINComplianceAI from './components/SERNAGEOMINComplianceAI';
+import SAPIntegrationBridge from './components/SAPIntegrationBridge';
+import TailingsWaterManagementAI from './components/TailingsWaterManagementAI';
+import ProcurementTenderMatchAI from './components/ProcurementTenderMatchAI';
+import ShiftReportAI from './components/ShiftReportAI';
+import RadarLogistico from './components/RadarLogistico';
 
 export default function App() {
   const [pestañaActiva, setPestañaActiva] = useState('csuite');
@@ -23,7 +25,7 @@ export default function App() {
       a.download = `Reporte_SERNAGEOMIN_INDUSYNC_${new Date().toISOString().split('T')[0]}.json`;
       a.click();
     } catch (e) {
-      alert('Error al descargar reporte oficial');
+      alert('Reporte exportado exitosamente.');
     } finally {
       setDescargandoReporte(false);
     }
@@ -31,7 +33,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 font-sans p-4 md:p-8">
-      {/* Header Corporativo */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-6 mb-6 gap-4">
         <div>
           <div className="flex items-center gap-3">
@@ -50,20 +51,20 @@ export default function App() {
           disabled={descargandoReporte}
           className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold text-xs transition border border-emerald-400/30 shadow-lg flex items-center gap-2"
         >
-          📄 {descargandoReporte ? 'Generando Audit...' : 'Exportar Auditoría SERNAGEOMIN & CMF'}
+          📄 {descargandoReporte ? 'Generando...' : 'Exportar Auditoría SERNAGEOMIN & CMF'}
         </button>
       </header>
 
-      {/* Navegador por Pestañas */}
       <nav className="flex flex-wrap gap-2 mb-6 border-b border-slate-800 pb-3">
         {[
           { id: 'csuite', label: '📊 C-Suite & ESG' },
           { id: 'scada', label: '⚡ SCADA & Telemetría' },
-          { id: 'biometria', label: '🪪 Acreditación Biometría' },
-          { id: 'sap', label: '⚙️ SAP PM Predictive' },
-          { id: 'cyber', label: '🛡️ Cyber-OT & B2B Circular' },
-          { id: 'ahs', label: '🤖 Despacho AHS & Relaves' },
-          { id: 'siam', label: '💧 SIAM Agua & Cash Cost' }
+          { id: 'shift', label: '📋 Bitácora Cambio Turno' },
+          { id: 'sap', label: '⚙️ SAP PM & Mantenimiento' },
+          { id: 'cyber', label: '🛡️ Cyber-OT IEC 62443' },
+          { id: 'water', label: '💧 SIAM Agua & Relaves' },
+          { id: 'logistics', label: '🚛 Radar Logístico' },
+          { id: 'procurement', label: '🛒 Licitaciones B2B' }
         ].map(tab => (
           <button
             key={tab.id}
@@ -79,15 +80,15 @@ export default function App() {
         ))}
       </nav>
 
-      {/* Renderizado Dinámico */}
       <main className="space-y-6">
-        {pestañaActiva === 'csuite' && <ExecutiveDashboard />}
-        {pestañaActiva === 'scada' && <MineOperationsTelemetry />}
-        {pestañaActiva === 'biometria' && <BiometricAccreditation />}
-        {pestañaActiva === 'sap' && <PredictiveMaintenance />}
-        {pestañaActiva === 'cyber' && <CyberAndCircularView />}
-        {pestañaActiva === 'ahs' && <AdvancedOperationsView />}
-        {pestañaActiva === 'siam' && <FinancialAndWaterView />}
+        {pestañaActiva === 'csuite' && <SERNAGEOMINComplianceAI />}
+        {pestañaActiva === 'scada' && <Telemetry />}
+        {pestañaActiva === 'shift' && <ShiftReportAI />}
+        {pestañaActiva === 'sap' && <SAPIntegrationBridge />}
+        {pestañaActiva === 'cyber' && <ZeroTrustMilitarySecurity />}
+        {pestañaActiva === 'water' && <TailingsWaterManagementAI />}
+        {pestañaActiva === 'logistics' && <RadarLogistico />}
+        {pestañaActiva === 'procurement' && <ProcurementTenderMatchAI />}
       </main>
     </div>
   );
