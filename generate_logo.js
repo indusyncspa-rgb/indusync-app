@@ -1,4 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="512" height="512">
+import fs from 'fs';
+
+// SVG oficial de INDUSYNC convertible
+const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="512" height="512">
   <rect width="500" height="500" rx="80" fill="#090d16"/>
   <g stroke="#f59e0b" stroke-width="8" stroke-linecap="round" fill="none">
     <path d="M 80 250 L 160 250" />
@@ -11,4 +14,10 @@
   <path d="M 170 200 L 290 200 L 330 235 L 330 265 L 170 265 Z" fill="#94a3b8" stroke="#cbd5e1" stroke-width="4"/>
   <circle cx="205" cy="275" r="24" fill="#1e293b" stroke="#f59e0b" stroke-width="8"/>
   <circle cx="295" cy="275" r="24" fill="#1e293b" stroke="#f59e0b" stroke-width="8"/>
-</svg>
+</svg>`;
+
+fs.writeFileSync('public/logo.svg', svgContent);
+fs.writeFileSync('public/favicon.svg', svgContent);
+fs.writeFileSync('public/vite.svg', svgContent);
+
+console.log('✅ Archivos de logo regenerados exitosamente en public/');

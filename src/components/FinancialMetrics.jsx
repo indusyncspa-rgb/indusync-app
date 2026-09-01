@@ -1,23 +1,42 @@
-import React from 'react';
-import { useSystem } from '../context/SystemContext';
+import React, { useEffect, useState } from 'react';
+import { fetchMetricasFinancieras } from '../services/apiService';
 
-export default function FinancialMetrics() {
-  const { metricas } = useSystem();
+const FinancialMetrics = () => {
+  const [metrics, setMetrics] = useState({
+    tiempoDetencionEvitado: '0 hrs',
+    ahorroEstimadoUSD: '$0',
+    eficienciaRed: '0%',
+    toneladasSalvadas: '0 Ton'
+  });
+
+  useEffect(() => {
+    const loadMetrics = async () => {
+      const data = await fetchMetricasFinancieras();
+      setMetrics(data);
+    };
+    loadMetrics();
+  }, []);
 
   return (
-    <section style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px', marginBottom: '20px' }}>
-      <div style={{ backgroundColor: '#1e293b', padding: '15px', borderRadius: '10px', border: '1px solid #334155' }}>
-        <p style={{ margin: 0, fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase' }}>Tiempo Detención Evitado</p>
-        <p style={{ margin: '5px 0 0 0', fontSize: '20px', fontWeight: 'bold', color: '#38bdf8' }}>{metricas.tiempoDetencionEvitado}</p>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '15px', marginBottom: '24px' }}>
+      <div style={{ backgroundColor: '#131b29', border: '1px solid #1f2d40', borderRadius: '8px', padding: '16px', textCenter: 'center' }}>
+        <p style={{ color: '#8b9bb4', fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', margin: 0 }}>Detención Evitada</p>
+        <p style={{ color: '#38bdf8', fontSize: '24px', fontWeight: 'bold', margin: '8px 0 0 0' }}>{metrics.tiempoDetencionEvitado}</p>
       </div>
-      <div style={{ backgroundColor: '#1e293b', padding: '15px', borderRadius: '10px', border: '1px solid #334155' }}>
-        <p style={{ margin: 0, fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase' }}>Impacto Económico Ahorrado</p>
-        <p style={{ margin: '5px 0 0 0', fontSize: '20px', fontWeight: 'bold', color: '#10b981' }}>{metricas.ahorroEstimadoUSD}</p>
+      <div style={{ backgroundColor: '#131b29', border: '1px solid #22c55e', borderRadius: '8px', padding: '16px', textCenter: 'center' }}>
+        <p style={{ color: '#22c55e', fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', margin: 0 }}>Ahorro Recuperado (ROI)</p>
+        <p style={{ color: '#22c55e', fontSize: '24px', fontWeight: 'bold', margin: '8px 0 0 0' }}>{metrics.ahorroEstimadoUSD}</p>
       </div>
-      <div style={{ backgroundColor: '#1e293b', padding: '15px', borderRadius: '10px', border: '1px solid #334155' }}>
-        <p style={{ margin: 0, fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase' }}>Eficiencia Operativa Red</p>
-        <p style={{ margin: '5px 0 0 0', fontSize: '20px', fontWeight: 'bold', color: '#f59e0b' }}>{metricas.eficienciaRed}</p>
+      <div style={{ backgroundColor: '#131b29', border: '1px solid #1f2d40', borderRadius: '8px', padding: '16px', textCenter: 'center' }}>
+        <p style={{ color: '#8b9bb4', fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', margin: 0 }}>Producción Salvada</p>
+        <p style={{ color: '#eab308', fontSize: '24px', fontWeight: 'bold', margin: '8px 0 0 0' }}>{metrics.toneladasSalvadas}</p>
       </div>
-    </section>
+      <div style={{ backgroundColor: '#131b29', border: '1px solid #1f2d40', borderRadius: '8px', padding: '16px', textCenter: 'center' }}>
+        <p style={{ color: '#8b9bb4', fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', margin: 0 }}>Eficiencia de Red</p>
+        <p style={{ color: '#f97316', fontSize: '24px', fontWeight: 'bold', margin: '8px 0 0 0' }}>{metrics.eficienciaRed}</p>
+      </div>
+    </div>
   );
-}
+};
+
+export default FinancialMetrics;
