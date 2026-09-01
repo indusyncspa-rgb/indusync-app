@@ -11,6 +11,7 @@ import IndustrialCopilotAI from './components/IndustrialCopilotAI';
 import DigitalTwinView from './components/DigitalTwinView';
 import ExecutivePitchMode from './components/ExecutivePitchMode';
 import CircularEconomyMarketplace from './components/CircularEconomyMarketplace';
+import NotificationCenter from './components/NotificationCenter';
 
 export default function App() {
   const [pestañaActiva, setPestañaActiva] = useState('csuite');
@@ -35,7 +36,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans p-4 md:p-8">
+    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans p-4 md:p-8 relative pb-20">
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-6 mb-6 gap-4">
         <div>
           <div className="flex items-center gap-3">
@@ -99,6 +100,9 @@ export default function App() {
         {pestañaActiva === 'water' && <TailingsWaterManagementAI />}
         {pestañaActiva === 'logistics' && <RadarLogistico />}
       </main>
+
+      {/* Widget flotante de eventos en vivo */}
+      <NotificationCenter />
     </div>
   );
 }
