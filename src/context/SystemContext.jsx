@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { fetchMetricasFinancieras, solicitarAsignacionIA } from '../services/apiService';
+import { fetchMetricasFinancieras, solicitarAsignacionIA } from '@/services/apiService';
 
 const SystemContext = createContext();
 
