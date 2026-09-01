@@ -10,6 +10,7 @@ import ShiftReportAI from './components/ShiftReportAI';
 import RadarLogistico from './components/RadarLogistico';
 import IndustrialCopilotAI from './components/IndustrialCopilotAI';
 import DigitalTwinView from './components/DigitalTwinView';
+import ExecutivePitchMode from './components/ExecutivePitchMode';
 
 export default function App() {
   const [pestañaActiva, setPestañaActiva] = useState('csuite');
@@ -60,6 +61,7 @@ export default function App() {
       <nav className="flex flex-wrap gap-2 mb-6 border-b border-slate-800 pb-3">
         {[
           { id: 'csuite', label: '📊 C-Suite & ESG' },
+          { id: 'pitch', label: '💰 Pitch Directorio & ROI' },
           { id: 'copilot', label: '🤖 Copiloto Industrial AI' },
           { id: 'twin', label: '🌐 Gemelo Digital' },
           { id: 'scada', label: '⚡ SCADA & Telemetría' },
@@ -86,6 +88,7 @@ export default function App() {
 
       <main className="space-y-6">
         {pestañaActiva === 'csuite' && <SERNAGEOMINComplianceAI />}
+        {pestañaActiva === 'pitch' && <ExecutivePitchMode />}
         {pestañaActiva === 'copilot' && <IndustrialCopilotAI />}
         {pestañaActiva === 'twin' && <DigitalTwinView />}
         {pestañaActiva === 'scada' && <Telemetry />}
