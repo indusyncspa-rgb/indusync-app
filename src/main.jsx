@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
+import { AuthProvider } from './context/AuthContext.jsx';
+import { SystemProvider } from './context/SystemContext.jsx';
 import './index.css';
 
 class ErrorBoundary extends React.Component {
@@ -14,21 +16,26 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error("Error de renderizado capturado:", error, errorInfo);
+    console.error("Error capturado por ErrorBoundary:", error, errorInfo);
   }
 
   render() {
     if (this.state.hasError) {
       return (
-        <div className="p-8 bg-slate-950 text-red-400 min-h-screen font-mono text-xs">
-          <h1 className="text-lg font-bold mb-2 text-red-500">⚠️ Error de Ejecución Detectado</h1>
-          <p className="mb-4 text-slate-300">Detalle del problema para corregir:</p>
-          <pre className="p-4 bg-slate-900 border border-slate-800 rounded-lg text-red-300 overflow-auto whitespace-pre-wrap">
-            {this.state.error?.stack || this.state.error?.toString()}
-          </pre>
+        <div style={{ padding: '20px', color: '#fff', backgroundColor: '#121212', minHeight: '100vh' }}>
+          <h2>Ha ocurrido un error al cargar la aplicación.</h2>
+          <pre style={{ color: '#ff6b6b' }}>{this.state.error?.toString()}</pre>
+          <button 
+            onClick={() => window.location.reload()}
+            style={{ padding: '8px 16px', marginTop: '10px', cursor: 'pointer' }}
+          >
+            Reintentar
+          </button>
         </div>
       );
     }
+
+    // ¡CRÍTICO!: Si no hay error, se deben retornar los componentes hijos
     return this.props.children;
   }
 }
@@ -36,17 +43,11 @@ class ErrorBoundary extends React.Component {
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <ErrorBoundary>
-      <App />
+      <SystemProvider>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+      </SystemProvider>
     </ErrorBoundary>
   </React.StrictMode>
 );
-
-// Registro de Service Worker para PWA
-if ('serviceWorker' in navigator && import.meta.env.PROD) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker
-      .register('/sw.js')
-      .then((reg) => console.log('Service Worker registrado:', reg.scope))
-      .catch((err) => console.error('Error Service Worker:', err));
-  });
-}
