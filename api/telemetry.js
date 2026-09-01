@@ -6,7 +6,7 @@ export default async function handler(req, res) {
 
   if (req.method === 'OPTIONS') return res.status(200).end();
 
-  // Simulación de sensores SCADA / IoT industrial
+  // Simulación de lectura de sensores de campo SCADA / IoT
   const telemetriaMina = {
     flotaAutonoma: {
       camionesActivos: Math.floor(28 + Math.random() * 4),
