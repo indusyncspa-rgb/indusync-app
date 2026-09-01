@@ -1,4 +1,4 @@
-// Servicio Pub/Sub para flujo de telemetría IoT y Flota CAEX
+// Servicio Pub/Sub para flujo de telemetría IoT, Flota, Cyber, ESG y C-Suite
 class TelemetryService {
   constructor() {
     this.listeners = new Set();
@@ -6,16 +6,52 @@ class TelemetryService {
     this.isLive = false;
     
     this.data = {
+      // Telemetría SCADA
       pressure: 142.5,
       temperature: 68.2,
       flowRate: 310.0,
       networkLatency: 12,
+      
+      // Flota CAEX
       fleet: [
         { id: 'CAEX-01', driver: 'Juan Perez', status: 'Cargando', speed: 0, fuel: 88, fatigueRisk: 'Bajo', location: 'Frente 3 - Banco 1200' },
         { id: 'CAEX-02', driver: 'Carlos Araya', status: 'En Tránsito', speed: 38, fuel: 65, fatigueRisk: 'Medio', location: 'Rampa Principal' },
         { id: 'CAEX-03', driver: 'Maria Silva', status: 'Descargando', speed: 5, fuel: 91, fatigueRisk: 'Bajo', location: 'Chancador Primario' },
         { id: 'CAEX-04', driver: 'Pedro Soto', status: 'Mantenimiento', speed: 0, fuel: 32, fatigueRisk: 'Alto', location: 'Taller Central' }
-      ]
+      ],
+
+      // Ciberseguridad OT / IT
+      cyber: {
+        threatLevel: 'DEFCON 3 - Elevado',
+        blockedAttacksToday: 1420,
+        activeAnomalies: 2,
+        otFirewallStatus: 'Protegido',
+        scadaIntegrity: 99.8,
+        recentLogs: [
+          { time: '16:20:11', source: '192.168.4.12', event: 'Escaneo de puertos no autorizado en red Modbus', severity: 'Media' },
+          { time: '16:15:02', source: '10.0.12.88', event: 'Bloqueo de conexión entrante desconocida a PLC chancado', severity: 'Alta' },
+          { time: '16:01:45', source: 'Internal-OT', event: 'Verificación de firmas de firmware PLC completada', severity: 'Baja' }
+        ]
+      },
+
+      // ESG & Sostenibilidad
+      esg: {
+        carbonFootprint: 1.12, // tCO2e / ton Cu
+        waterRecyclingRate: 84.5, // %
+        renewableEnergyShare: 92.0, // %
+        solarGenerationMW: 45.8,
+        tailingsDepositStatus: 'Estable (Sensor Inclinométrico Ok)'
+      },
+
+      // Consola Ejecutiva C-Suite
+      csuite: {
+        copperPriceLb: 4.35, // USD / lb
+        dailyProductionTons: 12450,
+        targetProductionTons: 13000,
+        costPerTonUSD: 1.82,
+        operatingMarginPercent: 41.5,
+        ebitdaForecastMillion: 18.4
+      }
     };
   }
 
@@ -32,18 +68,29 @@ class TelemetryService {
   startStream() {
     this.isLive = true;
     this.timer = setInterval(() => {
+      // Oscilaciones SCADA
       this.data.pressure = parseFloat((140 + Math.random() * 8).toFixed(1));
       this.data.temperature = parseFloat((65 + Math.random() * 7).toFixed(1));
       this.data.flowRate = parseFloat((300 + Math.random() * 20).toFixed(1));
       this.data.networkLatency = Math.floor(10 + Math.random() * 5);
 
+      // Flota
       this.data.fleet = this.data.fleet.map(caex => {
         if (caex.status === 'En Tránsito') {
-          const newSpeed = Math.floor(25 + Math.random() * 20);
-          return { ...caex, speed: newSpeed };
+          return { ...caex, speed: Math.floor(25 + Math.random() * 20) };
         }
         return caex;
       });
+
+      // Ciberseguridad
+      this.data.cyber.blockedAttacksToday += Math.random() > 0.6 ? 1 : 0;
+
+      // ESG
+      this.data.esg.solarGenerationMW = parseFloat((44 + Math.random() * 4).toFixed(1));
+
+      // C-Suite
+      this.data.csuite.copperPriceLb = parseFloat((4.30 + Math.random() * 0.12).toFixed(2));
+      this.data.csuite.dailyProductionTons += Math.floor(Math.random() * 3);
 
       this.listeners.forEach(callback => callback(this.data));
     }, 1500);
