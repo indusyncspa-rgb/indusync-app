@@ -5,12 +5,12 @@ import ZeroTrustMilitarySecurity from './components/ZeroTrustMilitarySecurity';
 import SERNAGEOMINComplianceAI from './components/SERNAGEOMINComplianceAI';
 import SAPIntegrationBridge from './components/SAPIntegrationBridge';
 import TailingsWaterManagementAI from './components/TailingsWaterManagementAI';
-import ProcurementTenderMatchAI from './components/ProcurementTenderMatchAI';
 import ShiftReportAI from './components/ShiftReportAI';
 import RadarLogistico from './components/RadarLogistico';
 import IndustrialCopilotAI from './components/IndustrialCopilotAI';
 import DigitalTwinView from './components/DigitalTwinView';
 import ExecutivePitchMode from './components/ExecutivePitchMode';
+import CircularEconomyMarketplace from './components/CircularEconomyMarketplace';
 
 export default function App() {
   const [pestañaActiva, setPestañaActiva] = useState('csuite');
@@ -64,13 +64,13 @@ export default function App() {
           { id: 'pitch', label: '💰 Pitch Directorio & ROI' },
           { id: 'copilot', label: '🤖 Copiloto Industrial AI' },
           { id: 'twin', label: '🌐 Gemelo Digital' },
+          { id: 'marketplace', label: '♻️ Marketplace Excedentes & B2B' },
           { id: 'scada', label: '⚡ SCADA & Telemetría' },
           { id: 'shift', label: '📋 Bitácora Cambio Turno' },
           { id: 'sap', label: '⚙️ SAP PM & Mantenimiento' },
           { id: 'cyber', label: '🛡️ Cyber-OT IEC 62443' },
           { id: 'water', label: '💧 SIAM Agua & Relaves' },
-          { id: 'logistics', label: '🚛 Radar Logístico' },
-          { id: 'procurement', label: '🛒 Licitaciones B2B' }
+          { id: 'logistics', label: '🚛 Radar Logístico' }
         ].map(tab => (
           <button
             key={tab.id}
@@ -91,13 +91,13 @@ export default function App() {
         {pestañaActiva === 'pitch' && <ExecutivePitchMode />}
         {pestañaActiva === 'copilot' && <IndustrialCopilotAI />}
         {pestañaActiva === 'twin' && <DigitalTwinView />}
+        {pestañaActiva === 'marketplace' && <CircularEconomyMarketplace />}
         {pestañaActiva === 'scada' && <Telemetry />}
         {pestañaActiva === 'shift' && <ShiftReportAI />}
         {pestañaActiva === 'sap' && <SAPIntegrationBridge />}
         {pestañaActiva === 'cyber' && <ZeroTrustMilitarySecurity />}
         {pestañaActiva === 'water' && <TailingsWaterManagementAI />}
         {pestañaActiva === 'logistics' && <RadarLogistico />}
-        {pestañaActiva === 'procurement' && <ProcurementTenderMatchAI />}
       </main>
     </div>
   );
