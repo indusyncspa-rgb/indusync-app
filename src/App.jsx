@@ -1,214 +1,94 @@
-import React, { useState, useEffect } from 'react';
-
-// ====================================================
-// ZONA 1: ALMACÉN COMPLETO DE IMPORTS
-// ====================================================
-import EnterpriseAuthGate from './components/EnterpriseAuthGate';
-import Header from './components/Header';
-import AlertBanner from './components/AlertBanner';
-import ProcurementTenderMatchAI from './components/ProcurementTenderMatchAI';
-import ContractorAccreditationAI from './components/ContractorAccreditationAI';
-import ZeroTrustMilitarySecurity from './components/ZeroTrustMilitarySecurity';
-
-import ExecutiveOperationsMap from './components/ExecutiveOperationsMap';
-import GeometallurgicalAutonomousDrillingAI from './components/GeometallurgicalAutonomousDrillingAI';
-import AutonomousDispatcherAI from './components/AutonomousDispatcherAI';
-import OperatorFatigueBiometricsAI from './components/OperatorFatigueBiometricsAI';
-import UndergroundVentilationAI from './components/UndergroundVentilationAI';
-import GeotechnicalSlopeRadarAI from './components/GeotechnicalSlopeRadarAI';
-import SERNAGEOMINComplianceAI from './components/SERNAGEOMINComplianceAI';
-import IoTEdgeMeshMonitor from './components/IoTEdgeMeshMonitor';
-
-import DigitalTwinPredictiveMaintAI from './components/DigitalTwinPredictiveMaintAI';
-import SAPWorkOrderAutomation from './components/SAPWorkOrderAutomation';
-import TailingsWaterManagementAI from './components/TailingsWaterManagementAI';
-import ShiftReportAI from './components/ShiftReportAI';
-
-import SupplyChainProcurementAI from './components/SupplyChainProcurementAI';
-import CircularMarketplaceB2BAI from './components/CircularMarketplaceB2BAI';
-import EnergyGridHydrogenAI from './components/EnergyGridHydrogenAI';
-
-import AIOperationalCopilot from './components/AIOperationalCopilot';
-import ClientOnboardingBilling from './components/ClientOnboardingBilling';
-import LiveROICalculator from './components/LiveROICalculator';
-import ESGCarbonTracker from './components/ESGCarbonTracker';
+import React, { useState } from 'react';
+import { MineOperationsTelemetry } from './components/MineOperations';
+import { BiometricAccreditation } from './components/BiometricAccreditation';
+import { ExecutiveDashboard } from './components/ExecutiveDashboard';
+import { PredictiveMaintenance } from './components/PredictiveMaintenance';
+import { CyberAndCircularView } from './components/CyberAndCircularView';
+import { AdvancedOperationsView } from './components/AdvancedOperationsView';
+import { FinancialAndWaterView } from './components/FinancialAndWaterView';
 
 export default function App() {
-  const [pestañaActiva, setPestañaActiva] = useState('PITCH');
+  const [pestañaActiva, setPestañaActiva] = useState('csuite');
+  const [descargandoReporte, setDescargandoReporte] = useState(false);
 
-  // Fuerza el scroll al inicio al cambiar de pestaña
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pestañaActiva]);
-
-  const estiloBoton = (activa, colorActivo) => ({
-    backgroundColor: activa ? colorActivo : '#1e293b',
-    color: activa ? '#ffffff' : '#94a3b8',
-    border: 'none',
-    padding: '8px 14px',
-    borderRadius: '6px',
-    fontWeight: 'bold',
-    fontSize: '11px',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease'
-  });
+  const descargarReporteOficial = async () => {
+    setDescargandoReporte(true);
+    try {
+      const res = await fetch('/api/reports');
+      const data = await res.json();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Reporte_SERNAGEOMIN_INDUSYNC_${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+    } catch (e) {
+      alert('Error al descargar reporte oficial');
+    } finally {
+      setDescargandoReporte(false);
+    }
+  };
 
   return (
-    <EnterpriseAuthGate>
-    <div style={{ backgroundColor: '#020617', minHeight: '100vh', color: '#f8fafc', padding: '16px', fontFamily: 'system-ui, sans-serif' }}>
-      
-      {/* Header General */}
-      <Header />
-
-      {/* BARRA DE NAVEGACIÓN REORDENADA POR CICLO MINERO END-TO-END */}
-      <div style={{
-        backgroundColor: '#0f172a',
-        border: '1px solid #1e293b',
-        borderRadius: '8px',
-        padding: '8px 12px',
-        marginBottom: '20px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        gap: '8px'
-      }}>
-        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-          <button
-            onClick={() => setPestañaActiva('PITCH')}
-            style={estiloBoton(pestañaActiva === 'PITCH', '#38bdf8')}
-          >
-            🚀 Modo Pitch Ejecutivo (Full)
-          </button>
-          
-          <button
-            onClick={() => setPestañaActiva('ETAPA1_LICITACIONES')}
-            style={estiloBoton(pestañaActiva === 'ETAPA1_LICITACIONES', '#10b981')}
-          >
-            1. 📝 Licitaciones & Acceso Biométrico
-          </button>
-
-          <button
-            onClick={() => setPestañaActiva('ETAPA2_MINA')}
-            style={estiloBoton(pestañaActiva === 'ETAPA2_MINA', '#0d9488')}
-          >
-            2. ⛏️ Operaciones Mina & Seguridad
-          </button>
-
-          <button
-            onClick={() => setPestañaActiva('ETAPA3_PLANTA')}
-            style={estiloBoton(pestañaActiva === 'ETAPA3_PLANTA', '#d97706')}
-          >
-            3. 🏭 Planta & Mantenimiento SAP
-          </button>
-
-          <button
-            onClick={() => setPestañaActiva('ETAPA4_LOGISTICA')}
-            style={estiloBoton(pestañaActiva === 'ETAPA4_LOGISTICA', '#eab308')}
-          >
-            4. 📦 Logística & B2B Circular
-          </button>
-
-          <button
-            onClick={() => setPestañaActiva('ETAPA5_CONTROL')}
-            style={estiloBoton(pestañaActiva === 'ETAPA5_CONTROL', '#0284c7')}
-          >
-            5. 💎 Centro Control Ejecutivo & ESG
-          </button>
+    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans p-4 md:p-8">
+      {/* Header Corporativo */}
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-6 mb-6 gap-4">
+        <div>
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-black bg-gradient-to-r from-cyan-400 via-amber-300 to-emerald-400 bg-clip-text text-transparent">
+              INDUSYNC Enterprise
+            </h1>
+            <span className="px-2 py-0.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 rounded text-xs font-mono font-bold">
+              Meta-OS v2026.4
+            </span>
+          </div>
+          <p className="text-xs text-slate-400 mt-1">Plataforma Integrada de Operaciones Mineras, ESG & Ciberseguridad OT</p>
         </div>
 
-        <span style={{ color: '#38bdf8', fontSize: '10px', fontWeight: 'bold', border: '1px solid #38bdf8', padding: '3px 8px', borderRadius: '4px' }}>
-          ENV: ENTERPRISE v2026.4
-        </span>
-      </div>
+        <button
+          onClick={descargarReporteOficial}
+          disabled={descargandoReporte}
+          className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold text-xs transition border border-emerald-400/30 shadow-lg flex items-center gap-2"
+        >
+          📄 {descargandoReporte ? 'Generando Audit...' : 'Exportar Auditoría SERNAGEOMIN & CMF'}
+        </button>
+      </header>
 
-      {/* ====================================================
-          ZONA 2: RENDERIZADO DINÁMICO POR CICLO MINERO
-         ==================================================== */}
-      
-      {/* MODO PITCH CONTINUO (RECORRIDO COMPLETO MUESTRA A MUESTRA) */}
-      {pestañaActiva === 'PITCH' && (
-        <>
-          <ProcurementTenderMatchAI />
-          <ContractorAccreditationAI />
-          <ZeroTrustMilitarySecurity />
-          <ExecutiveOperationsMap />
-          <GeometallurgicalAutonomousDrillingAI />
-          <AutonomousDispatcherAI />
-          <OperatorFatigueBiometricsAI />
-          <UndergroundVentilationAI />
-          <GeotechnicalSlopeRadarAI />
-          <SERNAGEOMINComplianceAI />
-          <IoTEdgeMeshMonitor />
-          <AlertBanner />
-          <DigitalTwinPredictiveMaintAI />
-          <SAPWorkOrderAutomation />
-          <TailingsWaterManagementAI />
-          <ShiftReportAI />
-          <SupplyChainProcurementAI />
-          <CircularMarketplaceB2BAI />
-          <EnergyGridHydrogenAI />
-          <AIOperationalCopilot />
-          <ClientOnboardingBilling />
-          <LiveROICalculator />
-          <ESGCarbonTracker />
-        </>
-      )}
+      {/* Navegador por Pestañas */}
+      <nav className="flex flex-wrap gap-2 mb-6 border-b border-slate-800 pb-3">
+        {[
+          { id: 'csuite', label: '📊 C-Suite & ESG' },
+          { id: 'scada', label: '⚡ SCADA & Telemetría' },
+          { id: 'biometria', label: '🪪 Acreditación Biometría' },
+          { id: 'sap', label: '⚙️ SAP PM Predictive' },
+          { id: 'cyber', label: '🛡️ Cyber-OT & B2B Circular' },
+          { id: 'ahs', label: '🤖 Despacho AHS & Relaves' },
+          { id: 'siam', label: '💧 SIAM Agua & Cash Cost' }
+        ].map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setPestañaActiva(tab.id)}
+            className={`px-4 py-2 rounded-lg text-xs font-bold transition ${
+              pestañaActiva === tab.id
+                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 shadow'
+                : 'bg-slate-900 text-slate-400 hover:bg-slate-800 hover:text-slate-200 border border-slate-800'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </nav>
 
-      {/* ETAPA 1: LICITACIONES, ACCESO & ACREDITACIÓN */}
-      {pestañaActiva === 'ETAPA1_LICITACIONES' && (
-        <>
-          <ProcurementTenderMatchAI />
-          <ContractorAccreditationAI />
-          <ZeroTrustMilitarySecurity />
-        </>
-      )}
-
-      {/* ETAPA 2: OPERACIONES MINA, DISPATCH & SEGURIDAD HSEC */}
-      {pestañaActiva === 'ETAPA2_MINA' && (
-        <>
-          <ExecutiveOperationsMap />
-          <GeometallurgicalAutonomousDrillingAI />
-          <AutonomousDispatcherAI />
-          <OperatorFatigueBiometricsAI />
-          <UndergroundVentilationAI />
-          <GeotechnicalSlopeRadarAI />
-          <SERNAGEOMINComplianceAI />
-          <IoTEdgeMeshMonitor />
-          <AlertBanner />
-        </>
-      )}
-
-      {/* ETAPA 3: PLANTA CONCENTRADORA, MANTENIMIENTO & RELAVES */}
-      {pestañaActiva === 'ETAPA3_PLANTA' && (
-        <>
-          <DigitalTwinPredictiveMaintAI />
-          <SAPWorkOrderAutomation />
-          <TailingsWaterManagementAI />
-          <ShiftReportAI />
-        </>
-      )}
-
-      {/* ETAPA 4: LOGÍSTICA, CADENA DE SUMINISTRO & MARKETPLACE CIRCULAR */}
-      {pestañaActiva === 'ETAPA4_LOGISTICA' && (
-        <>
-          <SupplyChainProcurementAI />
-          <CircularMarketplaceB2BAI />
-          <EnergyGridHydrogenAI />
-        </>
-      )}
-
-      {/* ETAPA 5: CENTRO DE CONTROL EJECUTIVO, ROI & ESG */}
-      {pestañaActiva === 'ETAPA5_CONTROL' && (
-        <>
-          <AIOperationalCopilot />
-          <ClientOnboardingBilling />
-          <LiveROICalculator />
-          <ESGCarbonTracker />
-        </>
-      )}
-
+      {/* Renderizado Dinámico */}
+      <main className="space-y-6">
+        {pestañaActiva === 'csuite' && <ExecutiveDashboard />}
+        {pestañaActiva === 'scada' && <MineOperationsTelemetry />}
+        {pestañaActiva === 'biometria' && <BiometricAccreditation />}
+        {pestañaActiva === 'sap' && <PredictiveMaintenance />}
+        {pestañaActiva === 'cyber' && <CyberAndCircularView />}
+        {pestañaActiva === 'ahs' && <AdvancedOperationsView />}
+        {pestañaActiva === 'siam' && <FinancialAndWaterView />}
+      </main>
     </div>
-    </EnterpriseAuthGate>
   );
 }
