@@ -1,14 +1,18 @@
 // src/services/api.js
 export const apiService = {
-    async obtenerTelemetriaIoT() {
-  try {
-    const response = await fetch('/api/telemetry');
-    if (!response.ok) throw new Error('Error al leer telemetría');
-    return await response.json();
-  } catch (error) {
-    return {
-      flotaAutonoma: { camionesActivos: 30, velocidadPromedioKmh: '44.2', tonelajeTurnoActual: 145000 },
-      plantaMolienda: { presionMolinoSAG: '8.5 Bar', temperaturaRodamientos: '70 °C' }
+  async obtenerTelemetriaIoT() {
+    try {
+      const response = await fetch('/api/telemetry');
+      if (!response.ok) throw new Error('Error al leer telemetría');
+      return await response.json();
+    } catch (error) {
+      return {
+        flotaAutonoma: { camionesActivos: 30, velocidadPromedioKmh: '44.2', tonelajeTurnoActual: 145000 },
+        plantaMolienda: { presionMolinoSAG: '8.5 Bar', temperaturaRodamientos: '70 °C' }
+      };
+    }
+  },
+
   async procesarMatchLicitacion(licitacionId, presupuestoUSD) {
     try {
       const response = await fetch('/api/tenders', {
