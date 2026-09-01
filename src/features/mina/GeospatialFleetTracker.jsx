@@ -1,5 +1,5 @@
 import React from 'react';
-import FleetRadar from '@/features/fleet/FleetRadar';
+import FleetRadar from '../fleet/FleetRadar';
 
 export default function GeospatialFleetTracker() {
   return (

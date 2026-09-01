@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { telemetryService } from '@/services/telemetryService';
+import { telemetryService } from '../../services/telemetryService';
 
 export default function FleetRadar() {
-  const [telemetry, setTelemetry] = useState(telemetryService.getCurrentData());
+  const [telemetry, setTelemetry] = useState(() => telemetryService.getCurrentData());
 
   useEffect(() => {
     const unsubscribe = telemetryService.subscribe((data) => {
@@ -10,6 +10,8 @@ export default function FleetRadar() {
     });
     return () => unsubscribe();
   }, []);
+
+  const fleet = telemetry?.fleet || [];
 
   const getFatigueBadge = (risk) => {
     switch (risk) {
@@ -24,7 +26,7 @@ export default function FleetRadar() {
 
   return (
     <div className="p-6 bg-slate-900/80 border border-slate-800 rounded-2xl shadow-xl space-y-6">
-      <div className="flex justify-between items-center border-b border-slate-800 pb-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-800 pb-4 gap-2">
         <div>
           <h2 className="text-xl font-bold text-amber-400 flex items-center gap-2">
             🚛 Radar & Monitoreo de Flota CAEX
@@ -32,7 +34,7 @@ export default function FleetRadar() {
           <p className="text-xs text-slate-400">Control biométrico, velocidad y estado GPS en faena</p>
         </div>
         <div className="text-xs text-slate-400 font-mono">
-          Camiones monitoreados: <span className="text-white font-bold">{telemetry.fleet.length}</span>
+          Camiones monitoreados: <span className="text-white font-bold">{fleet.length}</span>
         </div>
       </div>
 
@@ -50,7 +52,7 @@ export default function FleetRadar() {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-800/50 font-mono">
-            {telemetry.fleet.map((truck) => (
+            {fleet.map((truck) => (
               <tr key={truck.id} className="hover:bg-slate-800/30 transition-colors">
                 <td className="p-3 font-bold text-cyan-400">{truck.id}</td>
                 <td className="p-3 text-slate-200 font-sans">{truck.driver}</td>

@@ -1,12 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
-import { AuthProvider } from './context/AuthContext';
-import * as SystemModule from './context/SystemContext';
 import './index.css';
-
-// Soporte flexible para SystemProvider si existe en tu proyecto
-const SystemProvider = SystemModule.SystemProvider || SystemModule.default || (({ children }) => children);
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -41,21 +36,17 @@ class ErrorBoundary extends React.Component {
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <ErrorBoundary>
-      <SystemProvider>
-        <AuthProvider>
-          <App />
-        </AuthProvider>
-      </SystemProvider>
+      <App />
     </ErrorBoundary>
   </React.StrictMode>
 );
 
-// Registro de Service Worker para capacidades PWA Offline
+// Registro de Service Worker para PWA
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', () => {
     navigator.serviceWorker
       .register('/sw.js')
-      .then((reg) => console.log('Service Worker PWA registrado con éxito:', reg.scope))
-      .catch((err) => console.error('Error registrando Service Worker PWA:', err));
+      .then((reg) => console.log('Service Worker registrado:', reg.scope))
+      .catch((err) => console.error('Error Service Worker:', err));
   });
 }

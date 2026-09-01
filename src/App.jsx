@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import Telemetry from '@/features/scada/Telemetry';
-import FleetRadar from '@/features/fleet/FleetRadar';
-import CyberDefense from '@/features/cyber/CyberDefense';
-import EsgSustainability from '@/features/esg/EsgSustainability';
-import ExecutiveConsole from '@/features/csuite/ExecutiveConsole';
+import Telemetry from './features/scada/Telemetry';
+import FleetRadar from './features/fleet/FleetRadar';
+import CyberDefense from './features/cyber/CyberDefense';
+import EsgSustainability from './features/esg/EsgSustainability';
+import ExecutiveConsole from './features/csuite/ExecutiveConsole';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('executive');

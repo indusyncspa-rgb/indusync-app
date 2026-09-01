@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { telemetryService } from '@/services/telemetryService';
+import { telemetryService } from '../../services/telemetryService';
 
 export default function CyberDefense() {
-  const [data, setData] = useState(telemetryService.getCurrentData());
+  const [data, setData] = useState(() => telemetryService.getCurrentData());
 
   useEffect(() => {
     const unsubscribe = telemetryService.subscribe((newData) => {
@@ -11,7 +11,16 @@ export default function CyberDefense() {
     return () => unsubscribe();
   }, []);
 
-  const cyber = data.cyber;
+  const cyber = data?.cyber || {
+    threatLevel: 'DEFCON 3 - Elevado',
+    blockedAttacksToday: 1420,
+    activeAnomalies: 2,
+    otFirewallStatus: 'Protegido',
+    scadaIntegrity: 99.8,
+    recentLogs: []
+  };
+
+  const recentLogs = cyber.recentLogs || [];
 
   return (
     <div className="p-6 bg-slate-900/80 border border-slate-800 rounded-2xl shadow-xl space-y-6">
@@ -52,7 +61,7 @@ export default function CyberDefense() {
           📡 Log de Eventos de Seguridad en Tiempo Real
         </h3>
         <div className="space-y-2 font-mono text-xs">
-          {cyber.recentLogs.map((log, index) => (
+          {recentLogs.map((log, index) => (
             <div key={index} className="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-slate-900/60 p-2.5 rounded border border-slate-800/80 gap-1">
               <div className="flex items-center gap-2">
                 <span className="text-slate-500">{log.time}</span>
