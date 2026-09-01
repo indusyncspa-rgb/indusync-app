@@ -13,12 +13,15 @@ class ErrorBoundary extends React.Component {
     super(props);
     this.state = { hasError: false, error: null };
   }
+
   static getDerivedStateFromError(error) {
     return { hasError: true, error };
   }
+
   componentDidCatch(error, errorInfo) {
     console.error("Error de renderizado capturado:", error, errorInfo);
   }
+
   render() {
     if (this.state.hasError) {
       return (
@@ -46,3 +49,13 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     </ErrorBoundary>
   </React.StrictMode>
 );
+
+// Registro de Service Worker para capacidades PWA Offline
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker
+      .register('/sw.js')
+      .then((reg) => console.log('Service Worker PWA registrado con éxito:', reg.scope))
+      .catch((err) => console.error('Error registrando Service Worker PWA:', err));
+  });
+}

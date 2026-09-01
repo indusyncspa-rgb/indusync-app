@@ -49,7 +49,7 @@ export default function Telemetry() {
         <div className="p-4 bg-slate-950/60 border border-slate-800 rounded-xl">
           <span className="text-xs text-slate-400 font-medium">Flota CAEX Activa</span>
           <div className="text-2xl font-bold text-purple-300 font-mono mt-1">
-            {metrics.activeCaex} <span className="text-xs text-slate-500">Unidades</span>
+            {metrics.fleet ? metrics.fleet.length : 0} <span className="text-xs text-slate-500">Unidades</span>
           </div>
         </div>
       </div>

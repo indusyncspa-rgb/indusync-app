@@ -32,13 +32,11 @@ class TelemetryService {
   startStream() {
     this.isLive = true;
     this.timer = setInterval(() => {
-      // Simulación de oscilaciones SCADA
       this.data.pressure = parseFloat((140 + Math.random() * 8).toFixed(1));
       this.data.temperature = parseFloat((65 + Math.random() * 7).toFixed(1));
       this.data.flowRate = parseFloat((300 + Math.random() * 20).toFixed(1));
       this.data.networkLatency = Math.floor(10 + Math.random() * 5);
 
-      // Simulación de movimiento de flota
       this.data.fleet = this.data.fleet.map(caex => {
         if (caex.status === 'En Tránsito') {
           const newSpeed = Math.floor(25 + Math.random() * 20);
