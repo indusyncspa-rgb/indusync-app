@@ -1,4 +1,5 @@
-import React, { useState, lazy, Suspense } from 'react';
+import React, { useState, lazy, Suspense, useEffect } from 'react';
+import { useAuth } from '@/context/AuthContext';
 
 // Componentes Comunes
 import Header from './components/common/Header';
@@ -182,8 +183,21 @@ const categorias = {
 };
 
 export default function App() {
-  const [categoriaActiva, setCategoriaActiva] = useState('csuite');
-  const [moduloActivo, setModuloActivo] = useState('exec_dash');
+  const { user, hasPermission, switchRole, ROLES } = useAuth();
+
+  const categoriasVisibles = Object.keys(categorias).filter(catKey => hasPermission(catKey));
+
+  const [categoriaActiva, setCategoriaActiva] = useState(categoriasVisibles[0] || 'csuite');
+  const [moduloActivo, setModuloActivo] = useState(categorias[categoriasVisibles[0]]?.modulos[0]?.id || 'exec_dash');
+
+  // Ajusta la categoría activa dinámicamente si el rol seleccionado cambia sus permisos
+  useEffect(() => {
+    if (!categoriasVisibles.includes(categoriaActiva) && categoriasVisibles.length > 0) {
+      const nuevaCat = categoriasVisibles[0];
+      setCategoriaActiva(nuevaCat);
+      setModuloActivo(categorias[nuevaCat].modulos[0].id);
+    }
+  }, [user.role, categoriasVisibles, categoriaActiva]);
 
   const handleCambioCategoria = (catKey) => {
     setCategoriaActiva(catKey);
@@ -198,12 +212,27 @@ export default function App() {
       
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-4 mb-4 gap-4">
         <Header />
-        <InstallAppButton />
+        <div className="flex items-center gap-3">
+          {/* Selector de Simulación de Rol (Dev Toolbar) */}
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 rounded-lg border border-slate-800 text-xs">
+            <span className="text-slate-400 font-medium">Rol:</span>
+            <select 
+              value={user.role} 
+              onChange={(e) => switchRole(e.target.value)}
+              className="bg-slate-950 text-cyan-400 font-mono font-bold px-2 py-0.5 rounded border border-slate-700 outline-none cursor-pointer"
+            >
+              {Object.values(ROLES).map(r => (
+                <option key={r} value={r}>{r.toUpperCase()}</option>
+              ))}
+            </select>
+          </div>
+          <InstallAppButton />
+        </div>
       </header>
 
-      {/* Categorías Principales */}
+      {/* Categorías Principales Filtradas por Rol */}
       <nav className="flex flex-wrap gap-2 mb-3 border-b border-slate-800 pb-3">
-        {Object.keys(categorias).map(catKey => (
+        {categoriasVisibles.map(catKey => (
           <button
             key={catKey}
             onClick={() => handleCambioCategoria(catKey)}
@@ -218,22 +247,24 @@ export default function App() {
         ))}
       </nav>
 
-      {/* Sub-Módulos */}
-      <div className="flex flex-wrap gap-1.5 mb-6 bg-slate-900/60 p-2 rounded-xl border border-slate-800/80">
-        {categorias[categoriaActiva].modulos.map(m => (
-          <button
-            key={m.id}
-            onClick={() => setModuloActivo(m.id)}
-            className={`px-3 py-1.5 rounded text-xs font-medium transition ${
-              moduloActivo === m.id
-                ? 'bg-emerald-500 text-slate-950 font-bold shadow'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
-            }`}
-          >
-            {m.label}
-          </button>
-        ))}
-      </div>
+      {/* Sub-Módulos de la Categoría Activa */}
+      {categorias[categoriaActiva] && (
+        <div className="flex flex-wrap gap-1.5 mb-6 bg-slate-900/60 p-2 rounded-xl border border-slate-800/80">
+          {categorias[categoriaActiva].modulos.map(m => (
+            <button
+              key={m.id}
+              onClick={() => setModuloActivo(m.id)}
+              className={`px-3 py-1.5 rounded text-xs font-medium transition ${
+                moduloActivo === m.id
+                  ? 'bg-emerald-500 text-slate-950 font-bold shadow'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+              }`}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Módulo Activo con Carga Suspendida */}
       <main className="space-y-6">
@@ -242,7 +273,11 @@ export default function App() {
             <span className="text-cyan-400 font-mono text-xs animate-pulse">⚡ Cargando módulo operativo...</span>
           </div>
         }>
-          {ComponenteModulo && <ComponenteModulo />}
+          {ComponenteModulo ? <ComponenteModulo /> : (
+            <div className="p-12 text-center bg-slate-900/40 rounded-xl border border-slate-800 text-slate-400 text-xs">
+              Selecciona un módulo válido.
+            </div>
+          )}
         </Suspense>
       </main>
 
