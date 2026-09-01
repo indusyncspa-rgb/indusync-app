@@ -1,23 +1,17 @@
 {
   "short_name": "INDUSYNC",
-  "name": "INDUSYNC® Meta-OS Industrial",
+  "name": "INDUSYNC Industrial Meta-OS",
+  "description": "Sistema Operativo Industrial y Telemetría en Tiempo Real para Faena Minera",
   "icons": [
     {
-      "src": "/favicon.svg?v=2",
-      "type": "image/svg+xml",
-      "sizes": "192x192 512x512",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/vite.svg?v=2",
-      "type": "image/svg+xml",
-      "sizes": "192x192 512x512",
-      "purpose": "any maskable"
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
     }
   ],
   "start_url": "/",
-  "background_color": "#090d16",
-  "theme_color": "#090d16",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
   "display": "standalone",
-  "orientation": "portrait"
+  "orientation": "any"
 }
