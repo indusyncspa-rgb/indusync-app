@@ -9,6 +9,7 @@ import ProcurementTenderMatchAI from './components/ProcurementTenderMatchAI';
 import ShiftReportAI from './components/ShiftReportAI';
 import RadarLogistico from './components/RadarLogistico';
 import IndustrialCopilotAI from './components/IndustrialCopilotAI';
+import DigitalTwinView from './components/DigitalTwinView';
 
 export default function App() {
   const [pestañaActiva, setPestañaActiva] = useState('csuite');
@@ -60,6 +61,7 @@ export default function App() {
         {[
           { id: 'csuite', label: '📊 C-Suite & ESG' },
           { id: 'copilot', label: '🤖 Copiloto Industrial AI' },
+          { id: 'twin', label: '🌐 Gemelo Digital' },
           { id: 'scada', label: '⚡ SCADA & Telemetría' },
           { id: 'shift', label: '📋 Bitácora Cambio Turno' },
           { id: 'sap', label: '⚙️ SAP PM & Mantenimiento' },
@@ -85,6 +87,7 @@ export default function App() {
       <main className="space-y-6">
         {pestañaActiva === 'csuite' && <SERNAGEOMINComplianceAI />}
         {pestañaActiva === 'copilot' && <IndustrialCopilotAI />}
+        {pestañaActiva === 'twin' && <DigitalTwinView />}
         {pestañaActiva === 'scada' && <Telemetry />}
         {pestañaActiva === 'shift' && <ShiftReportAI />}
         {pestañaActiva === 'sap' && <SAPIntegrationBridge />}
