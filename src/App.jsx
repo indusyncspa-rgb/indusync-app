@@ -8,6 +8,7 @@ import TailingsWaterManagementAI from './components/TailingsWaterManagementAI';
 import ProcurementTenderMatchAI from './components/ProcurementTenderMatchAI';
 import ShiftReportAI from './components/ShiftReportAI';
 import RadarLogistico from './components/RadarLogistico';
+import IndustrialCopilotAI from './components/IndustrialCopilotAI';
 
 export default function App() {
   const [pestañaActiva, setPestañaActiva] = useState('csuite');
@@ -58,6 +59,7 @@ export default function App() {
       <nav className="flex flex-wrap gap-2 mb-6 border-b border-slate-800 pb-3">
         {[
           { id: 'csuite', label: '📊 C-Suite & ESG' },
+          { id: 'copilot', label: '🤖 Copiloto Industrial AI' },
           { id: 'scada', label: '⚡ SCADA & Telemetría' },
           { id: 'shift', label: '📋 Bitácora Cambio Turno' },
           { id: 'sap', label: '⚙️ SAP PM & Mantenimiento' },
@@ -82,6 +84,7 @@ export default function App() {
 
       <main className="space-y-6">
         {pestañaActiva === 'csuite' && <SERNAGEOMINComplianceAI />}
+        {pestañaActiva === 'copilot' && <IndustrialCopilotAI />}
         {pestañaActiva === 'scada' && <Telemetry />}
         {pestañaActiva === 'shift' && <ShiftReportAI />}
         {pestañaActiva === 'sap' && <SAPIntegrationBridge />}
