@@ -1,0 +1,1 @@
+const estadoAcueducto = data?.estadoAcueducto ?? 'ÓPTIMO';
