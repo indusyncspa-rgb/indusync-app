@@ -1,292 +1,317 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import ExecutiveDashboard from './features/csuite/ExecutiveDashboard';
 import FinanceDashboard from './features/csuite/FinanceDashboard';
 import WaterManagement from './features/esg/WaterManagement';
 import AutoRescueP0 from './features/operator/AutoRescueP0';
 
-// Estado Enterprise Multivariable con más de 30 métricas industriales y operacionales
-const FULL_ENTERPRISE_STATE = {
-  // Mercado & Commodities en vivo
+// Dataset operacional global de INDUSYNC Meta-OS
+const initialData = {
   precioCobreLbUsd: 3.90,
-  precioOroOzUsd: 2480.5,
-  precioMolibdenoKgUsd: 42.10,
-  
-  // Planta Concentradora & Mina
   produccionDiariaTon: 82500,
-  metaProduccionTon: 80000,
   eficienciaEnergetica: 94.2,
   disponibilidadFlota: 91.8,
-  caexOperativos: 38,
-  caexTotales: 42,
-  toneladasMolidasHora: 3450,
-  leyCabezaCu: 0.78,
-  recuperacionPlantaPct: 89.2,
-  
-  // Métricas Financieras C-Suite & ROI
   cashCostC1: 1.26,
   ebitdaEstimadoMusd: 26.76,
   opexAcumuladoMusd: 142.8,
-  capexProyectadoMusd: 85.0,
   ahorroIAacumuladoUsd: 1425000,
-  ingresosTotalesMusd: 310.5,
-  costoProcesamientoTon: 14.20,
-  
-  // Gobernanza ESG, Agua & Relaves (GISTM)
-  estadoAcueducto: 'ÓPTIMO (100% OPERATIVO)',
+  estadoAcueducto: 'ÓPTIMO (100%)',
   recuperacionAguaPct: 88.4,
   consumoEspecificoM3Ton: 0.42,
-  nivelEmbalsePct: 91.2,
   flujoDesaladoraLps: 1250,
-  presionTuberiaBar: 18.5,
-  calidadPh: 7.8,
-  emisionesCo2Ton: 0.82,
-  estabilidadRelavesIndex: 99.4,
-  
-  // Infraestructura OT, SCADA & IA
-  nodosScadaActivos: 1420,
-  latenciaScadaMs: 12,
-  versionAlgoritmoIA: 'v4.2-LSTM-ZeroTrust',
-  alertasActivasP0: 0,
-  alertasActivasP1: 2,
-  ultimaInfeccionPrevenida: 'Hace 4 min (Firewall OT)'
+  presionTuberiaBar: 18.5
 };
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState('executive');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [faena, setFaena] = useState('Cordillera Alta - Sector Norte');
-  const [opState, setOpState] = useState(FULL_ENTERPRISE_STATE);
-  const [timeString, setTimeString] = useState(new Date().toLocaleTimeString());
+  const [role, setRole] = useState('ADMIN');
+  const [mainTab, setMainTab] = useState('csuite');
+  const [subTab, setSubTab] = useState('pitch');
+  const [autoRescueActive, setAutoRescueActive] = useState(false);
 
-  // Reloj de telemetría y pequeñas variaciones dinámicas en tiempo real
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeString(new Date().toLocaleTimeString());
-      setOpState((prev) => ({
-        ...prev,
-        latenciaScadaMs: Math.floor(10 + Math.random() * 5),
-        toneladasMolidasHora: Math.floor(3420 + Math.random() * 60),
-        precioCobreLbUsd: +(3.89 + Math.random() * 0.03).toFixed(2),
-      }));
-    }, 3000);
-    return () => clearInterval(timer);
-  }, []);
+  // Parámetros interactivos del Calculador de ROI
+  const [procesamientoMTon, setProcesamientoMTon] = useState(30);
+  const [precioCobreLp, setPrecioCobreLp] = useState(3.9);
 
-  // Estructura jerárquica del Menú Navegador
-  const navigationSections = [
-    {
-      title: 'ESTRATEGIA & C-SUITE',
-      items: [
-        { id: 'executive', label: 'Dashboard Ejecutivo', icon: '📊', description: 'Vista consolidada P&L' },
-        { id: 'finanzas', label: 'Finanzas & ROI', icon: '💰', description: 'EBITDA y reducción OPEX' },
-      ],
-    },
-    {
-      title: 'OPERACIONES OT & PLANTA',
-      items: [
-        { id: 'p0', label: 'Auto-Rescue P0', icon: '🚨', badge: 'IA LIVE', description: 'Gemelo digital de mitigación' },
-        { id: 'flota', label: 'Despacho CAEX', icon: '🚜', badge: 'PRÓXIMO', description: 'Optimización de camiones' },
-      ],
-    },
-    {
-      title: 'SOSTENIBILIDAD & ESG',
-      items: [
-        { id: 'agua', label: 'Recursos Hídricos', icon: '💧', description: 'Acueducto & Desaladora' },
-        { id: 'relaves', label: 'Monitoreo Relaves', icon: '🛡️', badge: 'GISTM', description: 'Geotecnia & Sensores' },
-      ],
-    },
-  ];
+  // Cálculos en tiempo real
+  const ahorroEnergia = (procesamientoMTon * 0.85).toFixed(2);
+  const reduccionCashCost = (procesamientoMTon * 0.042).toFixed(2);
+  const valorTotalEbitda = (parseFloat(ahorroEnergia) + parseFloat(reduccionCashCost)).toFixed(2);
 
   return (
-    <div className="min-h-screen bg-[#070a11] text-slate-100 font-sans flex flex-col md:flex-row selection:bg-cyan-500 selection:text-slate-950">
-      
-      {/* BARRA LATERAL ENTERPRISE (SIDEBAR) */}
-      <aside className={`${isSidebarOpen ? 'w-full md:w-72' : 'w-20'} bg-slate-900/90 border-r border-slate-800/80 p-4 flex flex-col justify-between transition-all duration-300 z-40 backdrop-blur-2xl`}>
-        <div>
-          {/* Logo y Encabezado de Marca */}
-          <div className="flex items-center justify-between px-2 py-3 mb-4 border-b border-slate-800/80">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 rounded-xl flex items-center justify-center font-black text-slate-950 text-xl shadow-lg shadow-cyan-500/20 ring-1 ring-white/20">
-                ⚡
+    <div className="min-h-screen bg-[#070b14] text-slate-100 font-sans p-4 md:p-6 space-y-4">
+      {/* 1. ALERTA P0: BANNER ROJO SUPERIOR */}
+      <div className="bg-[#2a080c] border border-red-800/80 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-2xl">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="bg-red-600 text-white font-mono font-bold text-[10px] px-2.5 py-1 rounded tracking-wider uppercase">
+              ALERTA P0: DETENCIÓN INMINENTE
+            </span>
+          </div>
+          <h2 className="text-sm font-bold text-red-100 flex items-center gap-2">
+            <span>⚠️</span> Chancador Secundario #3 - Temperatura de Rodamiento &gt; 115°C
+          </h2>
+          <p className="text-xs font-mono text-red-300">
+            Pérdida estimada si no se interviene: <span className="font-bold text-white">$140,000 USD / hora</span>
+          </p>
+        </div>
+        <button
+          onClick={() => {
+            setAutoRescueActive(true);
+            setMainTab('scada');
+            setSubTab('p0');
+          }}
+          className="bg-[#00e599] hover:bg-[#00c785] text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 cursor-pointer transition shadow-lg shadow-emerald-500/20 whitespace-nowrap"
+        >
+          <span>🚀</span> Activar Auto-Rescue INDUSYNC®
+        </button>
+      </div>
+
+      {/* 2. BARRA DE CABECERA PRINCIPAL */}
+      <div className="bg-[#0d1424] border border-slate-800/80 rounded-2xl p-4 flex flex-wrap justify-between items-center gap-4 shadow-lg">
+        <div className="flex items-center gap-4 flex-wrap">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-cyan-950/80 border border-cyan-500/60 rounded-xl flex items-center justify-center font-bold text-cyan-400 text-xl shadow-lg shadow-cyan-500/20">
+              🛡️
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <h1 className="text-lg font-black text-white tracking-wider">INDUSYNC</h1>
+                <span className="text-[10px] font-bold text-cyan-400 font-mono bg-cyan-950/80 px-1.5 py-0.5 rounded border border-cyan-800">® Meta-OS</span>
               </div>
-              {isSidebarOpen && (
-                <div>
-                  <h1 className="font-black text-white text-base tracking-wider leading-none">INDUSYNC®</h1>
-                  <p className="text-[9px] font-mono text-cyan-400 tracking-widest uppercase mt-1">Enterprise OS v4.2</p>
-                </div>
-              )}
+              <p className="text-[10px] font-mono text-slate-400 tracking-wider">SOFTWARE IA INDUSTRIAL PARA LA ALTA MINERÍA</p>
             </div>
           </div>
 
-          {/* Selector de Faena Minera */}
-          {isSidebarOpen && (
-            <div className="mb-6 px-2">
-              <label className="text-[10px] font-mono text-slate-500 uppercase block mb-1">Unidad Operativa Active</label>
-              <select 
-                value={faena}
-                onChange={(e) => setFaena(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-300 font-medium focus:outline-none focus:border-cyan-500"
-              >
-                <option value="Cordillera Alta - Sector Norte">Faena Cordillera Alta (Cu-Mo)</option>
-                <option value="Salar Sur - Planta Lixiviación">Planta Lixiviación Salar Sur</option>
-                <option value="Puerto Coloso - Impulsión">Terminal Marítimo & Desaladora</option>
-              </select>
-            </div>
-          )}
-
-          {/* Grupos de Navegación */}
-          <div className="space-y-6">
-            {navigationSections.map((section, idx) => (
-              <div key={idx} className="space-y-1">
-                {isSidebarOpen && (
-                  <p className="px-3 text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider mb-2">
-                    {section.title}
-                  </p>
-                )}
-                {section.items.map((item) => {
-                  const isActive = activeTab === item.id;
-                  const isDisabled = item.badge === 'PRÓXIMO';
-                  return (
-                    <button
-                      key={item.id}
-                      disabled={isDisabled}
-                      onClick={() => setActiveTab(item.id)}
-                      className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl transition-all cursor-pointer text-xs font-medium ${
-                        isActive
-                          ? 'bg-gradient-to-r from-cyan-500/20 via-cyan-500/10 to-transparent text-cyan-400 border border-cyan-500/30 shadow-lg shadow-cyan-500/10'
-                          : isDisabled
-                          ? 'opacity-40 cursor-not-allowed text-slate-600'
-                          : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/40'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <span className="text-base flex-shrink-0">{item.icon}</span>
-                        {isSidebarOpen && (
-                          <div className="text-left truncate">
-                            <p className="leading-tight truncate">{item.label}</p>
-                            <p className="text-[10px] text-slate-500 truncate font-normal">{item.description}</p>
-                          </div>
-                        )}
-                      </div>
-                      {isSidebarOpen && item.badge && (
-                        <span className={`px-1.5 py-0.5 rounded text-[9px] font-mono font-bold flex-shrink-0 ${
-                          item.badge === 'IA LIVE' ? 'bg-red-500/20 text-red-400 border border-red-500/40 animate-pulse' :
-                          item.badge === 'GISTM' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' :
-                          'bg-slate-800 text-slate-500'
-                        }`}>
-                          {item.badge}
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            ))}
+          <div className="flex items-center gap-2 flex-wrap ml-0 lg:ml-4">
+            <button 
+              onClick={() => alert("Descargando INDUSYNC® Mobile App...")}
+              className="bg-[#00e599] hover:bg-[#00c785] text-slate-950 font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer transition"
+            >
+              <span>📱</span> Descargar App
+            </button>
+            <button 
+              onClick={() => alert("Modo Técnico / Dev Activado")}
+              className="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer transition border border-slate-700"
+            >
+              <span>⚙️</span> Modo Técnico / Dev
+            </button>
+            <button 
+              onClick={() => alert("Generando Dossier Ejecutivo PDF...")}
+              className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer transition shadow-md shadow-cyan-600/20"
+            >
+              <span>📄</span> Descargar Dossier
+            </button>
           </div>
         </div>
 
-        {/* Status SCADA & Estado de Red (Footer Sidebar) */}
-        {isSidebarOpen && (
-          <div className="pt-4 border-t border-slate-800/80 space-y-2">
-            <div className="p-3 bg-slate-950/90 rounded-xl border border-slate-800 font-mono text-[10px] space-y-1.5">
-              <div className="flex items-center justify-between">
-                <span className="text-slate-500">SCADA Telemetría:</span>
-                <span className="text-emerald-400 font-bold flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-ping" />
-                  {opState.nodosScadaActivos} NODOS
-                </span>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800 font-mono text-xs">
+            <span className="text-slate-400">Rol:</span>
+            <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="bg-transparent text-cyan-400 font-bold focus:outline-none cursor-pointer uppercase"
+            >
+              <option value="ADMIN" className="bg-slate-900 text-white">ADMIN</option>
+              <option value="VP OPERACIONES" className="bg-slate-900 text-white">VP OPERACIONES</option>
+              <option value="SUPERINTENDENTE OT" className="bg-slate-900 text-white">SUPERINTENDENTE OT</option>
+              <option value="OPERADOR SCADA" className="bg-slate-900 text-white">OPERADOR SCADA</option>
+            </select>
+          </div>
+
+          <button 
+            onClick={() => alert("Descargando App...")}
+            className="bg-[#00e599] hover:bg-[#00c785] text-slate-950 font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer transition"
+          >
+            <span>📱</span> Descargar App
+          </button>
+        </div>
+      </div>
+
+      {/* 3. TABS PRINCIPALES (HORIZONTALES) */}
+      <div className="flex flex-wrap gap-2 text-xs font-semibold">
+        {[
+          { id: 'csuite', label: '📊 C-Suite & Finanzas' },
+          { id: 'mina', label: '⛏️ Mina & Operaciones' },
+          { id: 'gemelo', label: '🌐 Gemelo Digital & IA' },
+          { id: 'scada', label: '⚡ Mantenimiento & SCADA' },
+          { id: 'esg', label: '💧 ESG & Geotecnia' },
+          { id: 'cyber', label: '🛡️ Cyber & Acreditación' },
+          { id: 'b2b', label: '♻️ Marketplace & B2B' },
+        ].map((tab) => {
+          const isActive = mainTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => {
+                setMainTab(tab.id);
+                if (tab.id === 'csuite') setSubTab('pitch');
+                setAutoRescueActive(false);
+              }}
+              className={`px-4 py-2 rounded-xl transition cursor-pointer font-bold ${
+                isActive
+                  ? 'bg-[#0c233c] text-cyan-400 border border-cyan-500/80 shadow-lg shadow-cyan-500/10'
+                  : 'bg-[#0d1424] text-slate-400 border border-slate-800/80 hover:text-slate-200 hover:border-slate-700'
+              }`}
+            >
+              {tab.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* 4. SUB-TABS SECUNDARIOS (PARA C-SUITE & FINANZAS) */}
+      {mainTab === 'csuite' && (
+        <div className="bg-[#0d1424] border border-slate-800/80 rounded-2xl p-2 flex flex-wrap gap-1.5 text-xs">
+          {[
+            { id: 'dashboard', label: 'Dashboard Ejecutivo' },
+            { id: 'pitch', label: 'Pitch Directorio' },
+            { id: 'mapa', label: 'Mapa Operacional' },
+            { id: 'roi', label: 'Calculador ROI' },
+            { id: 'finanzas_agua', label: 'Finanzas & Agua' },
+            { id: 'metricas', label: 'Métricas Financieras' },
+            { id: 'facturacion', label: 'Onboarding & Facturación' },
+            { id: 'logs', label: 'Logs de Auditoría' },
+          ].map((sub) => {
+            const isSubActive = subTab === sub.id;
+            return (
+              <button
+                key={sub.id}
+                onClick={() => setSubTab(sub.id)}
+                className={`px-3.5 py-1.5 rounded-xl font-bold transition cursor-pointer ${
+                  isSubActive
+                    ? 'bg-[#00e599] text-slate-950 shadow-md shadow-emerald-500/20'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                }`}
+              >
+                {sub.label}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* 5. ÁREA DE CONTENIDO */}
+      <main className="space-y-6">
+        {/* VIEW: PITCH DIRECTORIO / CALCULADOR DE ROI */}
+        {mainTab === 'csuite' && (subTab === 'pitch' || subTab === 'roi') && (
+          <div className="bg-[#09101d] border border-slate-800/90 rounded-3xl p-6 space-y-6 shadow-2xl">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <div>
+                <h2 className="text-xl font-black text-white flex items-center gap-2">
+                  <span>💰</span> Calculador de ROI & Valor para el Directorio
+                </h2>
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Proyección de Impacto Financiero y Reducción de Cash Cost C1 con INDUSYNC Meta-OS
+                </p>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-slate-500">Latencia Red OT:</span>
-                <span className="text-cyan-400">{opState.latenciaScadaMs} ms</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-slate-500">Seguridad Enclave:</span>
-                <span className="text-purple-400">IEC 62443 PASSED</span>
-              </div>
+              <span className="px-3.5 py-1 bg-emerald-950/80 text-[#00e599] border border-emerald-800/60 rounded-full font-mono text-xs font-bold">
+                Executive ROI Engine
+              </span>
             </div>
 
-            <p className="text-[9px] text-slate-600 font-mono text-center">
-              INDUSYNC System Time: {timeString}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              {/* Controles y Sliders */}
+              <div className="lg:col-span-5 bg-[#0d1424] border border-slate-800 p-6 rounded-2xl space-y-6">
+                <h3 className="text-sm font-bold text-white border-b border-slate-800 pb-3">
+                  Parámetros Operacionales Faena
+                </h3>
+
+                <div className="space-y-3">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-300">Procesamiento Anual:</span>
+                    <span className="text-[#00e599] font-bold font-mono">{procesamientoMTon} MTon/año</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="10"
+                    max="60"
+                    step="1"
+                    value={procesamientoMTon}
+                    onChange={(e) => setProcesamientoMTon(parseFloat(e.target.value))}
+                    className="w-full accent-[#00e599] bg-slate-800 h-2 rounded-lg cursor-pointer"
+                  />
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex justify-between text-xs">
+                    <span className="text-slate-300">Precio Cobre Largo Plazo:</span>
+                    <span className="text-[#00e599] font-bold font-mono">US$ {precioCobreLp.toFixed(1)}/lb</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="2.5"
+                    max="5.5"
+                    step="0.1"
+                    value={precioCobreLp}
+                    onChange={(e) => setPrecioCobreLp(parseFloat(e.target.value))}
+                    className="w-full accent-[#00e599] bg-slate-800 h-2 rounded-lg cursor-pointer"
+                  />
+                </div>
+              </div>
+
+              {/* Tarjetas de Métricas de Retorno */}
+              <div className="lg:col-span-7 space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="bg-[#0d1424] border border-slate-800 p-5 rounded-2xl">
+                    <p className="text-xs text-slate-400">Ahorro Energético Molienda</p>
+                    <p className="text-2xl font-black text-[#00e599] font-mono mt-2">${ahorroEnergia} M USD</p>
+                    <p className="text-[11px] text-slate-400 mt-1">Eficiencia 4.2% kWh/t</p>
+                  </div>
+
+                  <div className="bg-[#0d1424] border border-slate-800 p-5 rounded-2xl">
+                    <p className="text-xs text-slate-400">Reducción Cash Cost C1</p>
+                    <p className="text-2xl font-black text-cyan-400 font-mono mt-2">${reduccionCashCost} M USD</p>
+                    <p className="text-[11px] text-slate-400 mt-1">-US$ 0.042/lb en faena</p>
+                  </div>
+                </div>
+
+                <div className="bg-[#0d1424] border border-slate-800 p-6 rounded-2xl relative overflow-hidden">
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">VALOR RETORNO TOTAL ANUAL (EBITDA +)</p>
+                  <p className="text-3xl md:text-4xl font-black text-[#00e599] font-mono mt-3">${valorTotalEbitda} M USD / año</p>
+                  
+                  <div className="mt-4 flex justify-end">
+                    <span className="inline-flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-full border border-slate-800 text-[11px] font-mono text-cyan-400">
+                      <span className="w-2 h-2 bg-cyan-400 rounded-full animate-ping" />
+                      Realtime Event Stream (5)
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* VIEW: DASHBOARD EJECUTIVO */}
+        {mainTab === 'csuite' && subTab === 'dashboard' && (
+          <ExecutiveDashboard data={initialData} />
+        )}
+
+        {/* VIEW: FINANZAS & AGUA / METRICAS */}
+        {mainTab === 'csuite' && (subTab === 'finanzas_agua' || subTab === 'metricas') && (
+          <FinanceDashboard data={initialData} />
+        )}
+
+        {/* VIEW: ESG & GEOTECNIA / MAPA OPERACIONAL */}
+        {(mainTab === 'esg' || (mainTab === 'csuite' && subTab === 'mapa')) && (
+          <WaterManagement data={initialData} />
+        )}
+
+        {/* VIEW: AUTO-RESCUE P0 / MANTENIMIENTO & SCADA */}
+        {(mainTab === 'scada' || mainTab === 'mina' || autoRescueActive) && (
+          <AutoRescueP0 data={initialData} />
+        )}
+
+        {/* VIEW FALLBACK PARA CYBER, GEMELO DIGITAL Y B2B */}
+        {(mainTab === 'cyber' || mainTab === 'b2b' || mainTab === 'gemelo' || (mainTab === 'csuite' && (subTab === 'facturacion' || subTab === 'logs'))) && (
+          <div className="bg-[#0d1424] border border-slate-800 rounded-2xl p-10 text-center space-y-4 font-mono shadow-xl">
+            <span className="text-4xl">🛡️</span>
+            <h3 className="text-lg font-bold text-white uppercase tracking-wider">Módulo {subTab.toUpperCase() || mainTab.toUpperCase()} Enclave Activo</h3>
+            <p className="text-xs text-slate-400 max-w-md mx-auto">
+              Conexión Zero-Trust establecida. Telemetría de tiempo real y canal de auditoría sincronizados con el nodo principal.
             </p>
           </div>
         )}
-      </aside>
-
-      {/* ÁREA DE CONTENIDO PRINCIPAL */}
-      <div className="flex-1 flex flex-col min-w-0">
-        
-        {/* HEADER SUPERIOR CON TICKER DE COMMODITIES */}
-        <header className="bg-slate-900/60 border-b border-slate-800/80 px-6 py-3.5 flex flex-wrap justify-between items-center gap-4 backdrop-blur-xl sticky top-0 z-30">
-          <div className="flex items-center gap-4">
-            <button 
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="text-slate-400 hover:text-white text-xs bg-slate-800/80 hover:bg-slate-700 p-2 rounded-lg border border-slate-700 transition cursor-pointer hidden md:flex items-center gap-1.5 font-mono"
-            >
-              <span>{isSidebarOpen ? '◀' : '▶'}</span>
-              <span>{isSidebarOpen ? 'Colapsar' : 'Expandir'}</span>
-            </button>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-mono text-cyan-400 uppercase tracking-widest bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-800/50">
-                  PLATAFORMA EN TIEMPO REAL
-                </span>
-                <span className="text-xs text-slate-400 font-mono">• {faena}</span>
-              </div>
-              <h2 className="text-base font-bold text-white tracking-tight mt-0.5">
-                Centro de Control Autónomo & Optimización Minera
-              </h2>
-            </div>
-          </div>
-
-          {/* Ticker de Precios de Mercado en Vivo */}
-          <div className="flex items-center gap-3">
-            <div className="hidden lg:flex items-center gap-4 bg-slate-950/90 px-4 py-2 rounded-xl border border-slate-800/80 font-mono text-xs">
-              <div>
-                <span className="text-[10px] text-slate-500 block">Cu (LME)</span>
-                <span className="text-emerald-400 font-bold">${opState.precioCobreLbUsd} USD/lb</span>
-              </div>
-              <div className="w-px h-6 bg-slate-800" />
-              <div>
-                <span className="text-[10px] text-slate-500 block">Au (Spot)</span>
-                <span className="text-amber-400 font-bold">${opState.precioOroOzUsd} USD/oz</span>
-              </div>
-              <div className="w-px h-6 bg-slate-800" />
-              <div>
-                <span className="text-[10px] text-slate-500 block">Mo (FeMo)</span>
-                <span className="text-slate-300 font-bold">${opState.precioMolibdenoKgUsd} USD/kg</span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-3 py-1.5 rounded-xl font-mono text-xs font-bold">
-              <span className="w-2 h-2 bg-emerald-400 rounded-full animate-ping" />
-              Zero-Trust Active
-            </div>
-          </div>
-        </header>
-
-        {/* ÁREA CENTRAL DINÁMICA DE MÓDULOS */}
-        <main className="flex-1 p-4 md:p-8 max-w-7xl w-full mx-auto space-y-6">
-          {activeTab === 'executive' && <ExecutiveDashboard data={opState} />}
-          {activeTab === 'p0' && <AutoRescueP0 data={opState} />}
-          {activeTab === 'finanzas' && <FinanceDashboard data={opState} />}
-          {activeTab === 'agua' && <WaterManagement data={opState} />}
-        </main>
-
-        {/* PIE DE PÁGINA */}
-        <footer className="border-t border-slate-800/80 px-8 py-4 bg-slate-950/60 backdrop-blur-md flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-slate-500 font-mono">
-          <p>INDUSYNC® Enterprise OS • Sistema Operacional Autónomo para Alta Minería</p>
-          <div className="flex items-center gap-4 text-[11px]">
-            <span className="text-slate-400">IEC 62443 Compliance</span>
-            <span>•</span>
-            <span className="text-slate-400">GISTM Water & Tailings</span>
-            <span>•</span>
-            <span className="text-cyan-400 font-bold">v4.2.0 PROD</span>
-          </div>
-        </footer>
-
-      </div>
-
+      </main>
     </div>
   );
 }
