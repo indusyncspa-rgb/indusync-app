@@ -1,317 +1,292 @@
-import React, { useState } from 'react';
-import ExecutiveDashboard from './features/csuite/ExecutiveDashboard';
-import FinanceDashboard from './features/csuite/FinanceDashboard';
-import WaterManagement from './features/esg/WaterManagement';
-import AutoRescueP0 from './features/operator/AutoRescueP0';
+import React, { useState, lazy, Suspense, useEffect } from 'react';
+import { useAuth } from '@/context/AuthContext';
 
-// Dataset operacional global de INDUSYNC Meta-OS
-const initialData = {
-  precioCobreLbUsd: 3.90,
-  produccionDiariaTon: 82500,
-  eficienciaEnergetica: 94.2,
-  disponibilidadFlota: 91.8,
-  cashCostC1: 1.26,
-  ebitdaEstimadoMusd: 26.76,
-  opexAcumuladoMusd: 142.8,
-  ahorroIAacumuladoUsd: 1425000,
-  estadoAcueducto: 'ÓPTIMO (100%)',
-  recuperacionAguaPct: 88.4,
-  consumoEspecificoM3Ton: 0.42,
-  flujoDesaladoraLps: 1250,
-  presionTuberiaBar: 18.5
+// Componentes Comunes
+import Header from './components/common/Header';
+import NotificationCenter from './components/common/NotificationCenter';
+import InstallAppButton from './components/common/InstallAppButton';
+import AlertBanner from './components/common/AlertBanner';
+
+// Carga nativa de todos los componentes en src/features/ vía Vite Glob
+const featureModules = import.meta.glob('./features/**/*.jsx');
+
+// Helper resiliente que soporta export default y export nombrados
+const createLazyComponent = (path) => {
+  const importer = featureModules[path];
+  if (!importer) {
+    return () => (
+      <div className="p-6 bg-slate-900/50 border border-slate-800 rounded-xl text-center">
+        <p className="text-xs text-slate-400">Archivo <span className="font-mono text-cyan-400">{path}</span> no encontrado.</p>
+      </div>
+    );
+  }
+  return lazy(async () => {
+    try {
+      const mod = await importer();
+      const Component = mod.default || Object.values(mod).find((v) => typeof v === 'function');
+      return { default: Component || (() => null) };
+    } catch (err) {
+      console.error(`Error cargando ${path}:`, err);
+      return {
+        default: () => (
+          <div className="p-6 bg-red-950/20 border border-red-800 rounded-xl text-center">
+            <p className="text-xs text-red-400">Error al cargar el componente.</p>
+          </div>
+        )
+      };
+    }
+  });
+};
+
+const modules = {
+  // C-Suite
+  exec_dash: createLazyComponent('./features/csuite/ExecutiveDashboard.jsx'),
+  pitch: createLazyComponent('./features/csuite/ExecutivePitchMode.jsx'),
+  ops_map: createLazyComponent('./features/csuite/ExecutiveOperationsMap.jsx'),
+  roi_calc: createLazyComponent('./features/csuite/LiveROICalculator.jsx'),
+  fin_water: createLazyComponent('./features/csuite/FinancialAndWaterView.jsx'),
+  fin_metrics: createLazyComponent('./features/csuite/FinancialMetrics.jsx'),
+  billing: createLazyComponent('./features/csuite/ClientOnboardingBilling.jsx'),
+  audit: createLazyComponent('./features/csuite/AuditLogs.jsx'),
+
+  // Mina & Operaciones
+  mine_ops: createLazyComponent('./features/mina/MineOperations.jsx'),
+  dispatcher: createLazyComponent('./features/mina/AutonomousDispatcherAI.jsx'),
+  fleet: createLazyComponent('./features/mina/GeospatialFleetTracker.jsx'),
+  drilling: createLazyComponent('./features/mina/GeometallurgicalAutonomousDrillingAI.jsx'),
+  ventilation: createLazyComponent('./features/mina/UndergroundVentilationAI.jsx'),
+  fatigue: createLazyComponent('./features/mina/OperatorFatigueBiometricsAI.jsx'),
+  field_mobile: createLazyComponent('./features/mina/FieldInspectionMobile.jsx'),
+  shift_report: createLazyComponent('./features/mina/ShiftReportAI.jsx'),
+
+  // Gemelo Digital
+  twin_view: createLazyComponent('./features/gemelo/DigitalTwinView.jsx'),
+  twin_sim: createLazyComponent('./features/gemelo/DigitalTwinSimulator.jsx'),
+  twin_maint: createLazyComponent('./features/gemelo/DigitalTwinPredictiveMaintAI.jsx'),
+  copilot: createLazyComponent('./features/gemelo/IndustrialCopilotAI.jsx'),
+  ai_copilot: createLazyComponent('./features/gemelo/AIOperationalCopilot.jsx'),
+  ai_engine: createLazyComponent('./features/gemelo/AIPredictiveEngine.jsx'),
+
+  // SCADA & Mantenimiento
+  scada_telemetry: createLazyComponent('./features/scada/Telemetry.jsx'),
+  pred_maint: createLazyComponent('./features/scada/PredictiveMaintenance.jsx'),
+  sap_bridge: createLazyComponent('./features/scada/SAPIntegrationBridge.jsx'),
+  sap_auto: createLazyComponent('./features/scada/SAPWorkOrderAutomation.jsx'),
+  iot_mesh: createLazyComponent('./features/scada/IoTEdgeMeshMonitor.jsx'),
+  offgrid: createLazyComponent('./features/scada/OffGridSync.jsx'),
+
+  // ESG & Geotecnia
+  sernageomin: createLazyComponent('./features/esg/SERNAGEOMINComplianceAI.jsx'),
+  water_tailings: createLazyComponent('./features/esg/TailingsWaterManagementAI.jsx'),
+  slope_radar: createLazyComponent('./features/esg/GeotechnicalSlopeRadarAI.jsx'),
+  esg_carbon: createLazyComponent('./features/esg/ESGCarbonTracker.jsx'),
+  hydrogen: createLazyComponent('./features/esg/EnergyGridHydrogenAI.jsx'),
+
+  // Cyber & Seguridad
+  zero_trust: createLazyComponent('./features/cyber/ZeroTrustMilitarySecurity.jsx'),
+  biometric: createLazyComponent('./features/cyber/BiometricAccreditation.jsx'),
+  contractor_ai: createLazyComponent('./features/cyber/ContractorAccreditationAI.jsx'),
+  contractors: createLazyComponent('./features/cyber/ContractorManagement.jsx'),
+  cyber_circular: createLazyComponent('./features/cyber/CyberAndCircularView.jsx'),
+
+  // Marketplace & Logística
+  circ_market: createLazyComponent('./features/marketplace/CircularEconomyMarketplace.jsx'),
+  circ_b2b_ai: createLazyComponent('./features/marketplace/CircularMarketplaceB2BAI.jsx'),
+  market_std: createLazyComponent('./features/marketplace/Marketplace.jsx'),
+  market_b2b: createLazyComponent('./features/marketplace/MarketplaceB2B.jsx'),
+  tender_match: createLazyComponent('./features/marketplace/ProcurementTenderMatchAI.jsx'),
+  supply_chain: createLazyComponent('./features/marketplace/SupplyChainProcurementAI.jsx'),
+  radar_logistics: createLazyComponent('./features/marketplace/RadarLogistico.jsx')
+};
+
+const categorias = {
+  csuite: {
+    label: '📊 C-Suite & Finanzas',
+    modulos: [
+      { id: 'exec_dash', label: 'Dashboard Ejecutivo' },
+      { id: 'pitch', label: 'Pitch Directorio' },
+      { id: 'ops_map', label: 'Mapa Operacional' },
+      { id: 'roi_calc', label: 'Calculador ROI' },
+      { id: 'fin_water', label: 'Finanzas & Agua' },
+      { id: 'fin_metrics', label: 'Métricas Financieras' },
+      { id: 'billing', label: 'Onboarding & Facturación' },
+      { id: 'audit', label: 'Logs de Auditoría' }
+    ]
+  },
+  mina: {
+    label: '⛏️ Mina & Operaciones',
+    modulos: [
+      { id: 'mine_ops', label: 'Operaciones Mina' },
+      { id: 'dispatcher', label: 'Despacho Autónomo' },
+      { id: 'fleet', label: 'Radar Flota CAEX' },
+      { id: 'drilling', label: 'Perforación Geometalúrgica' },
+      { id: 'ventilation', label: 'Ventilación Subterránea' },
+      { id: 'fatigue', label: 'Biometría & Fatiga' },
+      { id: 'field_mobile', label: '📱 Inspección Móvil' },
+      { id: 'shift_report', label: 'Bitácora Cambio Turno' }
+    ]
+  },
+  gemelo: {
+    label: '🌐 Gemelo Digital & IA',
+    modulos: [
+      { id: 'twin_view', label: 'Vista Gemelo Digital' },
+      { id: 'twin_sim', label: 'Simulador Proceso' },
+      { id: 'twin_maint', label: 'Mantención Predictiva' },
+      { id: 'copilot', label: 'Copiloto Industrial' },
+      { id: 'ai_copilot', label: 'Copiloto Operacional' },
+      { id: 'ai_engine', label: 'Motor Predictivo' }
+    ]
+  },
+  scada: {
+    label: '⚡ Mantenimiento & SCADA',
+    modulos: [
+      { id: 'scada_telemetry', label: 'SCADA Telemetría' },
+      { id: 'pred_maint', label: 'Mantenimiento Predictivo' },
+      { id: 'sap_bridge', label: 'SAP PM Integration' },
+      { id: 'sap_auto', label: 'Automatización OT' },
+      { id: 'iot_mesh', label: 'Monitor Malla IoT' },
+      { id: 'offgrid', label: 'Sincronización Off-Grid' }
+    ]
+  },
+  esg: {
+    label: '💧 ESG & Geotecnia',
+    modulos: [
+      { id: 'sernageomin', label: 'SERNAGEOMIN Compliance' },
+      { id: 'water_tailings', label: 'Agua & Relaves GISTM' },
+      { id: 'slope_radar', label: 'Radar Taludes' },
+      { id: 'esg_carbon', label: 'Huella Carbono' },
+      { id: 'hydrogen', label: 'Matriz Energética' }
+    ]
+  },
+  cyber: {
+    label: '🛡️ Cyber & Acreditación',
+    modulos: [
+      { id: 'zero_trust', label: 'Cyber-OT IEC 62443' },
+      { id: 'biometric', label: 'Acreditación Biométrica' },
+      { id: 'contractor_ai', label: 'Acreditación Contratistas' },
+      { id: 'contractors', label: 'Gestión Contratistas' },
+      { id: 'cyber_circular', label: 'Visión Cyber & Circular' }
+    ]
+  },
+  marketplace: {
+    label: '♻️ Marketplace & B2B',
+    modulos: [
+      { id: 'circ_market', label: 'Excedentes ESG' },
+      { id: 'circ_b2b_ai', label: 'Marketplace B2B AI' },
+      { id: 'market_std', label: 'Portal Marketplace' },
+      { id: 'market_b2b', label: 'Portal B2B' },
+      { id: 'tender_match', label: 'Licitaciones AI' },
+      { id: 'supply_chain', label: 'Cadena Suministros' },
+      { id: 'radar_logistics', label: 'Radar Logístico' }
+    ]
+  }
 };
 
 export default function App() {
-  const [role, setRole] = useState('ADMIN');
-  const [mainTab, setMainTab] = useState('csuite');
-  const [subTab, setSubTab] = useState('pitch');
-  const [autoRescueActive, setAutoRescueActive] = useState(false);
+  const authContext = useAuth() || {};
+  const user = authContext.user || { role: 'csuite' };
+  const hasPermission = authContext.hasPermission || (() => true);
+  const switchRole = authContext.switchRole || (() => {});
+  const ROLES = authContext.ROLES || { CSUITE: 'csuite', OPERATOR: 'operator', ADMIN: 'admin' };
 
-  // Parámetros interactivos del Calculador de ROI
-  const [procesamientoMTon, setProcesamientoMTon] = useState(30);
-  const [precioCobreLp, setPrecioCobreLp] = useState(3.9);
+  const categoriasVisibles = Object.keys(categorias).filter(catKey => hasPermission(catKey));
 
-  // Cálculos en tiempo real
-  const ahorroEnergia = (procesamientoMTon * 0.85).toFixed(2);
-  const reduccionCashCost = (procesamientoMTon * 0.042).toFixed(2);
-  const valorTotalEbitda = (parseFloat(ahorroEnergia) + parseFloat(reduccionCashCost)).toFixed(2);
+  const [categoriaActiva, setCategoriaActiva] = useState(categoriasVisibles[0] || 'csuite');
+  const [moduloActivo, setModuloActivo] = useState(
+    categorias[categoriasVisibles[0]]?.modulos[0]?.id || 'exec_dash'
+  );
+
+  useEffect(() => {
+    if (!categoriasVisibles.includes(categoriaActiva) && categoriasVisibles.length > 0) {
+      const nuevaCat = categoriasVisibles[0];
+      setCategoriaActiva(nuevaCat);
+      if (categorias[nuevaCat]?.modulos[0]?.id) {
+        setModuloActivo(categorias[nuevaCat].modulos[0].id);
+      }
+    }
+  }, [user?.role, categoriasVisibles, categoriaActiva]);
+
+  const handleCambioCategoria = (catKey) => {
+    setCategoriaActiva(catKey);
+    if (categorias[catKey]?.modulos[0]?.id) {
+      setModuloActivo(categorias[catKey].modulos[0].id);
+    }
+  };
+
+  const ComponenteModulo = modules[moduloActivo];
 
   return (
-    <div className="min-h-screen bg-[#070b14] text-slate-100 font-sans p-4 md:p-6 space-y-4">
-      {/* 1. ALERTA P0: BANNER ROJO SUPERIOR */}
-      <div className="bg-[#2a080c] border border-red-800/80 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-2xl">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="bg-red-600 text-white font-mono font-bold text-[10px] px-2.5 py-1 rounded tracking-wider uppercase">
-              ALERTA P0: DETENCIÓN INMINENTE
-            </span>
-          </div>
-          <h2 className="text-sm font-bold text-red-100 flex items-center gap-2">
-            <span>⚠️</span> Chancador Secundario #3 - Temperatura de Rodamiento &gt; 115°C
-          </h2>
-          <p className="text-xs font-mono text-red-300">
-            Pérdida estimada si no se interviene: <span className="font-bold text-white">$140,000 USD / hora</span>
-          </p>
-        </div>
-        <button
-          onClick={() => {
-            setAutoRescueActive(true);
-            setMainTab('scada');
-            setSubTab('p0');
-          }}
-          className="bg-[#00e599] hover:bg-[#00c785] text-slate-950 font-black px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 cursor-pointer transition shadow-lg shadow-emerald-500/20 whitespace-nowrap"
-        >
-          <span>🚀</span> Activar Auto-Rescue INDUSYNC®
-        </button>
-      </div>
-
-      {/* 2. BARRA DE CABECERA PRINCIPAL */}
-      <div className="bg-[#0d1424] border border-slate-800/80 rounded-2xl p-4 flex flex-wrap justify-between items-center gap-4 shadow-lg">
-        <div className="flex items-center gap-4 flex-wrap">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-cyan-950/80 border border-cyan-500/60 rounded-xl flex items-center justify-center font-bold text-cyan-400 text-xl shadow-lg shadow-cyan-500/20">
-              🛡️
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <h1 className="text-lg font-black text-white tracking-wider">INDUSYNC</h1>
-                <span className="text-[10px] font-bold text-cyan-400 font-mono bg-cyan-950/80 px-1.5 py-0.5 rounded border border-cyan-800">® Meta-OS</span>
-              </div>
-              <p className="text-[10px] font-mono text-slate-400 tracking-wider">SOFTWARE IA INDUSTRIAL PARA LA ALTA MINERÍA</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 flex-wrap ml-0 lg:ml-4">
-            <button 
-              onClick={() => alert("Descargando INDUSYNC® Mobile App...")}
-              className="bg-[#00e599] hover:bg-[#00c785] text-slate-950 font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer transition"
-            >
-              <span>📱</span> Descargar App
-            </button>
-            <button 
-              onClick={() => alert("Modo Técnico / Dev Activado")}
-              className="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer transition border border-slate-700"
-            >
-              <span>⚙️</span> Modo Técnico / Dev
-            </button>
-            <button 
-              onClick={() => alert("Generando Dossier Ejecutivo PDF...")}
-              className="bg-cyan-600 hover:bg-cyan-500 text-white font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer transition shadow-md shadow-cyan-600/20"
-            >
-              <span>📄</span> Descargar Dossier
-            </button>
-          </div>
-        </div>
-
+    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans p-4 md:p-8 relative pb-20">
+      <AlertBanner />
+      
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-4 mb-4 gap-4">
+        <Header />
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800 font-mono text-xs">
-            <span className="text-slate-400">Rol:</span>
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="bg-transparent text-cyan-400 font-bold focus:outline-none cursor-pointer uppercase"
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 rounded-lg border border-slate-800 text-xs">
+            <span className="text-slate-400 font-medium">Rol:</span>
+            <select 
+              value={user?.role || 'csuite'} 
+              onChange={(e) => switchRole(e.target.value)}
+              className="bg-slate-950 text-cyan-400 font-mono font-bold px-2 py-0.5 rounded border border-slate-700 outline-none cursor-pointer"
             >
-              <option value="ADMIN" className="bg-slate-900 text-white">ADMIN</option>
-              <option value="VP OPERACIONES" className="bg-slate-900 text-white">VP OPERACIONES</option>
-              <option value="SUPERINTENDENTE OT" className="bg-slate-900 text-white">SUPERINTENDENTE OT</option>
-              <option value="OPERADOR SCADA" className="bg-slate-900 text-white">OPERADOR SCADA</option>
+              {Object.values(ROLES).map(r => (
+                <option key={r} value={r}>{(r || '').toUpperCase()}</option>
+              ))}
             </select>
           </div>
-
-          <button 
-            onClick={() => alert("Descargando App...")}
-            className="bg-[#00e599] hover:bg-[#00c785] text-slate-950 font-bold px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5 cursor-pointer transition"
-          >
-            <span>📱</span> Descargar App
-          </button>
+          <InstallAppButton />
         </div>
-      </div>
+      </header>
 
-      {/* 3. TABS PRINCIPALES (HORIZONTALES) */}
-      <div className="flex flex-wrap gap-2 text-xs font-semibold">
-        {[
-          { id: 'csuite', label: '📊 C-Suite & Finanzas' },
-          { id: 'mina', label: '⛏️ Mina & Operaciones' },
-          { id: 'gemelo', label: '🌐 Gemelo Digital & IA' },
-          { id: 'scada', label: '⚡ Mantenimiento & SCADA' },
-          { id: 'esg', label: '💧 ESG & Geotecnia' },
-          { id: 'cyber', label: '🛡️ Cyber & Acreditación' },
-          { id: 'b2b', label: '♻️ Marketplace & B2B' },
-        ].map((tab) => {
-          const isActive = mainTab === tab.id;
-          return (
+      <nav className="flex flex-wrap gap-2 mb-3 border-b border-slate-800 pb-3">
+        {categoriasVisibles.map(catKey => (
+          <button
+            key={catKey}
+            onClick={() => handleCambioCategoria(catKey)}
+            className={`px-4 py-2 rounded-lg text-xs font-bold transition ${
+              categoriaActiva === catKey
+                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/50 shadow-md'
+                : 'bg-slate-900 text-slate-400 hover:bg-slate-800 hover:text-slate-200 border border-slate-800'
+            }`}
+          >
+            {categorias[catKey]?.label}
+          </button>
+        ))}
+      </nav>
+
+      {categorias[categoriaActiva] && (
+        <div className="flex flex-wrap gap-1.5 mb-6 bg-slate-900/60 p-2 rounded-xl border border-slate-800/80">
+          {categorias[categoriaActiva].modulos.map(m => (
             <button
-              key={tab.id}
-              onClick={() => {
-                setMainTab(tab.id);
-                if (tab.id === 'csuite') setSubTab('pitch');
-                setAutoRescueActive(false);
-              }}
-              className={`px-4 py-2 rounded-xl transition cursor-pointer font-bold ${
-                isActive
-                  ? 'bg-[#0c233c] text-cyan-400 border border-cyan-500/80 shadow-lg shadow-cyan-500/10'
-                  : 'bg-[#0d1424] text-slate-400 border border-slate-800/80 hover:text-slate-200 hover:border-slate-700'
+              key={m.id}
+              onClick={() => setModuloActivo(m.id)}
+              className={`px-3 py-1.5 rounded text-xs font-medium transition ${
+                moduloActivo === m.id
+                  ? 'bg-emerald-500 text-slate-950 font-bold shadow'
+                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
               }`}
             >
-              {tab.label}
+              {m.label}
             </button>
-          );
-        })}
-      </div>
-
-      {/* 4. SUB-TABS SECUNDARIOS (PARA C-SUITE & FINANZAS) */}
-      {mainTab === 'csuite' && (
-        <div className="bg-[#0d1424] border border-slate-800/80 rounded-2xl p-2 flex flex-wrap gap-1.5 text-xs">
-          {[
-            { id: 'dashboard', label: 'Dashboard Ejecutivo' },
-            { id: 'pitch', label: 'Pitch Directorio' },
-            { id: 'mapa', label: 'Mapa Operacional' },
-            { id: 'roi', label: 'Calculador ROI' },
-            { id: 'finanzas_agua', label: 'Finanzas & Agua' },
-            { id: 'metricas', label: 'Métricas Financieras' },
-            { id: 'facturacion', label: 'Onboarding & Facturación' },
-            { id: 'logs', label: 'Logs de Auditoría' },
-          ].map((sub) => {
-            const isSubActive = subTab === sub.id;
-            return (
-              <button
-                key={sub.id}
-                onClick={() => setSubTab(sub.id)}
-                className={`px-3.5 py-1.5 rounded-xl font-bold transition cursor-pointer ${
-                  isSubActive
-                    ? 'bg-[#00e599] text-slate-950 shadow-md shadow-emerald-500/20'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
-                }`}
-              >
-                {sub.label}
-              </button>
-            );
-          })}
+          ))}
         </div>
       )}
 
-      {/* 5. ÁREA DE CONTENIDO */}
       <main className="space-y-6">
-        {/* VIEW: PITCH DIRECTORIO / CALCULADOR DE ROI */}
-        {mainTab === 'csuite' && (subTab === 'pitch' || subTab === 'roi') && (
-          <div className="bg-[#09101d] border border-slate-800/90 rounded-3xl p-6 space-y-6 shadow-2xl">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-              <div>
-                <h2 className="text-xl font-black text-white flex items-center gap-2">
-                  <span>💰</span> Calculador de ROI & Valor para el Directorio
-                </h2>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  Proyección de Impacto Financiero y Reducción de Cash Cost C1 con INDUSYNC Meta-OS
-                </p>
-              </div>
-              <span className="px-3.5 py-1 bg-emerald-950/80 text-[#00e599] border border-emerald-800/60 rounded-full font-mono text-xs font-bold">
-                Executive ROI Engine
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              {/* Controles y Sliders */}
-              <div className="lg:col-span-5 bg-[#0d1424] border border-slate-800 p-6 rounded-2xl space-y-6">
-                <h3 className="text-sm font-bold text-white border-b border-slate-800 pb-3">
-                  Parámetros Operacionales Faena
-                </h3>
-
-                <div className="space-y-3">
-                  <div className="flex justify-between text-xs">
-                    <span className="text-slate-300">Procesamiento Anual:</span>
-                    <span className="text-[#00e599] font-bold font-mono">{procesamientoMTon} MTon/año</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="10"
-                    max="60"
-                    step="1"
-                    value={procesamientoMTon}
-                    onChange={(e) => setProcesamientoMTon(parseFloat(e.target.value))}
-                    className="w-full accent-[#00e599] bg-slate-800 h-2 rounded-lg cursor-pointer"
-                  />
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex justify-between text-xs">
-                    <span className="text-slate-300">Precio Cobre Largo Plazo:</span>
-                    <span className="text-[#00e599] font-bold font-mono">US$ {precioCobreLp.toFixed(1)}/lb</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="2.5"
-                    max="5.5"
-                    step="0.1"
-                    value={precioCobreLp}
-                    onChange={(e) => setPrecioCobreLp(parseFloat(e.target.value))}
-                    className="w-full accent-[#00e599] bg-slate-800 h-2 rounded-lg cursor-pointer"
-                  />
-                </div>
-              </div>
-
-              {/* Tarjetas de Métricas de Retorno */}
-              <div className="lg:col-span-7 space-y-6">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="bg-[#0d1424] border border-slate-800 p-5 rounded-2xl">
-                    <p className="text-xs text-slate-400">Ahorro Energético Molienda</p>
-                    <p className="text-2xl font-black text-[#00e599] font-mono mt-2">${ahorroEnergia} M USD</p>
-                    <p className="text-[11px] text-slate-400 mt-1">Eficiencia 4.2% kWh/t</p>
-                  </div>
-
-                  <div className="bg-[#0d1424] border border-slate-800 p-5 rounded-2xl">
-                    <p className="text-xs text-slate-400">Reducción Cash Cost C1</p>
-                    <p className="text-2xl font-black text-cyan-400 font-mono mt-2">${reduccionCashCost} M USD</p>
-                    <p className="text-[11px] text-slate-400 mt-1">-US$ 0.042/lb en faena</p>
-                  </div>
-                </div>
-
-                <div className="bg-[#0d1424] border border-slate-800 p-6 rounded-2xl relative overflow-hidden">
-                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">VALOR RETORNO TOTAL ANUAL (EBITDA +)</p>
-                  <p className="text-3xl md:text-4xl font-black text-[#00e599] font-mono mt-3">${valorTotalEbitda} M USD / año</p>
-                  
-                  <div className="mt-4 flex justify-end">
-                    <span className="inline-flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-full border border-slate-800 text-[11px] font-mono text-cyan-400">
-                      <span className="w-2 h-2 bg-cyan-400 rounded-full animate-ping" />
-                      Realtime Event Stream (5)
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
+        <Suspense fallback={
+          <div className="p-12 text-center bg-slate-900/40 rounded-xl border border-slate-800">
+            <span className="text-cyan-400 font-mono text-xs animate-pulse">⚡ Cargando módulo operativo...</span>
           </div>
-        )}
-
-        {/* VIEW: DASHBOARD EJECUTIVO */}
-        {mainTab === 'csuite' && subTab === 'dashboard' && (
-          <ExecutiveDashboard data={initialData} />
-        )}
-
-        {/* VIEW: FINANZAS & AGUA / METRICAS */}
-        {mainTab === 'csuite' && (subTab === 'finanzas_agua' || subTab === 'metricas') && (
-          <FinanceDashboard data={initialData} />
-        )}
-
-        {/* VIEW: ESG & GEOTECNIA / MAPA OPERACIONAL */}
-        {(mainTab === 'esg' || (mainTab === 'csuite' && subTab === 'mapa')) && (
-          <WaterManagement data={initialData} />
-        )}
-
-        {/* VIEW: AUTO-RESCUE P0 / MANTENIMIENTO & SCADA */}
-        {(mainTab === 'scada' || mainTab === 'mina' || autoRescueActive) && (
-          <AutoRescueP0 data={initialData} />
-        )}
-
-        {/* VIEW FALLBACK PARA CYBER, GEMELO DIGITAL Y B2B */}
-        {(mainTab === 'cyber' || mainTab === 'b2b' || mainTab === 'gemelo' || (mainTab === 'csuite' && (subTab === 'facturacion' || subTab === 'logs'))) && (
-          <div className="bg-[#0d1424] border border-slate-800 rounded-2xl p-10 text-center space-y-4 font-mono shadow-xl">
-            <span className="text-4xl">🛡️</span>
-            <h3 className="text-lg font-bold text-white uppercase tracking-wider">Módulo {subTab.toUpperCase() || mainTab.toUpperCase()} Enclave Activo</h3>
-            <p className="text-xs text-slate-400 max-w-md mx-auto">
-              Conexión Zero-Trust establecida. Telemetría de tiempo real y canal de auditoría sincronizados con el nodo principal.
-            </p>
-          </div>
-        )}
+        }>
+          {ComponenteModulo ? <ComponenteModulo /> : (
+            <div className="p-12 text-center bg-slate-900/40 rounded-xl border border-slate-800 text-slate-400 text-xs">
+              Selecciona un módulo válido.
+            </div>
+          )}
+        </Suspense>
       </main>
+
+      <NotificationCenter />
     </div>
   );
 }
