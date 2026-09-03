@@ -1,93 +1,59 @@
 import React, { useState } from 'react';
 
-const AutonomousDispatcherAI = () => {
-  const [optimizando, setOptimizando] = useState(false);
-  const [rutasOptimizadas, setRutasOptimizadas] = useState(false);
+export default function AutonomousDispatcherAI() {
+  const [autoOptimize, setAutoOptimize] = useState(true);
 
-  const [flota, setFlota] = useState([
-    { id: 'CAEX-101', destino: 'Chancador Primario', espera: '14 min', estado: 'CONGESTIONADO', consumo: '185 L/h' },
-    { id: 'CAEX-104', destino: 'Botadero Norte', espera: '2 min', estado: 'FLUIDO', consumo: '142 L/h' },
-    { id: 'CAEX-108', destino: 'Stockpile Fase 3', espera: '8 min', estado: 'MEDIO', consumo: '160 L/h' }
-  ]);
-
-  const optimizarRutasIA = () => {
-    setOptimizando(true);
-    setTimeout(() => {
-      setFlota([
-        { id: 'CAEX-101', destino: 'Stockpile Alternativo B', espera: '3 min', estado: 'OPTIMIZADO', consumo: '148 L/h' },
-        { id: 'CAEX-104', destino: 'Botadero Norte', espera: '1 min', estado: 'OPTIMIZADO', consumo: '139 L/h' },
-        { id: 'CAEX-108', destino: 'Chancador Secundario', espera: '2 min', estado: 'OPTIMIZADO', consumo: '150 L/h' }
-      ]);
-      setOptimizando(false);
-      setRutasOptimizadas(true);
-    }, 1500);
-  };
+  const recomendaciones = [
+    { id: 1, origen: 'PIT-NORTH-01', destino: 'CHANCADOR-01', caex: 'CAEX-104', impacto: '-3.2 min espera' },
+    { id: 2, origen: 'PIT-SOUTH-04', destino: 'STOCKPILE-02', caex: 'CAEX-112', impacto: '+18t/h rendimiento' },
+    { id: 3, origen: 'PIT-EAST-02', destino: 'CHANCADOR-02', caex: 'CAEX-109', impacto: 'Ahorro 4.1L diésel' },
+  ];
 
   return (
-    <div style={{ backgroundColor: '#0f172a', border: '1px solid #0284c7', borderRadius: '8px', padding: '20px', marginBottom: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
+    <div className="space-y-6">
+      <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-xl flex justify-between items-center flex-wrap gap-4">
         <div>
-          <h3 style={{ color: '#38bdf8', fontSize: '16px', fontWeight: 'bold', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-            🚜 Dispatcher de Flota Autónomo & Algoritmo Anti-Colas (IA)
-          </h3>
-          <p style={{ color: '#94a3b8', fontSize: '11px', margin: '2px 0 0 0' }}>
-            Re-enrutamiento dinámico en tiempo real para acelerar ciclos de cargado y minimizar huella de carbono.
-          </p>
+          <h2 className="text-lg font-bold text-cyan-400 font-mono flex items-center gap-2">
+            🤖 Motor IA de Despacho Autónomo
+          </h2>
+          <p className="text-xs text-slate-400">Algoritmo genético de ruteo de bajo consumo y cero cuellos de botella.</p>
         </div>
-        <button
-          onClick={optimizarRutasIA}
-          disabled={optimizando}
-          style={{
-            backgroundColor: optimizando ? '#475569' : '#0284c7',
-            color: '#fff',
-            border: 'none',
-            padding: '8px 14px',
-            borderRadius: '6px',
-            fontWeight: 'bold',
-            fontSize: '11px',
-            cursor: optimizando ? 'not-allowed' : 'pointer'
-          }}
-        >
-          {optimizando ? '⚡ Recalculando Matriz de Tráfico...' : '🎯 Optimizar Ciclos de Flota'}
-        </button>
+        <div className="flex items-center gap-3 bg-slate-950 px-4 py-2 rounded-lg border border-slate-800">
+          <span className="text-xs text-slate-300">Modo Auto-Piloto IA:</span>
+          <button
+            onClick={() => setAutoOptimize(!autoOptimize)}
+            className={`px-3 py-1 text-xs font-mono rounded font-bold transition ${
+              autoOptimize ? 'bg-emerald-500 text-slate-950' : 'bg-slate-800 text-slate-400'
+            }`}
+          >
+            {autoOptimize ? 'ACTIVO' : 'PAUSADO'}
+          </button>
+        </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '12px', marginBottom: '14px' }}>
-        {flota.map(camion => (
-          <div key={camion.id} style={{ backgroundColor: '#1e293b', border: '1px solid #334155', padding: '12px', borderRadius: '6px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-              <span style={{ color: '#38bdf8', fontWeight: 'bold', fontSize: '12px' }}>{camion.id}</span>
-              <span style={{
-                backgroundColor: camion.estado === 'OPTIMIZADO' ? '#065f46' : camion.estado === 'CONGESTIONADO' ? '#881337' : '#854d0e',
-                color: camion.estado === 'OPTIMIZADO' ? '#34d399' : camion.estado === 'CONGESTIONADO' ? '#fda4af' : '#fef08a',
-                fontSize: '9px',
-                padding: '2px 6px',
-                borderRadius: '4px',
-                fontWeight: 'bold'
-              }}>
-                {camion.estado}
-              </span>
+      <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 space-y-4">
+        <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider">
+          Optimizaciones de Riego y Ruteo en Tiempo Real
+        </h3>
+        <div className="space-y-2">
+          {recomendaciones.map((rec) => (
+            <div key={rec.id} className="bg-slate-950/80 border border-slate-800 p-3 rounded-lg flex items-center justify-between text-xs font-mono">
+              <div className="flex items-center gap-3">
+                <span className="px-2 py-0.5 bg-cyan-500/20 text-cyan-300 rounded border border-cyan-500/30">
+                  {rec.caex}
+                </span>
+                <span className="text-slate-400">{rec.origen} ➔ {rec.destino}</span>
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="text-emerald-400">{rec.impacto}</span>
+                <button className="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-[10px]">
+                  Reasignar
+                </button>
+              </div>
             </div>
-            <p style={{ color: '#cbd5e1', fontSize: '11px', margin: '0 0 6px 0' }}>
-              <strong>Destino:</strong> {camion.destino}
-            </p>
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', fontSize: '10px' }}>
-              <span>Cola de espera: <strong style={{ color: '#f8fafc' }}>{camion.espera}</strong></span>
-              <span>Consumo: <strong style={{ color: '#38bdf8' }}>{camion.consumo}</strong></span>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {rutasOptimizadas && (
-        <div style={{ backgroundColor: '#090d16', border: '1px solid #38bdf8', padding: '10px 14px', borderRadius: '6px', fontSize: '11px', color: '#38bdf8', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px' }}>
-          <span>📉 <strong>Reducción de Cola en Pala/Chancador:</strong> -78% de tiempo ocioso</span>
-          <span>⛽ <strong>Ahorro Estimado:</strong> -450 Litros Diésel / Turno</span>
+          ))}
         </div>
-      )}
+      </div>
     </div>
   );
-};
-
-export default AutonomousDispatcherAI;
-
+}

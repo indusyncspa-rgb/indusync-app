@@ -1,89 +1,71 @@
 import React, { useState } from 'react';
 
-const ZeroTrustMilitarySecurity = () => {
-  const [aislandoOT, setAislandoOT] = useState(false);
-  const [airGapActivo, setAirGapActivo] = useState(false);
+export default function ZeroTrustMilitarySecurity() {
+  const [threatLevel, setThreatLevel] = useState('VERDE');
 
-  const [nodosSeguridad, setNodosSeguridad] = useState([
-    { id: 'OT-GW-01', zona: 'Red PLC/SCADA Chancado', encriptacion: 'AES-256-GCM (Quantum-Resistant)', amenazas: 0, estado: 'BLINDADO' },
-    { id: 'OT-GW-02', zona: 'Telemetría Flota CAEX Starlink', encriptacion: 'mTLS + Token Hardware', amenazas: 1, estado: 'INTENTO BLOQUEADO' },
-    { id: 'IT-BRIDGE-03', zona: 'Conector SAP S/4HANA Cloud', encriptacion: 'Zero-Trust Tunnel (IEC 62443)', amenazas: 0, estado: 'PROTEGIDO' }
-  ]);
-
-  const activarProtocoloAirGap = () => {
-    setAislandoOT(true);
-    setTimeout(() => {
-      setAislandoOT(false);
-      setAirGapActivo(true);
-      setNodosSeguridad(prev =>
-        prev.map(n => ({ ...n, estado: 'AIR-GAP ISOLATED', encriptacion: 'LnkFisico_Desconectado' }))
-      );
-    }, 1400);
-  };
+  const eventosSeguridad = [
+    { id: 'SEC-901', origen: 'IP 192.168.4.12 (Subestación 3)', tipo: 'Intento de Acceso No Autorizado', accion: 'Bloqueado Automáticamente', tiempo: 'Hace 4 min' },
+    { id: 'SEC-902', origen: 'Módulo IoT Edge CAEX-108', tipo: 'Firma de Firmware Inválida', accion: 'Aislamiento de Red OT', tiempo: 'Hace 18 min' },
+    { id: 'SEC-903', origen: 'Usuario j.perez@contratista.cl', tipo: 'Intento Escalado Privilegios', accion: 'Token Revocado', tiempo: 'Hace 1 hora' },
+  ];
 
   return (
-    <div style={{ backgroundColor: '#090d16', border: '1px solid #10b981', borderRadius: '8px', padding: '20px', marginBottom: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
+    <div className="space-y-6">
+      <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-xl flex justify-between items-center flex-wrap gap-4">
         <div>
-          <h3 style={{ color: '#34d399', fontSize: '16px', fontWeight: 'bold', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-            🛡️ Escudo Ciberseguridad Zero-Trust Nivel Militar (IEC 62443 / NIST SP 800-82)
-          </h3>
-          <p style={{ color: '#94a3b8', fontSize: '11px', margin: '2px 0 0 0' }}>
-            Protección de infraestructura crítica OT/IT, prevención de ransomware y aislamiento físico autónomo.
-          </p>
+          <h2 className="text-lg font-bold text-cyan-400 font-mono flex items-center gap-2">
+            🛡️ Seguridad OT/IT Zero-Trust (IEC 62443)
+          </h2>
+          <p className="text-xs text-slate-400">Protección perimetral militar y aislamiento dinámico de micro-segmentos OT.</p>
         </div>
-        <button
-          onClick={activarProtocoloAirGap}
-          disabled={aislandoOT || airGapActivo}
-          style={{
-            backgroundColor: airGapActivo ? '#065f46' : aislandoOT ? '#475569' : '#059669',
-            color: '#fff',
-            border: 'none',
-            padding: '8px 14px',
-            borderRadius: '6px',
-            fontWeight: 'bold',
-            fontSize: '11px',
-            cursor: airGapActivo || aislandoOT ? 'not-allowed' : 'pointer'
-          }}
-        >
-          {aislandoOT ? '⚡ Aislando Redes OT...' : airGapActivo ? '🔒 Modo Air-Gap Defensivo Activo' : '🚨 Protocolo Air-Gap Aislamiento Total'}
-        </button>
+        <div className="flex items-center gap-3">
+          <span className="text-xs font-mono text-slate-400">Nivel de Amenaza:</span>
+          <span className={`px-3 py-1 font-mono font-bold text-xs rounded border ${
+            threatLevel === 'VERDE' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' : 'bg-rose-500/20 text-rose-400 border-rose-500/40'
+          }`}>
+            DEFCON 5 / {threatLevel}
+          </span>
+        </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '12px', marginBottom: '14px' }}>
-        {nodosSeguridad.map(nodo => (
-          <div key={nodo.id} style={{ backgroundColor: '#131e32', border: '1px solid #1e293b', padding: '12px', borderRadius: '6px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-              <span style={{ color: '#34d399', fontWeight: 'bold', fontSize: '11px' }}>{nodo.id}</span>
-              <span style={{
-                backgroundColor: nodo.estado.includes('AIR-GAP') ? '#854d0e' : nodo.estado.includes('BLOQUEADO') ? '#7f1d1d' : '#065f46',
-                color: nodo.estado.includes('AIR-GAP') ? '#fef08a' : nodo.estado.includes('BLOQUEADO') ? '#fca5a5' : '#34d399',
-                fontSize: '9px',
-                padding: '2px 6px',
-                borderRadius: '4px',
-                fontWeight: 'bold'
-              }}>
-                {nodo.estado}
-              </span>
-            </div>
-            <p style={{ color: '#f8fafc', fontSize: '11px', fontWeight: 'bold', margin: '0 0 4px 0' }}>{nodo.zona}</p>
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', fontSize: '10px' }}>
-              <span>Cifrado: <strong style={{ color: '#38bdf8' }}>{nodo.encriptacion}</strong></span>
-              <span>Intrusiones: <strong style={{ color: nodo.amenazas > 0 ? '#fb7185' : '#34d399' }}>{nodo.amenazas}</strong></span>
-            </div>
-          </div>
-        ))}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs">
+        <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl">
+          <span className="text-slate-400">DISPOSITIVOS OT AUTENTICADOS</span>
+          <h3 className="text-2xl font-bold text-cyan-400 mt-1">1,420 / 1,420</h3>
+          <span className="text-[10px] text-emerald-400">✓ Certificados mTLS Activos</span>
+        </div>
+        <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl">
+          <span className="text-slate-400">INTENTOS DE INTRUSION (24h)</span>
+          <h3 className="text-2xl font-bold text-emerald-400 mt-1">142 Bloqueados</h3>
+          <span className="text-[10px] text-emerald-400">✓ 0 Brechas Detectadas</span>
+        </div>
+        <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl">
+          <span className="text-slate-400">ESTADO ENCRIPTACION</span>
+          <h3 className="text-2xl font-bold text-slate-200 mt-1">AES-256 GCM</h3>
+          <span className="text-[10px] text-cyan-400">Túneles IPSec Activos</span>
+        </div>
       </div>
 
-      {airGapActivo && (
-        <div style={{ backgroundColor: '#064e3b', border: '1px solid #34d399', padding: '10px 14px', borderRadius: '6px', fontSize: '11px', color: '#a7f3d0', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px' }}>
-          <span>🔒 <strong>Aislamiento Físico Activo:</strong> Redes de control mina operando en buffer encriptado local</span>
-          <span>🛡️ <strong>Normativa NIST:</strong> 0 vulnerabilidades expuestas a internet externo</span>
+      <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 space-y-3">
+        <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono">
+          Logs de Eventos y Mitigación en Tiempo Real
+        </h3>
+        <div className="space-y-2 font-mono text-xs">
+          {eventosSeguridad.map(ev => (
+            <div key={ev.id} className="bg-slate-950/80 border border-slate-800 p-3 rounded-lg flex justify-between items-center flex-wrap gap-2">
+              <div className="flex items-center gap-3">
+                <span className="text-rose-400 font-bold">{ev.id}</span>
+                <span className="text-slate-300">{ev.origen}</span>
+                <span className="text-slate-500">({ev.tipo})</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-emerald-400">{ev.accion}</span>
+                <span className="text-slate-500 text-[10px]">{ev.tiempo}</span>
+              </div>
+            </div>
+          ))}
         </div>
-      )}
+      </div>
     </div>
   );
-};
-
-export default ZeroTrustMilitarySecurity;
-
+}

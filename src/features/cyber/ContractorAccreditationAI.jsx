@@ -1,93 +1,61 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-const ContractorAccreditationAI = () => {
-  const [procesando, setProcesando] = useState(false);
-  const [acreditados, setAcreditados] = useState(false);
-
-  const [contratistas, setContratistas] = useState([
-    { id: 'CONT-88', empresa: 'Servicios Hidráulicos del Norte', trabajadores: 12, estado: 'PENDIENTE DOCS', paseGarita: 'BLOQUEADO' },
-    { id: 'CONT-92', empresa: 'Mantenimiento Eléctrico E-Tech', trabajadores: 8, estado: 'VERIFICADO', paseGarita: 'AUTORIZADO' },
-    { id: 'CONT-104', empresa: 'Transportes TransMineria Ltd', trabajadores: 15, estado: 'REVISIÓN IA', paseGarita: 'EN EVALUACIÓN' }
-  ]);
-
-  const validarDocumentacionIA = () => {
-    setProcesando(true);
-    setTimeout(() => {
-      setContratistas(prev =>
-        prev.map(c => ({
-          ...c,
-          estado: 'VALIDADO 100%',
-          paseGarita: 'AUTORIZADO (QR)'
-        }))
-      );
-      setProcesando(false);
-      setAcreditados(true);
-    }, 1600);
-  };
+export default function ContractorAccreditationAI() {
+  const contratistas = [
+    { empresa: 'TechMine Services', dotacion: 45, cumplimiento: '100%', pase: 'ACTIVO', riesgo: 'Bajo' },
+    { empresa: 'Ingeniería & Montajes S.A.', dotacion: 112, cumplimiento: '98.2%', pase: 'ACTIVO', riesgo: 'Bajo' },
+    { empresa: 'Logística del Norte', dotacion: 28, cumplimiento: '84.0%', pase: 'RESTRINGIDO', riesgo: 'Medio' },
+  ];
 
   return (
-    <div style={{ backgroundColor: '#0f172a', border: '1px solid #a855f7', borderRadius: '8px', padding: '20px', marginBottom: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
+    <div className="space-y-6">
+      <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-xl flex justify-between items-center">
         <div>
-          <h3 style={{ color: '#c084fc', fontSize: '16px', fontWeight: 'bold', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-            🪪 OCR & Validación de Acreditación de Contratistas con IA
-          </h3>
-          <p style={{ color: '#94a3b8', fontSize: '11px', margin: '2px 0 0 0' }}>
-            Escaneo automático de exámenes médicos, inducciones y licencias para autorización inmediata en garita.
-          </p>
+          <h2 className="text-lg font-bold text-cyan-400 font-mono flex items-center gap-2">
+            🪪 Acreditación & Control de Contratistas con IA
+          </h2>
+          <p className="text-xs text-slate-400">Validación documental instantánea, exámenes médicos y pases de acceso Biométricos.</p>
         </div>
-        <button
-          onClick={validarDocumentacionIA}
-          disabled={procesando}
-          style={{
-            backgroundColor: procesando ? '#475569' : '#9333ea',
-            color: '#fff',
-            border: 'none',
-            padding: '8px 14px',
-            borderRadius: '6px',
-            fontWeight: 'bold',
-            fontSize: '11px',
-            cursor: procesando ? 'not-allowed' : 'pointer'
-          }}
-        >
-          {procesando ? '🔍 Escaneando Vínculos LPT y Licencias...' : '⚡ Procesar Carpetas de Acreditación'}
+        <button className="px-3 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded text-xs transition font-mono">
+          + Acreditar Nuevo Personal
         </button>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '12px', marginBottom: '14px' }}>
-        {contratistas.map(item => (
-          <div key={item.id} style={{ backgroundColor: '#1e293b', border: '1px solid #334155', padding: '12px', borderRadius: '6px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-              <span style={{ color: '#c084fc', fontWeight: 'bold', fontSize: '11px' }}>{item.id}</span>
-              <span style={{
-                backgroundColor: item.paseGarita.includes('AUTORIZADO') ? '#065f46' : '#7f1d1d',
-                color: item.paseGarita.includes('AUTORIZADO') ? '#34d399' : '#fca5a5',
-                fontSize: '9px',
-                padding: '2px 6px',
-                borderRadius: '4px',
-                fontWeight: 'bold'
-              }}>
-                {item.paseGarita}
-              </span>
-            </div>
-            <p style={{ color: '#f8fafc', fontSize: '12px', fontWeight: 'bold', margin: '0 0 4px 0' }}>{item.empresa}</p>
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', fontSize: '10px' }}>
-              <span>Dotación: <strong>{item.trabajadores} pers.</strong></span>
-              <span>Estado: <strong style={{ color: '#e9d5ff' }}>{item.estado}</strong></span>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {acreditados && (
-        <div style={{ backgroundColor: '#090d16', border: '1px solid #a855f7', padding: '10px 14px', borderRadius: '6px', fontSize: '11px', color: '#e9d5ff', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px' }}>
-          <span>⏱️ <strong>Tiempo de Espera en Garita:</strong> Reducido de 45 min a 1.2 segundos</span>
-          <span>✅ <strong>Cumplimiento Normativo Ley Subcontratación:</strong> 100% Verificado</span>
+      <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-5">
+        <h3 className="text-xs font-bold text-slate-200 uppercase tracking-wider mb-4 font-mono">
+          Empresas Contratistas Acreditadas en Faena
+        </h3>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs font-mono">
+            <thead className="bg-slate-950 text-slate-400 border-b border-slate-800">
+              <tr>
+                <th className="p-3">Empresa</th>
+                <th className="p-3">Dotación en Faena</th>
+                <th className="p-3">Doc. Auditable IA</th>
+                <th className="p-3">Pase Acceso</th>
+                <th className="p-3">Riesgo Safety</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-800/60">
+              {contratistas.map((c, i) => (
+                <tr key={i} className="hover:bg-slate-850/50 transition">
+                  <td className="p-3 font-bold text-slate-200">{c.empresa}</td>
+                  <td className="p-3 text-cyan-400">{c.dotacion} personas</td>
+                  <td className="p-3 text-emerald-400">{c.cumplimiento}</td>
+                  <td className="p-3">
+                    <span className={`px-2 py-0.5 rounded text-[10px] ${
+                      c.pase === 'ACTIVO' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                    }`}>
+                      {c.pase}
+                    </span>
+                  </td>
+                  <td className="p-3 text-slate-400">{c.riesgo}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      )}
+      </div>
     </div>
   );
-};
-
-export default ContractorAccreditationAI;
-
+}

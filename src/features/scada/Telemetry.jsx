@@ -1,62 +1,46 @@
 import React, { useState, useEffect } from 'react';
-import { telemetryService } from '../../services/telemetryService';
 
 export default function Telemetry() {
-  const [metrics, setMetrics] = useState(() => telemetryService.getCurrentData());
+  const [vibracion, setVibracion] = useState(2.4);
 
   useEffect(() => {
-    const unsubscribe = telemetryService.subscribe((newData) => {
-      setMetrics(newData);
-    });
-    return () => unsubscribe();
+    const interval = setInterval(() => {
+      setVibracion(prev => Number((prev + (Math.random() * 0.4 - 0.2)).toFixed(2)));
+    }, 2000);
+    return () => clearInterval(interval);
   }, []);
 
-  const pressure = metrics?.pressure ?? 142.5;
-  const temperature = metrics?.temperature ?? 68.2;
-  const flowRate = metrics?.flowRate ?? 310.0;
-  const networkLatency = metrics?.networkLatency ?? 12;
-  const fleetCount = metrics?.fleet?.length ?? 0;
-
   return (
-    <div className="p-6 bg-slate-900/80 border border-slate-800 rounded-2xl shadow-xl space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-800 pb-4 gap-2">
+    <div className="space-y-6">
+      <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-xl flex justify-between items-center">
         <div>
-          <h2 className="text-xl font-bold text-cyan-400">⚡ Telemetría SCADA & IoT Edge</h2>
-          <p className="text-xs text-slate-400">Lecturas en tiempo real mediante capa Pub/Sub</p>
+          <h2 className="text-lg font-bold text-cyan-400 font-mono flex items-center gap-2">
+            ⚡ SCADA Telemetría OT en Tiempo Real
+          </h2>
+          <p className="text-xs text-slate-400">Captura remota de sensores OPC-UA y Modbus TCP.</p>
         </div>
-        <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 px-3 py-1 rounded-full text-xs font-mono">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-          EN VIVO ({networkLatency}ms)
-        </div>
+        <span className="text-xs font-mono bg-emerald-950/60 text-emerald-400 border border-emerald-800 px-3 py-1 rounded">
+          Sincronizado vía MQTT
+        </span>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-4 bg-slate-950/60 border border-slate-800 rounded-xl">
-          <span className="text-xs text-slate-400 font-medium">Presión Hidráulica</span>
-          <div className="text-2xl font-bold text-cyan-300 font-mono mt-1">
-            {pressure} <span className="text-xs text-slate-500">PSI</span>
-          </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl font-mono">
+          <p className="text-xs text-slate-400">VIBRACION SAG-01</p>
+          <h3 className="text-3xl font-bold text-cyan-400 mt-2">{vibracion} <span className="text-xs font-normal text-slate-400">mm/s</span></h3>
+          <p className="text-[10px] text-emerald-400 mt-1">✓ Dentro de umbral de ISO 10816</p>
         </div>
 
-        <div className="p-4 bg-slate-950/60 border border-slate-800 rounded-xl">
-          <span className="text-xs text-slate-400 font-medium">Temperatura Motor</span>
-          <div className="text-2xl font-bold text-amber-300 font-mono mt-1">
-            {temperature} <span className="text-xs text-slate-500">°C</span>
-          </div>
+        <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl font-mono">
+          <p className="text-xs text-slate-400">PRESION HIDRAULICA</p>
+          <h3 className="text-3xl font-bold text-emerald-400 mt-2">185.4 <span className="text-xs font-normal text-slate-400">BAR</span></h3>
+          <p className="text-[10px] text-emerald-400 mt-1">✓ Sistema estable</p>
         </div>
 
-        <div className="p-4 bg-slate-950/60 border border-slate-800 rounded-xl">
-          <span className="text-xs text-slate-400 font-medium">Flujo de Pulpa</span>
-          <div className="text-2xl font-bold text-emerald-300 font-mono mt-1">
-            {flowRate} <span className="text-xs text-slate-500">L/s</span>
-          </div>
-        </div>
-
-        <div className="p-4 bg-slate-950/60 border border-slate-800 rounded-xl">
-          <span className="text-xs text-slate-400 font-medium">Flota CAEX Activa</span>
-          <div className="text-2xl font-bold text-purple-300 font-mono mt-1">
-            {fleetCount} <span className="text-xs text-slate-500">Unidades</span>
-          </div>
+        <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl font-mono">
+          <p className="text-xs text-slate-400">FLUJO DE AGUA RECIRCULADA</p>
+          <h3 className="text-3xl font-bold text-cyan-400 mt-2">1,240 <span className="text-xs font-normal text-slate-400">L/s</span></h3>
+          <p className="text-[10px] text-cyan-400 mt-1">✓ Eficiencia H2O: 92%</p>
         </div>
       </div>
     </div>

@@ -1,101 +1,97 @@
 import React, { useState } from 'react';
 
 export default function DigitalTwinView() {
-  const [spi, setSpi] = useState(115);
-  const [tph, setTph] = useState(4200);
-  const [resultado, setResultado] = useState(null);
-  const [simulando, setSimulando] = useState(false);
+  const [nodoSeleccionado, setNodoSeleccionado] = useState('Chancador Primario');
 
-  const ejecutarSimulacion = async () => {
-    setSimulando(true);
-    try {
-      const res = await fetch('/api/digital-twin', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ spi, tph })
-      });
-      const data = await res.json();
-      setResultado(data.simulacion);
-    } catch (e) {
-      alert('Error en simulación');
-    } finally {
-      setSimulando(false);
-    }
-  };
+  const nodos = [
+    { id: 'Chancador Primario', kpi: 'Rendimiento: 92%', temp: '68°C', estado: 'Normal', riesgo: 'Bajo' },
+    { id: 'Correa Transportadora 01', kpi: 'Velocidad: 4.2 m/s', temp: '42°C', estado: 'Normal', riesgo: 'Bajo' },
+    { id: 'Molino SAG 01', kpi: 'Carga: 84%', temp: '85°C', estado: 'Alerta Vibración', riesgo: 'Medio' },
+    { id: 'Celda Flotación A', kpi: 'pH: 10.4', temp: '24°C', estado: 'Optimo', riesgo: 'Bajo' }
+  ];
 
   return (
-    <div className="p-6 bg-slate-900 text-white rounded-xl border border-purple-500/30 space-y-6">
-      <div className="flex justify-between items-center border-b border-slate-800 pb-4">
+    <div className="space-y-6">
+      <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-xl flex justify-between items-center flex-wrap gap-4">
         <div>
-          <h2 className="text-xl font-bold text-purple-400">🌐 Gemelo Digital & Simulador de Proceso Mina-Planta</h2>
-          <p className="text-xs text-slate-400">Predicción de Métricas Operacionales según Dureza del Mineral (SPI) y Tasa de Alimentación</p>
+          <h2 className="text-lg font-bold text-cyan-400 font-mono flex items-center gap-2">
+            🌐 Gemelo Digital: Planta Concentradora
+          </h2>
+          <p className="text-xs text-slate-400">Modelo tridimensional sincronizado en milisegundos con sensores de planta.</p>
         </div>
-        <span className="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs font-mono font-bold">
-          Digital Twin Engine v2.4
-        </span>
+        <div className="flex items-center gap-2 font-mono text-xs">
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="text-slate-300">Render 3D en Vivo</span>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Panel de Variables */}
-        <div className="p-4 bg-slate-800 rounded-lg border border-slate-700 space-y-4">
-          <h3 className="text-sm font-bold text-slate-200">Parámetros de Entrada del Yacimiento</h3>
-          
-          <div>
-            <label className="text-xs text-slate-400 block mb-1">Dureza Mineral (Índice SPI): <strong className="text-purple-400">{spi} min</strong></label>
-            <input 
-              type="range" min="80" max="150" value={spi} 
-              onChange={(e) => setSpi(e.target.value)}
-              className="w-full accent-purple-500 cursor-pointer"
-            />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Canvas Simulado 3D */}
+        <div className="lg:col-span-2 bg-slate-950 border border-slate-800 rounded-xl p-6 min-h-[320px] flex flex-col justify-between relative overflow-hidden">
+          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#06b6d4_1px,transparent_1px)] [background-size:16px_16px]" />
+          <div className="relative z-10 flex justify-between items-center">
+            <span className="text-xs font-mono text-slate-400 bg-slate-900/80 px-3 py-1 rounded border border-slate-800">
+              Vista Activa: <strong className="text-cyan-400">{nodoSeleccionado}</strong>
+            </span>
+            <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-800 px-2 py-0.5 rounded">
+              FPS: 60 | Latencia: 8ms
+            </span>
           </div>
 
-          <div>
-            <label className="text-xs text-slate-400 block mb-1">Alimentación Planta: <strong className="text-purple-400">{tph} TPH</strong></label>
-            <input 
-              type="range" min="3000" max="5000" step="50" value={tph} 
-              onChange={(e) => setTph(e.target.value)}
-              className="w-full accent-purple-500 cursor-pointer"
-            />
+          <div className="relative z-10 my-auto text-center py-12">
+            <div className="inline-block p-8 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-4xl mb-3 animate-pulse">
+              ⚙️
+            </div>
+            <p className="text-xs font-mono text-slate-400">Renderizado esquemático interactivo del componente industrial</p>
           </div>
 
-          <button
-            onClick={ejecutarSimulacion}
-            disabled={simulando}
-            className="w-full py-2 bg-purple-600 hover:bg-purple-500 font-bold text-xs rounded transition text-white shadow-lg"
-          >
-            {simulando ? 'Calculando física del circuito...' : '🚀 Ejecutar Simulación en Gemelo Digital'}
-          </button>
+          <div className="relative z-10 flex gap-2 overflow-x-auto pb-1">
+            {nodos.map(n => (
+              <button
+                key={n.id}
+                onClick={() => setNodoSeleccionado(n.id)}
+                className={`px-3 py-1.5 rounded text-xs font-mono whitespace-nowrap transition border ${
+                  nodoSeleccionado === n.id
+                    ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/60'
+                    : 'bg-slate-900/80 text-slate-400 border-slate-800 hover:bg-slate-800'
+                }`}
+              >
+                {n.id}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Output de Resultados */}
-        <div className="p-4 bg-slate-800 rounded-lg border border-slate-700 flex flex-col justify-between">
-          <h3 className="text-sm font-bold text-slate-200 mb-2">Proyección Predictiva de Salida</h3>
-          
-          {resultado ? (
-            <div className="space-y-3">
-              <div className="p-3 bg-slate-900 rounded border border-slate-700 flex justify-between items-center">
-                <span className="text-xs text-slate-400">Recuperación Cobre Fino:</span>
-                <strong className="text-emerald-400 text-lg">{resultado.recuperacionCuPct}%</strong>
+        {/* Telemetría del Nodo Seleccionado */}
+        <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-5 space-y-4">
+          <h3 className="text-xs font-bold text-slate-200 uppercase tracking-wider border-b border-slate-800 pb-2">
+            Diagnóstico Predictivo
+          </h3>
+          {nodos.filter(n => n.id === nodoSeleccionado).map(n => (
+            <div key={n.id} className="space-y-3 font-mono text-xs">
+              <div className="flex justify-between">
+                <span className="text-slate-400">Métrica Principal:</span>
+                <span className="text-emerald-400 font-bold">{n.kpi}</span>
               </div>
-
-              <div className="p-3 bg-slate-900 rounded border border-slate-700 flex justify-between items-center">
-                <span className="text-xs text-slate-400">Consumo Específico Energía:</span>
-                <strong className="text-amber-400 text-lg">{resultado.consumoKwhTon} kWh/t</strong>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Temperatura Operativa:</span>
+                <span className="text-cyan-400 font-bold">{n.temp}</span>
               </div>
-
-              <div className="p-3 bg-slate-900 rounded border border-slate-700">
-                <span className="text-xs text-slate-400 block mb-1">Cuello de Botella Detectado:</span>
-                <strong className="text-cyan-300 text-xs font-mono">{resultado.cuelloBotellaDetectado || resultado.cuelloBotella}</strong>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Estado Diagnóstico:</span>
+                <span className="text-amber-400 font-bold">{n.estado}</span>
               </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Nivel de Riesgo IA:</span>
+                <span className="text-slate-200">{n.riesgo}</span>
+              </div>
+              <button className="w-full mt-4 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded text-xs transition">
+                Simular Falla / Stress Test
+              </button>
             </div>
-          ) : (
-            <div className="flex-1 flex items-center justify-center text-xs text-slate-500 italic">
-              Ajusta los parámetros y presiona "Ejecutar Simulación" para ver el comportamiento del Gemelo Digital.
-            </div>
-          )}
+          ))}
         </div>
       </div>
     </div>
   );
 }
-

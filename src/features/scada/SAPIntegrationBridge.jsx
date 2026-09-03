@@ -1,51 +1,48 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
-const SAPIntegrationBridge = () => {
-  const [logsSap, setLogsSap] = useState([
-    { id: 'SOLPED-9042', erp: 'SAP S/4HANA PM', item: 'Manga Alta Presión', estado: 'Sincronizado (200 OK)', timestamp: '11:58:02' },
-    { id: 'WORK-ORD-881', erp: 'IBM Maximo', item: 'Mantención Neumáticos CAEX', estado: 'Aprobado Autónomo', timestamp: '11:52:15' }
-  ]);
-
-  useEffect(() => {
-    const handleSapLog = (e) => {
-      const nuevoLog = {
-        id: e.detail.id,
-        erp: e.detail.erp,
-        item: e.detail.item,
-        estado: e.detail.estado,
-        timestamp: new Date().toLocaleTimeString()
-      };
-      setLogsSap(prev => [nuevoLog, ...prev]);
-    };
-
-    window.addEventListener('sap-log', handleSapLog);
-    return () => window.removeEventListener('sap-log', handleSapLog);
-  }, []);
+export default function SAPIntegrationBridge() {
+  const ordenesSAP = [
+    { ot: 'OT-883921', equipo: 'MOLINO-SAG-01', tipo: 'PM02 Preventivo', prioridad: 'Alta', estado: 'Sincronizado SAP' },
+    { ot: 'OT-883925', equipo: 'CAEX-104', tipo: 'PM01 Correctivo', prioridad: 'Crítica', estado: 'Pendiente Aprobación' },
+    { ot: 'OT-883929', equipo: 'BOMBA-RELAVES-02', tipo: 'PM03 Inspección', prioridad: 'Media', estado: 'Sincronizado SAP' }
+  ];
 
   return (
-    <div style={{ backgroundColor: '#131b29', border: '1px solid #1f2d40', borderRadius: '8px', padding: '20px', marginBottom: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-        <h3 style={{ color: '#f8fafc', fontSize: '16px', fontWeight: 'bold', margin: 0 }}>
-          🔗 Capa de Integración No Invasiva (SAP S/4HANA & Oracle REST Bridge)
-        </h3>
-        <span style={{ backgroundColor: '#064e3b', color: '#34d399', fontSize: '10px', fontWeight: 'bold', padding: '4px 8px', borderRadius: '4px' }}>
-          API RESTful / Webhooks Activos
-        </span>
+    <div className="space-y-6">
+      <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-xl flex justify-between items-center">
+        <div>
+          <h2 className="text-lg font-bold text-cyan-400 font-mono flex items-center gap-2">
+            🔄 Conector Automático SAP PM & OT
+          </h2>
+          <p className="text-xs text-slate-400">Puente bidireccional de Órdenes de Trabajo e Inventario de Repuestos.</p>
+        </div>
+        <button className="px-3 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 rounded text-xs font-mono transition">
+          Forzar Sync SAP S/4HANA
+        </button>
       </div>
-      <p style={{ color: '#94a3b8', fontSize: '12px', marginBottom: '14px' }}>
-        Interoperabilidad bidireccional en tiempo real sin modificar los sistemas legacy de la minera.
-      </p>
-      <div style={{ backgroundColor: '#0b1120', borderRadius: '6px', padding: '10px', fontFamily: 'monospace', fontSize: '11px', maxHeight: '160px', overflowY: 'auto' }}>
-        {logsSap.map((log, index) => (
-          <div key={index} style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #1e293b', padding: '6px 0', color: '#cbd5e1' }}>
-            <span><strong style={{ color: '#38bdf8' }}>[{log.erp}]</strong> {log.id} - {log.item}</span>
-            <span style={{ color: '#22c55e' }}>{log.estado} ({log.timestamp})</span>
-          </div>
-        ))}
+
+      <div className="bg-slate-900/60 border border-slate-800 rounded-xl p-5">
+        <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3">
+          Órdenes de Trabajo Generadas Automáticamente por IA
+        </h3>
+        <div className="space-y-2 font-mono text-xs">
+          {ordenesSAP.map(o => (
+            <div key={o.ot} className="bg-slate-950/80 border border-slate-800 p-3 rounded-lg flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <span className="text-cyan-400 font-bold">{o.ot}</span>
+                <span className="text-slate-200">{o.equipo}</span>
+                <span className="text-slate-500">({o.tipo})</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className={`px-2 py-0.5 rounded text-[10px] ${o.prioridad === 'Crítica' ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}`}>
+                  {o.prioridad}
+                </span>
+                <span className="text-emerald-400">{o.estado}</span>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
-};
-
-export default SAPIntegrationBridge;
-
+}

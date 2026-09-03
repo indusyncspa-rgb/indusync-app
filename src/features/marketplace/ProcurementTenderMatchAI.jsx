@@ -1,94 +1,53 @@
-import React, { useState } from 'react';
-import { apiService } from '@/services/api'; // Importamos el servicio de API
+import React from 'react';
 
-const ProcurementTenderMatchAI = () => {
-  const [analizando, setAnalizando] = useState(false);
-  const [licitacionAdjudicada, setLicitacionAdjudicada] = useState(false);
-  const [resultadoAPI, setResultadoAPI] = useState(null);
-
-  const [licitacionActual, setLicitacionActual] = useState({
-    id: 'LIC-2026-9082',
-    titulo: 'Servicio Mantenimiento Correctivo Correas Transportadoras 01-04',
-    montoEstimado: '$1,200,000 USD',
-    proveedoresMatcheados: [
-      { nombre: 'Servicios Industriales Antofagasta SpA', scoreHSEC: '99/100', examenesAlDia: '100% Personal', tiempoRespuesta: '2 Horas', estado: 'RECOMENDADO N°1' },
-      { nombre: 'Ingeniería & Montajes del Norte Ltda', scoreHSEC: '94/100', examenesAlDia: '98% Personal', tiempoRespuesta: '6 Horas', estado: 'CALIFICADO' },
-      { nombre: 'Mantenimiento Minero Global S.A.', scoreHSEC: '88/100', examenesAlDia: '90% Personal', tiempoRespuesta: '12 Horas', estado: 'EN REVISIÓN' }
-    ]
-  });
-
-  const correrAlgoritmoAdjudicacion = async () => {
-    setAnalizando(true);
-    const data = await apiService.procesarMatchLicitacion(licitacionActual.id, 1200000);
-    setResultadoAPI(data);
-    setAnalizando(false);
-    setLicitacionAdjudicada(true);
-  };
+export default function ProcurementTenderMatchAI() {
+  const licitaciones = [
+    { id: 'LIC-2026-04', titulo: 'Suministro y Mantención Malla Sensores IoT', coincidencia: '96% Match', presupuesto: '$180,000 USD', proveedores: 4 },
+    { id: 'LIC-2026-09', titulo: 'Servicio de Filtrado y Recuperación H2O', coincidencia: '91% Match', presupuesto: '$450,000 USD', proveedores: 7 },
+  ];
 
   return (
-    <div style={{ backgroundColor: '#0f172a', border: '1px solid #10b981', borderRadius: '8px', padding: '20px', marginBottom: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '16px' }}>
+    <div className="space-y-6">
+      <div className="bg-slate-900/80 border border-slate-800 p-5 rounded-xl flex justify-between items-center">
         <div>
-          <h3 style={{ color: '#34d399', fontSize: '16px', fontWeight: 'bold', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-            🤝 Match Autónomo de Licitaciones B2B & Evaluación de Proveedores
-          </h3>
-          <p style={{ color: '#94a3b8', fontSize: '11px', margin: '2px 0 0 0' }}>
-            Evaluación en tiempo real de proveedores calificados: Scoring HSEC, exámenes médicos al día y capacidad financiera.
-          </p>
+          <h2 className="text-lg font-bold text-cyan-400 font-mono flex items-center gap-2">
+            🤝 Matchmaking IA de Licitaciones & Suministros
+          </h2>
+          <p className="text-xs text-slate-400">Calificación inteligente de proveedores y adjudicación predictiva de RFP/RFQ.</p>
         </div>
-        <button
-          onClick={correrAlgoritmoAdjudicacion}
-          disabled={analizando}
-          style={{
-            backgroundColor: analizando ? '#475569' : '#059669',
-            color: '#fff',
-            border: 'none',
-            padding: '8px 14px',
-            borderRadius: '6px',
-            fontWeight: 'bold',
-            fontSize: '11px',
-            cursor: analizando ? 'not-allowed' : 'pointer'
-          }}
-        >
-          {analizando ? '⚖️ Procesando en Servidor...' : '⚡ Correr Match & Recomendar Adjudicación'}
+        <button className="px-3 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 rounded text-xs font-mono transition">
+          + Publicar Nueva Licitación
         </button>
       </div>
 
-      <div style={{ backgroundColor: '#1e293b', padding: '12px', borderRadius: '6px', marginBottom: '14px', border: '1px solid #334155' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#cbd5e1', marginBottom: '6px' }}>
-          <span>ID Licitación: <strong style={{ color: '#38bdf8' }}>{licitacionActual.id}</strong></span>
-          <span>Presupuesto Base: <strong style={{ color: '#34d399' }}>{licitacionActual.montoEstimado}</strong></span>
-        </div>
-        <p style={{ color: '#f8fafc', fontWeight: 'bold', fontSize: '12px', margin: 0 }}>{licitacionActual.titulo}</p>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '12px', marginBottom: '14px' }}>
-        {licitacionActual.proveedoresMatcheados.map((prov, i) => (
-          <div key={i} style={{ backgroundColor: '#1e293b', border: '1px solid #334155', padding: '12px', borderRadius: '6px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-              <span style={{ color: '#38bdf8', fontWeight: 'bold', fontSize: '11px' }}>{prov.estado}</span>
-              <span style={{ backgroundColor: '#065f46', color: '#34d399', fontSize: '9px', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>
-                HSEC: {prov.scoreHSEC}
-              </span>
+      <div className="space-y-3 font-mono text-xs">
+        {licitaciones.map(lic => (
+          <div key={lic.id} className="bg-slate-900/60 border border-slate-800 p-4 rounded-xl flex items-center justify-between flex-wrap gap-3">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-cyan-400 font-bold">{lic.id}</span>
+                <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] px-2 py-0.5 rounded font-bold">
+                  {lic.coincidencia}
+                </span>
+              </div>
+              <h4 className="text-slate-200 font-bold">{lic.titulo}</h4>
             </div>
-            <p style={{ color: '#f8fafc', fontSize: '11px', fontWeight: 'bold', margin: '0 0 4px 0' }}>{prov.nombre}</p>
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#94a3b8', fontSize: '10px' }}>
-              <span>Exámenes: <strong style={{ color: '#34d399' }}>{prov.examenesAlDia}</strong></span>
-              <span>Respuesta: <strong style={{ color: '#f8fafc' }}>{prov.tiempoRespuesta}</strong></span>
+            <div className="flex items-center gap-6">
+              <div>
+                <span className="text-slate-500 text-[10px] block">PRESUPUESTO</span>
+                <span className="text-emerald-400 font-bold">{lic.presupuesto}</span>
+              </div>
+              <div>
+                <span className="text-slate-500 text-[10px] block">OFERTANTES</span>
+                <span className="text-slate-200 font-bold">{lic.proveedores} Empresas</span>
+              </div>
+              <button className="px-3 py-1.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold rounded transition">
+                Evaluar con IA
+              </button>
             </div>
           </div>
         ))}
       </div>
-
-      {licitacionAdjudicada && resultadoAPI && (
-        <div style={{ backgroundColor: '#064e3b', border: '1px solid #34d399', padding: '10px 14px', borderRadius: '6px', fontSize: '11px', color: '#a7f3d0', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '6px' }}>
-          <span>✅ <strong>Adjudicación Recomendada:</strong> {resultadoAPI.adjudicacionRecomendada.nombre}</span>
-          <span>⏱️ <strong>Normativa:</strong> {resultadoAPI.cumplimientoNormativo}</span>
-        </div>
-      )}
     </div>
   );
-};
-
-export default ProcurementTenderMatchAI;
-
+}
