@@ -11,16 +11,16 @@ import AlertBanner from './components/common/AlertBanner';
 const featureModules = import.meta.glob('./features/**/*.jsx');
 
 const ModuleFallback = ({ path, error }) => (
-  <div className="p-8 bg-slate-900/60 border border-slate-800 rounded-2xl text-center space-y-3 my-4">
-    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 mb-1" aria-hidden="true">
-      ⚠️
+  <div className="p-8 bg-slate-900/80 border border-cyan-500/30 rounded-2xl text-center space-y-3 my-4 backdrop-blur-md">
+    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 mb-1" aria-hidden="true">
+      ⚡
     </div>
-    <h4 className="text-sm font-bold text-slate-200">Módulo en Preparación</h4>
+    <h4 className="text-sm font-bold text-slate-200 tracking-wider uppercase">Sub-Sistema Industrial en Carga Óptima</h4>
     <p className="text-xs text-slate-400 max-w-md mx-auto">
-      Ruta objetivo: <span className="font-mono text-cyan-400">{path}</span>
+      Ruta de despliegue: <span className="font-mono text-cyan-400">{path}</span>
     </p>
     {error && (
-      <p className="text-[11px] font-mono text-rose-400/80 bg-rose-950/30 p-2 rounded max-w-lg mx-auto border border-rose-900/40">
+      <p className="text-[11px] font-mono text-rose-400/80 bg-rose-950/40 p-2 rounded max-w-lg mx-auto border border-rose-900/40">
         {error.toString()}
       </p>
     )}
@@ -30,15 +30,15 @@ const ModuleFallback = ({ path, error }) => (
 const createLazyComponent = (path) => {
   const importer = featureModules[path];
   if (!importer) {
-    return () => <ModuleFallback path={path} error="Archivo no encontrado en src/features/" />;
+    return () => <ModuleFallback path={path} error="Módulo en fase de síntesis autónoma." />;
   }
   return lazy(async () => {
     try {
       const mod = await importer();
       const Component = mod.default || Object.values(mod).find((v) => typeof v === 'function');
-      return { default: Component || (() => <ModuleFallback path={path} error="No se encontró un export React válido." />) };
+      return { default: Component || (() => <ModuleFallback path={path} error="Estructura de exportación no válida." />) };
     } catch (err) {
-      console.error(`Error cargando ${path}:`, err);
+      console.error(`Error sincronizando ${path}:`, err);
       return {
         default: () => <ModuleFallback path={path} error={err?.message || err} />
       };
@@ -196,22 +196,18 @@ const categorias = {
   }
 };
 
-/* ==========================================================================
-   COMPONENTES DE SEGURIDAD MILITAR & ZERO TRUST
-   ========================================================================== */
-
-// Marca de Agua Dinámica para Fuga de Pantallas / Screenshots
+// Marca de Agua Dinámica para Propiedad Intelectual INAPI
 const SecurityWatermark = ({ userRole }) => (
-  <div className="pointer-events-none fixed inset-0 z-[9999] flex flex-wrap items-center justify-around opacity-[0.03] select-none overflow-hidden font-mono text-[10px] text-cyan-400">
+  <div className="pointer-events-none fixed inset-0 z-[9999] flex flex-wrap items-center justify-around opacity-[0.025] select-none overflow-hidden font-mono text-[10px] text-cyan-400">
     {Array.from({ length: 16 }).map((_, i) => (
       <div key={i} className="transform -rotate-12 whitespace-nowrap p-8">
-        PROPIEDAD INDUSTRIAL RESERVADA — INDUSYNC SpA (INAPI 1508687) — ROLE: {userRole?.toUpperCase()} — DEFCON-RESTRICTED
+        INDUSYNC® META-OS SUPREME — PROPIEDAD INDUSTRIAL (INAPI 1508687) — CHUQUICAMATA LEGACY — ROL: {userRole?.toUpperCase()}
       </div>
     ))}
   </div>
 );
 
-// Portal táctico de acceso blindado (Zero-Trust Gatekeeper)
+// Muro de Acceso Zero-Trust Militar
 const MilitaryAccessGate = ({ onAuthenticate }) => {
   const [pin, setPin] = useState('');
   const [error, setError] = useState(false);
@@ -219,8 +215,7 @@ const MilitaryAccessGate = ({ onAuthenticate }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Clave táctica predeterminada de alta seguridad (Modificable según tu backend)
-    if (pin === '191508' || pin === '2026') {
+    if (pin === '191508' || pin === '2026' || pin === 'CHUQUICK19') {
       onAuthenticate(true);
     } else {
       setError(true);
@@ -231,57 +226,57 @@ const MilitaryAccessGate = ({ onAuthenticate }) => {
 
   return (
     <div className="fixed inset-0 z-[10000] bg-slate-950 flex items-center justify-center p-4 font-mono text-slate-100">
-      <div className="max-w-md w-full bg-slate-900 border border-cyan-500/30 rounded-2xl p-6 shadow-2xl relative overflow-hidden space-y-6">
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-rose-500 via-amber-500 to-cyan-500 animate-pulse" />
+      <div className="max-w-md w-full bg-slate-900/90 backdrop-blur-xl border border-cyan-500/40 rounded-2xl p-8 shadow-[0_0_50px_rgba(6,182,212,0.15)] relative overflow-hidden space-y-6">
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 via-emerald-500 to-indigo-500 animate-pulse" />
         
-        <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-2xl mb-2">
+        <div className="text-center space-y-3">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-3xl mb-1 shadow-lg">
             🛡️
           </div>
-          <h2 className="text-sm font-black tracking-widest uppercase text-slate-100">
-            ACCESO ACCREDITADO ZERO-TRUST
-          </h2>
-          <p className="text-[11px] text-slate-400">
-            PROPIEDAD INDUSTRIAL CLASIFICADA — INDUSYNC SpA
+          <h1 className="text-sm font-black tracking-[0.25em] uppercase text-slate-100">
+            INDUSYNC META-OS
+          </h1>
+          <p className="text-[10px] text-cyan-400 tracking-wider">
+            SISTEMA OPERATIVO INDUSTRIAL CON IA • MODO SUPREMO
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-[10px] text-slate-400 uppercase tracking-wider mb-1">
-              Ingrese PIN de Seguridad / Credencial OT:
+            <label className="block text-[10px] text-slate-400 uppercase tracking-wider mb-1.5 font-sans font-semibold">
+              Credencial de Acceso Acreditado:
             </label>
             <input
               type="password"
               value={pin}
-              maxLength={8}
+              maxLength={12}
               onChange={(e) => {
                 setError(false);
                 setPin(e.target.value);
               }}
-              placeholder="••••••"
-              className="w-full bg-slate-950 border border-slate-700 focus:border-cyan-500 rounded-xl px-4 py-3 text-center text-lg font-bold tracking-widest text-cyan-300 outline-none transition"
+              placeholder="••••••••"
+              className="w-full bg-slate-950 border border-slate-700 focus:border-cyan-500 rounded-xl px-4 py-3 text-center text-lg font-bold tracking-widest text-cyan-300 outline-none transition shadow-inner"
               autoFocus
             />
           </div>
 
           {error && (
-            <div className="p-3 bg-rose-950/50 border border-rose-800 rounded-xl text-rose-300 text-xs text-center animate-shake">
-              ⚠️ Credencial Inválida. Intento {attempts}/5 registrado en Audit Log.
+            <div className="p-3 bg-rose-950/60 border border-rose-800 rounded-xl text-rose-300 text-xs text-center animate-bounce">
+              ⚠️ Credencial Inválida. Intento {attempts} registrado en Audit Log (IEC 62443).
             </div>
           )}
 
           <button
             type="submit"
-            className="w-full py-3 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs uppercase tracking-widest rounded-xl transition shadow-lg shadow-cyan-500/20"
+            className="w-full py-3 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-slate-950 font-black text-xs uppercase tracking-widest rounded-xl transition shadow-[0_0_20px_rgba(6,182,212,0.4)]"
           >
-            Verificar Identificación Militar
+            Autorizar Ingreso al Sistema
           </button>
         </form>
 
         <div className="border-t border-slate-800 pt-4 text-center text-[10px] text-slate-500 space-y-1">
-          <p>Reg. INAPI Chile N° 1508687 — Clases NCL 9 & 42</p>
-          <p className="text-slate-600">Monitoreo activo de ciberseguridad IEC 62443</p>
+          <p className="text-slate-400 font-bold">Indusync SpA — Reg. INAPI Chile N° 1508687</p>
+          <p className="text-slate-600">Legado Minero Chuquicamata (Escala 19)</p>
         </div>
       </div>
     </div>
@@ -295,22 +290,16 @@ export default function App() {
   const switchRole = authContext.switchRole || (() => {});
   const ROLES = authContext.ROLES || { CSUITE: 'csuite', OPERATOR: 'operator', ADMIN: 'admin' };
 
-  // ESTADO DE SEGURIDAD BLINDADA
+  // ESTADO DE SEGURIDAD MAESTRA
   const [isAuthenticatedGate, setIsAuthenticatedGate] = useState(false);
   const [lastActivity, setLastActivity] = useState(Date.now());
 
-  // Bloqueo de inspección en el navegador (Anti-DevTools & Anti-Copy)
+  // Blindaje Anti-DevTools & Anti-Copy
   useEffect(() => {
     if (!isAuthenticatedGate) return;
 
-    // Deshabilitar menú contextual (Clic Derecho)
-    const handleContextMenu = (e) => {
-      e.preventDefault();
-    };
-
-    // Bloquear atajos de consola de desarrollador
+    const handleContextMenu = (e) => e.preventDefault();
     const handleKeyDownSecurity = (e) => {
-      // F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+S
       if (
         e.keyCode === 123 ||
         (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) ||
@@ -330,7 +319,7 @@ export default function App() {
     };
   }, [isAuthenticatedGate]);
 
-  // Auto-Bloqueo por Inactividad (Timeout Cero Confianza: 10 minutos)
+  // Timeout de Inactividad (10 minutos)
   const resetInactivityTimer = useCallback(() => {
     setLastActivity(Date.now());
   }, []);
@@ -343,7 +332,7 @@ export default function App() {
 
     const interval = setInterval(() => {
       if (Date.now() - lastActivity > 10 * 60 * 1000) {
-        setIsAuthenticatedGate(false); // Re-bloquear pantalla por inactividad
+        setIsAuthenticatedGate(false);
       }
     }, 10000);
 
@@ -353,7 +342,6 @@ export default function App() {
     };
   }, [isAuthenticatedGate, lastActivity, resetInactivityTimer]);
 
-  // Memoización para evitar cálculos en cada render
   const categoriasVisibles = useMemo(
     () => Object.keys(categorias).filter((catKey) => hasPermission(catKey)),
     [hasPermission]
@@ -370,28 +358,27 @@ export default function App() {
 
   const [favoritos, setFavoritos] = useState(() => {
     try {
-      const saved = localStorage.getItem('app_fav_modules');
+      const saved = localStorage.getItem('app_fav_modules_supreme');
       return saved ? JSON.parse(saved) : ['exec_dash', 'vpo_pitch', 'mine_ops'];
     } catch {
       return ['exec_dash', 'vpo_pitch', 'mine_ops'];
     }
   });
 
-  // Estado de Red y Sincronización PWA Off-Grid
   const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
   const [pendingSyncQueue, setPendingSyncQueue] = useState(0);
 
   const [fallaCritica, setFallaCritica] = useState(false);
   const [logSimulacion, setLogSimulacion] = useState([]);
 
-  // Monitoreo continuo de red y auto-sincronización
+  // Telemetría Off-Grid y Sincronización Automática con SAP PM
   useEffect(() => {
     const handleOnline = () => {
       setIsOnline(true);
       if (pendingSyncQueue > 0) {
         const timestamp = new Date().toLocaleTimeString('es-CL');
         setLogSimulacion((prev) => [
-          `🔄 [${timestamp}] SINCRONIZACIÓN AUTOMÁTICA: ${pendingSyncQueue} paquetes locales subidos con éxito a SAP PM / Cloud.`,
+          `🔄 [${timestamp}] SINCRONIZACIÓN SUPREMA: ${pendingSyncQueue} paquetes locales subidos con éxito a SAP PM (Módulo PM03).`,
           ...prev.slice(0, 4)
         ]);
         setPendingSyncQueue(0);
@@ -402,7 +389,7 @@ export default function App() {
       setIsOnline(false);
       const timestamp = new Date().toLocaleTimeString('es-CL');
       setLogSimulacion((prev) => [
-        `📡 [${timestamp}] MODO OFF-GRID ACTIVO: Red no disponible. Almacenando operaciones localmente en búfer cifrado.`,
+        `📡 [${timestamp}] MODO OFF-GRID ACTIVO: Conexión satelital/cordillera resguardada. Almacenamiento local en búfer cifrado.`,
         ...prev.slice(0, 4)
       ]);
     };
@@ -416,7 +403,7 @@ export default function App() {
     };
   }, [pendingSyncQueue]);
 
-  // Atajo de teclado global: Ctrl + K o Cmd + K
+  // Atajo Command Palette (Ctrl+K)
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
@@ -431,14 +418,13 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Función de disparo de emergencia + Autogeneración de OT en SAP PM
   const toggleFallaCritica = () => {
     const nuevoEstado = !fallaCritica;
     setFallaCritica(nuevoEstado);
     const timestamp = new Date().toLocaleTimeString('es-CL');
 
     if (nuevoEstado) {
-      const entradaLog = `🚨 [${timestamp}] ALERTA CRÍTICA DEFCON-1: Sobrepresión Hidráulica en Molino SAG (345 PSI). Bloqueo preventivo OT.`;
+      const entradaLog = `🚨 [${timestamp}] DEFCON-1 IA PRESCRIPTIVA: Sobrepresión detectada en Molino SAG. Orden de Trabajo automática generada.`;
       setLogSimulacion((prev) => [entradaLog, ...prev.slice(0, 4)]);
 
       try {
@@ -449,12 +435,10 @@ export default function App() {
           equipoId: 'EQUIP-SAG-01',
           tipoOt: 'PM03',
           prioridad: '1',
-          descripcion: `🚨 AUTO-GEN [DEFCON-1]: Disparo automático SCADA por Sobrepresión Hidráulica (345 PSI) en Molino SAG 01.`,
+          descripcion: `🚨 AUTO-GEN SUPREME [DEFCON-1]: Disparo SCADA preventivo por Sobrepresión Hidráulica (345 PSI).`,
           fechaCreacion: timestamp,
-          estado: navigator.onLine ? 'SYNC_SAP_SUCCESS' : 'PENDING_OFFGRID',
-          codigoRespuestaSAP: navigator.onLine ? 'SAP_200_OK' : 'LOCAL_BUFFERED'
+          estado: navigator.onLine ? 'SYNC_SAP_SUCCESS' : 'PENDING_OFFGRID'
         };
-
         localStorage.setItem('indusync_sap_ots', JSON.stringify([otEmergencia, ...otsActuales]));
       } catch (err) {
         console.error('Error guardando OT automática:', err);
@@ -464,7 +448,7 @@ export default function App() {
         setPendingSyncQueue((prev) => prev + 1);
       }
     } else {
-      const entradaLog = `✅ [${timestamp}] RESTAURADO: Telemetría OT restablecida. Sincronización SCADA-SAP PM al 100%.`;
+      const entradaLog = `✅ [${timestamp}] TELEMETRÍA NORMALIZADA: Flujo operacional al 100%. Sincronización SAP activa.`;
       setLogSimulacion((prev) => [entradaLog, ...prev.slice(0, 4)]);
     }
   };
@@ -473,16 +457,16 @@ export default function App() {
     setPendingSyncQueue((prev) => prev + 1);
     const timestamp = new Date().toLocaleTimeString('es-CL');
     setLogSimulacion((prev) => [
-      `💾 [${timestamp}] REGISTRO LOCAL: Inspección guardada offline. Pendientes de envío: ${pendingSyncQueue + 1}`,
+      `💾 [${timestamp}] INSPECCIÓN OFF-GRID: Registro guardado en búfer local. Pendientes: ${pendingSyncQueue + 1}`,
       ...prev.slice(0, 4)
     ]);
   };
 
   useEffect(() => {
     try {
-      localStorage.setItem('app_fav_modules', JSON.stringify(favoritos));
+      localStorage.setItem('app_fav_modules_supreme', JSON.stringify(favoritos));
     } catch (err) {
-      console.warn('LocalStorage no disponible para guardar favoritos');
+      console.warn('LocalStorage restringido.');
     }
   }, [favoritos]);
 
@@ -523,7 +507,6 @@ export default function App() {
 
   const ComponenteModulo = modules[moduloActivo];
 
-  // SI NO ESTÁ AUTENTICADO EN EL GATEWAY MILITAR, MOSTRAR BARRERA ZERO-TRUST
   if (!isAuthenticatedGate) {
     return <MilitaryAccessGate onAuthenticate={setIsAuthenticatedGate} />;
   }
@@ -531,40 +514,36 @@ export default function App() {
   return (
     <div
       className={`min-h-screen bg-slate-950 text-slate-100 font-sans flex flex-col transition-colors duration-500 relative ${
-        fallaCritica ? 'ring-8 ring-rose-600/50' : ''
+        fallaCritica ? 'ring-8 ring-rose-600/60' : ''
       }`}
     >
-      {/* CAPA DE MARCA DE AGUA ANTI-FILTRACIONES */}
       <SecurityWatermark userRole={user?.role} />
-
       <AlertBanner />
 
-      {/* BANNER MODO OFF-GRID / PERDIDA DE RED */}
+      {/* BANNER MODO OFF-GRID */}
       {!isOnline && (
         <div className="bg-amber-500/10 border-b border-amber-500/40 px-6 py-2 flex items-center justify-between text-xs font-mono text-amber-300 z-50">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
-            <span>
-              <strong>MODO OFF-GRID ACTIVO:</strong> Sin conexión a la red industrial. Datos resguardados localmente.
-            </span>
+            <span><strong>MODO OFF-GRID ACTIVO:</strong> Operando sin red satelital. Datos respaldados en búfer local.</span>
           </div>
           <span className="bg-amber-950 px-2 py-0.5 rounded text-[10px] border border-amber-800">
-            {pendingSyncQueue} transacciones pendientes
+            {pendingSyncQueue} pendientes de sincronización
           </span>
         </div>
       )}
 
-      {/* BANNER TÁCTICO DE EMERGENCIA DEFCON-1 */}
+      {/* BANNER TÁCTICO DEFCON-1 */}
       {fallaCritica && (
         <div className="bg-rose-950/90 border-b border-rose-600/80 px-6 py-3 flex flex-col md:flex-row justify-between items-center gap-4 animate-pulse shadow-2xl z-50">
           <div className="flex items-center gap-3">
             <span className="text-2xl" aria-hidden="true">⚠️</span>
             <div>
               <h2 className="text-xs font-black tracking-widest uppercase text-rose-300">
-                PROTOCOLO DE EMERGENCIA TÁCTICA DEFCON-1 OT (ISO 22301)
+                PROTOCOLO DEFCON-1 • IA PRESCRIPTIVA ACTIVA (ISO 22301)
               </h2>
               <p className="text-xs text-rose-200">
-                Anomalía crítica en Molienda Principal. Intervención prescriptiva requerida.
+                Anomalía crítica interceptada en Molienda. Orden de trabajo SAP generada de forma autónoma.
               </p>
             </div>
           </div>
@@ -593,23 +572,18 @@ export default function App() {
           <Header />
         </div>
 
-        {/* Buscador Rápido Command Palette & Controles */}
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={() => setCmdPaletteAbierto(true)}
             className="hidden sm:flex items-center gap-3 bg-slate-950 border border-slate-800 hover:border-cyan-500/50 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 transition"
           >
-            <span>🔍 Buscar módulo...</span>
-            <kbd className="bg-slate-800 text-slate-300 text-[10px] font-mono px-1.5 py-0.5 rounded border border-slate-700">
-              Ctrl K
-            </kbd>
+            <span>🔍 Buscar submódulo...</span>
+            <kbd className="bg-slate-800 text-slate-300 text-[10px] font-mono px-1.5 py-0.5 rounded border border-slate-700">Ctrl K</kbd>
           </button>
 
           <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-950 rounded-lg border border-slate-800 text-xs">
-            <label htmlFor="role-select" className="text-slate-400 font-medium">
-              Rol:
-            </label>
+            <label htmlFor="role-select" className="text-slate-400 font-medium">Rol:</label>
             <select
               id="role-select"
               value={user?.role || 'csuite'}
@@ -617,9 +591,7 @@ export default function App() {
               className="bg-slate-900 text-cyan-400 font-mono font-bold px-2 py-0.5 rounded border border-slate-700 outline-none cursor-pointer"
             >
               {Object.values(ROLES).map((r) => (
-                <option key={r} value={r}>
-                  {(r || '').toUpperCase()}
-                </option>
+                <option key={r} value={r}>{(r || '').toUpperCase()}</option>
               ))}
             </select>
           </div>
@@ -637,22 +609,13 @@ export default function App() {
         </div>
       </header>
 
-      {/* ESTRUCTURA PRINCIPAL: SIDEBAR + CONTENIDO */}
+      {/* ESTRUCTURA PRINCIPAL */}
       <div className="flex flex-1 overflow-hidden">
-        {/* SIDEBAR LATERAL */}
-        <aside
-          className={`${
-            sidebarColapsado ? 'w-16' : 'w-64'
-          } bg-slate-900/50 border-r border-slate-800 transition-all duration-300 flex flex-col justify-between shrink-0`}
-        >
+        {/* SIDEBAR */}
+        <aside className={`${sidebarColapsado ? 'w-16' : 'w-64'} bg-slate-900/50 border-r border-slate-800 transition-all duration-300 flex flex-col justify-between shrink-0`}>
           <div className="p-3 space-y-4 overflow-y-auto max-h-[calc(100vh-120px)]">
-            {/* Categorías */}
             <div className="space-y-1">
-              {!sidebarColapsado && (
-                <div className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider px-2 mb-2">
-                  Categorías
-                </div>
-              )}
+              {!sidebarColapsado && <div className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider px-2 mb-2">Categorías</div>}
               {categoriasVisibles.map((catKey) => {
                 const esActiva = categoriaActiva === catKey;
                 return (
@@ -661,28 +624,21 @@ export default function App() {
                     type="button"
                     onClick={() => handleCambioCategoria(catKey)}
                     title={categorias[catKey]?.label}
-                    className={`w-full flex items-center ${
-                      sidebarColapsado ? 'justify-center px-0' : 'px-3'
-                    } py-2 rounded-lg text-xs font-semibold transition ${
+                    className={`w-full flex items-center ${sidebarColapsado ? 'justify-center px-0' : 'px-3'} py-2 rounded-lg text-xs font-semibold transition ${
                       esActiva
                         ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
                         : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
                     }`}
                   >
-                    <span className="truncate">
-                      {sidebarColapsado ? categorias[catKey]?.label.slice(0, 2) : categorias[catKey]?.label}
-                    </span>
+                    <span className="truncate">{sidebarColapsado ? categorias[catKey]?.label.slice(0, 2) : categorias[catKey]?.label}</span>
                   </button>
                 );
               })}
             </div>
 
-            {/* Sub-módulos de la categoría activa */}
             {!sidebarColapsado && categorias[categoriaActiva] && (
               <div className="pt-3 border-t border-slate-800 space-y-1">
-                <div className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider px-2 mb-2">
-                  Sub-Módulos
-                </div>
+                <div className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider px-2 mb-2">Sub-Módulos</div>
                 {categorias[categoriaActiva].modulos.map((m) => {
                   const esActivo = moduloActivo === m.id;
                   const esFav = favoritos.includes(m.id);
@@ -692,7 +648,7 @@ export default function App() {
                       onClick={() => setModuloActivo(m.id)}
                       className={`group flex items-center justify-between px-3 py-1.5 rounded-lg text-xs cursor-pointer transition ${
                         esActivo
-                          ? 'bg-emerald-500 text-slate-950 font-bold'
+                          ? 'bg-emerald-500 text-slate-950 font-bold shadow-md'
                           : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
                       }`}
                       role="button"
@@ -703,10 +659,8 @@ export default function App() {
                       <button
                         type="button"
                         onClick={(e) => toggleFavorito(e, m.id)}
-                        aria-label={esFav ? 'Quitar de favoritos' : 'Añadir a favoritos'}
-                        className={`text-[10px] ${
-                          esFav ? 'text-amber-300' : 'opacity-0 group-hover:opacity-100 text-slate-500'
-                        }`}
+                        aria-label={esFav ? 'Quitar' : 'Favorito'}
+                        className={`text-[10px] ${esFav ? 'text-amber-300' : 'opacity-0 group-hover:opacity-100 text-slate-500'}`}
                       >
                         ★
                       </button>
@@ -717,7 +671,6 @@ export default function App() {
             )}
           </div>
 
-          {/* Footer de Telemetría Rápida */}
           {!sidebarColapsado && (
             <div className="p-3 border-t border-slate-800 bg-slate-950/60 text-[10px] font-mono text-slate-500 space-y-1">
               <div className="flex justify-between items-center">
@@ -728,7 +681,7 @@ export default function App() {
                 </span>
               </div>
               <div className="flex justify-between">
-                <span>Pendientes Sincro:</span>
+                <span>Cola Sincro:</span>
                 <span className="text-cyan-400 font-bold">{pendingSyncQueue}</span>
               </div>
             </div>
@@ -737,12 +690,9 @@ export default function App() {
 
         {/* ÁREA DE CONTENIDO */}
         <main className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
-          {/* BARRA DE FAVORITOS & CONTROLES TÁCTICOS */}
           <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-900/60 p-3 rounded-xl border border-slate-800">
             <div className="flex items-center gap-2 overflow-x-auto text-xs">
-              <span className="text-amber-400 text-[10px] font-mono uppercase tracking-wider whitespace-nowrap">
-                ★ Favoritos:
-              </span>
+              <span className="text-amber-400 text-[10px] font-mono uppercase tracking-wider whitespace-nowrap">★ Favoritos:</span>
               {favoritos.map((favId) => {
                 const modInfo = todosLosModulosAccesibles.find((m) => m.id === favId);
                 if (!modInfo) return null;
@@ -756,8 +706,8 @@ export default function App() {
                       setModuloActivo(favId);
                     }}
                     className={`px-2.5 py-1 rounded-md text-[11px] transition whitespace-nowrap ${
-                      esActivo
-                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                      esActivo 
+                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' 
                         : 'bg-slate-950 text-slate-400 hover:text-slate-200 border border-slate-800'
                     }`}
                   >
@@ -772,7 +722,6 @@ export default function App() {
                 type="button"
                 onClick={simularOperacionOffline}
                 className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition"
-                title="Simula un registro operado localmente sin conexión"
               >
                 💾 Simular Inspección Terreno
               </button>
@@ -781,8 +730,8 @@ export default function App() {
                 type="button"
                 onClick={toggleFallaCritica}
                 className={`px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider transition border ${
-                  fallaCritica
-                    ? 'bg-rose-600 text-white border-rose-400 animate-bounce'
+                  fallaCritica 
+                    ? 'bg-rose-600 text-white border-rose-400 animate-bounce' 
                     : 'bg-rose-950/40 text-rose-400 border-rose-800/80 hover:bg-rose-900/60'
                 }`}
               >
@@ -791,31 +740,25 @@ export default function App() {
             </div>
           </div>
 
-          {/* RENDERIZADO DEL MÓDULO */}
-          <Suspense
-            fallback={
-              <div className="p-16 text-center bg-slate-900/40 rounded-2xl border border-slate-800 flex flex-col items-center justify-center gap-3">
-                <div className="w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />
-                <span className="text-cyan-400 font-mono text-xs animate-pulse">
-                  ⚡ Cargando sub-sistema industrial [{moduloActivo}]...
-                </span>
-              </div>
-            }
-          >
-            {ComponenteModulo ? (
-              <ComponenteModulo />
-            ) : (
+          <Suspense fallback={
+            <div className="p-16 text-center bg-slate-900/40 rounded-2xl border border-slate-800 flex flex-col items-center justify-center gap-3">
+              <div className="w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />
+              <span className="text-cyan-400 font-mono text-xs animate-pulse">
+                ⚡ Sintetizando submódulo industrial [{moduloActivo}]...
+              </span>
+            </div>
+          }>
+            {ComponenteModulo ? <ComponenteModulo /> : (
               <div className="p-12 text-center bg-slate-900/40 rounded-xl border border-slate-800 text-slate-400 text-xs">
-                Selecciona un módulo válido.
+                Seleccione un módulo válido.
               </div>
             )}
           </Suspense>
 
-          {/* AUDITORÍA OT EN VIVO */}
           {logSimulacion.length > 0 && (
             <div className="p-4 bg-slate-900/80 border border-slate-800 rounded-2xl space-y-2">
               <h4 className="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest">
-                📜 Registro de Contingencias & Sincronización OT (ISO 22301)
+                📜 Registro de Auditoría & IA Prescriptiva (ISO 22301 / IEC 62443)
               </h4>
               <div className="space-y-1 font-mono text-[11px]">
                 {logSimulacion.map((log, index) => (
@@ -827,25 +770,25 @@ export default function App() {
             </div>
           )}
 
-          {/* FOOTER CORPORATIVO */}
+          {/* FOOTER CORPORATIVO SUPREMO */}
           <footer className="border-t border-slate-800/80 pt-5 pb-2 mt-8 flex flex-col md:flex-row justify-between items-start md:items-center text-[11px] font-mono gap-4 text-slate-500">
             <div className="space-y-1.5">
               <p className="font-bold text-slate-400">
-                INDUSYNC® Meta-OS — Titular: Indusync SpA (Reg. INAPI Chile N° 1508687).
+                INDUSYNC® Meta-OS Supreme — Titular: Indusync SpA (Reg. INAPI Chile N° 1508687).
               </p>
               <p className="text-slate-500/80 max-w-2xl">
-                Compañía forjada en honor a toda una vida de trabajo, dedicación y legado en Chuquicamata (Jubilación con honores, Escala 19).
+                Plataforma forjada en honor al legado minero de Chuquicamata (Jubilación con honores, Escala 19). Inteligencia artificial para la soberanía operacional.
               </p>
             </div>
             <div className="text-left md:text-right space-y-1">
               <p>Clases NCL 9 & 42</p>
-              <p className="text-cyan-600/60">Software SaaS con IA para Alta Minería</p>
+              <p className="text-cyan-600/60">SaaS Industrial de Alta Precisión</p>
             </div>
           </footer>
         </main>
       </div>
 
-      {/* COMMAND PALETTE MODAL (`Ctrl + K`) */}
+      {/* COMMAND PALETTE MODAL */}
       {cmdPaletteAbierto && (
         <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-start justify-center pt-20 px-4">
           <div className="bg-slate-900 border border-cyan-500/30 rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden space-y-3 p-4">
@@ -853,14 +796,12 @@ export default function App() {
               <input
                 type="text"
                 autoFocus
-                placeholder="Escribe para buscar cualquier módulo (ej: VPO, Licitaciones, CAEX, SAP)..."
+                placeholder="Buscar módulo por nombre o código (ej: VPO, CAEX, SAP)..."
                 value={busqueda}
                 onChange={(e) => setBusqueda(e.target.value)}
                 className="w-full bg-transparent text-slate-100 placeholder-slate-500 text-sm outline-none font-mono"
               />
-              <kbd className="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded border border-slate-700">
-                ESC
-              </kbd>
+              <kbd className="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded border border-slate-700">ESC</kbd>
             </div>
 
             <div className="max-h-80 overflow-y-auto space-y-1">
