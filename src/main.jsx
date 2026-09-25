@@ -6,13 +6,21 @@ import { SystemProvider } from './context/SystemContext.jsx';
 import { OfflineSyncProvider } from './context/OfflineSyncContext.jsx';
 import './index.css';
 
-// Registro del Service Worker para funcionamiento 100% Offline (Subterráneo / Off-Grid)
+// Fix para móviles: Forzar el scroll arriba desde el segundo 0
+if (typeof window !== 'undefined') {
+  if ('scrollRestoration' in window.history) {
+    window.history.scrollRestoration = 'manual';
+  }
+  window.scrollTo(0, 0);
+}
+
+// Registro del Service Worker para PWA / Funcionamiento Offline
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker
       .register('/sw.js')
-      .then((reg) => console.log('✅ Service Worker PWA registrado con éxito:', reg.scope))
-      .catch((err) => console.error('❌ Error registrando Service Worker:', err));
+      .then((reg) => console.log('✅ Service Worker listo en móvil:', reg.scope))
+      .catch((err) => console.error('❌ Error registrando SW:', err));
   });
 }
 
