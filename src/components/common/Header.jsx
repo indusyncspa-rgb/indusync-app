@@ -1,38 +1,44 @@
-import React, { useState } from 'react';
-import DossierModal from './DossierModal';
+import React from 'react';
+import { generateDossierPDF } from '../../utils/pdfGenerator';
 
 export default function Header() {
-  const [isDossierOpen, setIsDossierOpen] = useState(false);
+  const handleDownloadDossier = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    generateDossierPDF();
+  };
 
   return (
-    <>
-      <div className="flex items-center gap-4">
-        <div className="w-12 h-12 bg-slate-900 border border-cyan-500/40 rounded-xl flex items-center justify-center text-2xl shadow-lg shadow-cyan-500/10">
+    <div className="flex items-center gap-3">
+      {/* LOGO & TÍTULO */}
+      <div className="flex items-center gap-2">
+        <div className="w-8 h-8 rounded-xl bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 font-black shadow-[0_0_15px_rgba(6,182,212,0.3)]">
           🛡️
         </div>
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-black text-white tracking-wider">INDUSYNC<sup>®</sup> Meta-OS</h1>
-            <span className="px-2 py-0.5 bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 rounded text-[10px] font-mono font-bold">
+            <h1 className="text-base font-black tracking-wider text-slate-100 flex items-center gap-1.5">
+              INDUSYNC<sup>®</sup> Meta-OS
+            </h1>
+            <span className="text-[10px] font-mono font-bold bg-cyan-950 text-cyan-300 border border-cyan-800 px-1.5 py-0.5 rounded">
               v2.4.0 OT
             </span>
           </div>
-          <div className="flex items-center gap-3 mt-0.5">
-            <p className="text-xs text-slate-400 font-mono">
-              SOFTWARE IA INDUSTRIAL PARA LA ALTA MINERÍA
-            </p>
-            <button
-              onClick={() => setIsDossierOpen(true)}
-              className="px-2.5 py-1 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/50 rounded text-xs font-bold transition flex items-center gap-1 cursor-pointer"
-            >
-              📄 Descargar Dossier
-            </button>
-          </div>
+          <p className="text-[10px] text-slate-400 font-mono tracking-tight hidden sm:block">
+            SOFTWARE IA INDUSTRIAL PARA LA ALTA MINERÍA
+          </p>
         </div>
       </div>
 
-      {/* Modal de Dossier Ejecutivo & Técnico */}
-      <DossierModal isOpen={isDossierOpen} onClose={() => setIsDossierOpen(false)} />
-    </>
+      {/* BOTÓN DESCARGAR DOSSIER (CONECTADO AL PDF) */}
+      <button
+        type="button"
+        onClick={handleDownloadDossier}
+        className="ml-2 bg-slate-800/90 hover:bg-slate-700 text-cyan-300 border border-cyan-500/40 hover:border-cyan-400 px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition flex items-center gap-1.5 shadow-md active:scale-95 cursor-pointer"
+        title="Descargar Dossier Ejecutivo en PDF"
+      >
+        📄 Descargar Dossier
+      </button>
+    </div>
   );
 }

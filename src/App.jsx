@@ -35,7 +35,7 @@ const createLazyComponent = (path) => {
   return lazy(async () => {
     try {
       const mod = await importer();
-      const Component = mod.default || Object.values(mod).find((v) => typeof v === 'function');
+      const Component = mod.default || Object.values(mod).find((v) => typeof v === 'function' || (typeof v === 'object' && v?.$$typeof));
       return { default: Component || (() => <ModuleFallback path={path} error="Estructura de exportación no válida." />) };
     } catch (err) {
       console.error(`Error sincronizando ${path}:`, err);
@@ -60,6 +60,7 @@ const modules = {
   audit: createLazyComponent('./features/csuite/AuditLogs.jsx'),
 
   // Mina & Operaciones
+  line_of_fire: createLazyComponent('./features/mina/LineOfFireShield.jsx'),
   mine_ops: createLazyComponent('./features/mina/MineOperations.jsx'),
   dispatcher: createLazyComponent('./features/mina/AutonomousDispatcherAI.jsx'),
   fleet: createLazyComponent('./features/mina/GeospatialFleetTracker.jsx'),
@@ -129,6 +130,7 @@ const categorias = {
   mina: {
     label: '⛏️ Mina & Operaciones',
     modulos: [
+      { id: 'line_of_fire', label: '🛡️ Shield IA: Línea de Fuego' },
       { id: 'mine_ops', label: 'Operaciones Mina' },
       { id: 'dispatcher', label: 'Despacho Autónomo' },
       { id: 'fleet', label: 'Radar Flota CAEX' },
@@ -359,9 +361,9 @@ export default function App() {
   const [favoritos, setFavoritos] = useState(() => {
     try {
       const saved = localStorage.getItem('app_fav_modules_supreme');
-      return saved ? JSON.parse(saved) : ['exec_dash', 'vpo_pitch', 'mine_ops'];
+      return saved ? JSON.parse(saved) : ['exec_dash', 'line_of_fire', 'mine_ops'];
     } catch {
-      return ['exec_dash', 'vpo_pitch', 'mine_ops'];
+      return ['exec_dash', 'line_of_fire', 'mine_ops'];
     }
   });
 
@@ -494,18 +496,15 @@ export default function App() {
     );
   }, [categoriasVisibles]);
 
-  const modulosFiltrados = useMemo(() => {
+  const modulosFiltradosPalette = useMemo(() => {
     if (!busqueda.trim()) return todosLosModulosAccesibles;
     const query = busqueda.toLowerCase();
     return todosLosModulosAccesibles.filter(
-      (m) =>
-        m.label.toLowerCase().includes(query) ||
-        m.id.toLowerCase().includes(query) ||
-        m.catLabel.toLowerCase().includes(query)
+      (m) => m.label.toLowerCase().includes(query) || m.catLabel.toLowerCase().includes(query)
     );
   }, [busqueda, todosLosModulosAccesibles]);
 
-  const ComponenteModulo = modules[moduloActivo];
+  const ComponenteModulo = modules[moduloActivo] || (() => <ModuleFallback path={moduloActivo} error="Submódulo no asignado." />);
 
   if (!isAuthenticatedGate) {
     return <MilitaryAccessGate onAuthenticate={setIsAuthenticatedGate} />;
@@ -605,6 +604,33 @@ export default function App() {
             🔒 Bloquear
           </button>
 
+          {/* GRUPO DE BOTONES DE DESCARGA NATIVA (.EXE y .MSI) */}
+          <div className="flex items-center gap-1.5">
+            <a
+              href="/downloads/INDUSYNC-MetaOS-Setup.exe"
+              download="INDUSYNC-MetaOS-Setup.exe"
+              className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5 shadow-[0_0_15px_rgba(16,185,129,0.3)]"
+              title="Descargar Instalador Ejecutable Windows (.exe)"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              <span>App .EXE</span>
+            </a>
+
+            <a
+              href="/downloads/INDUSYNC-MetaOS-Setup.msi"
+              download="INDUSYNC-MetaOS-Setup.msi"
+              className="bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-black px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5 shadow-[0_0_15px_rgba(6,182,212,0.3)]"
+              title="Descargar Paquete Corporativo MSI (.msi)"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8" />
+              </svg>
+              <span>Paquete .MSI</span>
+            </a>
+          </div>
+
           <InstallAppButton />
         </div>
       </header>
@@ -688,7 +714,7 @@ export default function App() {
           )}
         </aside>
 
-        {/* ÁREA DE CONTENIDO */}
+        {/* ÁREA DE CONTENIDO PRINCIPAL */}
         <main className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
           <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-900/60 p-3 rounded-xl border border-slate-800">
             <div className="flex items-center gap-2 overflow-x-auto text-xs">
@@ -705,10 +731,10 @@ export default function App() {
                       setCategoriaActiva(modInfo.catKey);
                       setModuloActivo(favId);
                     }}
-                    className={`px-2.5 py-1 rounded-md text-[11px] transition whitespace-nowrap ${
-                      esActivo 
-                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' 
-                        : 'bg-slate-950 text-slate-400 hover:text-slate-200 border border-slate-800'
+                    className={`px-3 py-1 rounded-lg text-xs font-medium border transition ${
+                      esActivo
+                        ? 'bg-amber-400/20 text-amber-300 border-amber-400/50 font-bold'
+                        : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-slate-200'
                     }`}
                   >
                     {modInfo.label}
@@ -717,119 +743,101 @@ export default function App() {
               })}
             </div>
 
+            {/* BOTONES TÁCTICOS DE PRUEBA */}
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={simularOperacionOffline}
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition"
+                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-xs rounded-lg border border-slate-700 transition flex items-center gap-1.5"
               >
-                💾 Simular Inspección Terreno
+                📱 Simular Inspección Terreno
               </button>
-
               <button
                 type="button"
                 onClick={toggleFallaCritica}
-                className={`px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider transition border ${
-                  fallaCritica 
-                    ? 'bg-rose-600 text-white border-rose-400 animate-bounce' 
-                    : 'bg-rose-950/40 text-rose-400 border-rose-800/80 hover:bg-rose-900/60'
+                className={`px-3 py-1.5 font-mono text-xs font-black rounded-lg transition uppercase tracking-wider flex items-center gap-1.5 shadow-lg ${
+                  fallaCritica
+                    ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 animate-bounce'
+                    : 'bg-rose-600 hover:bg-rose-500 text-white animate-pulse'
                 }`}
               >
-                {fallaCritica ? '🚨 Falla Activa' : '🚨 Simular Falla Crítica'}
+                🚨 {fallaCritica ? 'RESTABLECER SISTEMA' : 'SIMULAR FALLA CRÍTICA'}
               </button>
             </div>
           </div>
 
-          <Suspense fallback={
-            <div className="p-16 text-center bg-slate-900/40 rounded-2xl border border-slate-800 flex flex-col items-center justify-center gap-3">
-              <div className="w-8 h-8 border-2 border-cyan-500 border-t-transparent rounded-full animate-spin" />
-              <span className="text-cyan-400 font-mono text-xs animate-pulse">
-                ⚡ Sintetizando submódulo industrial [{moduloActivo}]...
-              </span>
-            </div>
-          }>
-            {ComponenteModulo ? <ComponenteModulo /> : (
-              <div className="p-12 text-center bg-slate-900/40 rounded-xl border border-slate-800 text-slate-400 text-xs">
-                Seleccione un módulo válido.
-              </div>
-            )}
+          {/* CONTENEDOR DEL SUBMÓDULO ACTIVO CON SUSPENSE */}
+          <Suspense fallback={<ModuleFallback path={moduloActivo} />}>
+            <ComponenteModulo 
+              fallaCritica={fallaCritica}
+              onToggleFalla={toggleFallaCritica}
+              isOnline={isOnline}
+              userRole={user?.role}
+            />
           </Suspense>
 
+          {/* LOGS DE SIMULACIÓN Y AUDITORÍA */}
           {logSimulacion.length > 0 && (
-            <div className="p-4 bg-slate-900/80 border border-slate-800 rounded-2xl space-y-2">
-              <h4 className="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest">
-                📜 Registro de Auditoría & IA Prescriptiva (ISO 22301 / IEC 62443)
-              </h4>
-              <div className="space-y-1 font-mono text-[11px]">
-                {logSimulacion.map((log, index) => (
-                  <div key={index} className="text-slate-300 bg-slate-950 p-2 rounded-lg border border-slate-800/60">
-                    {log}
-                  </div>
+            <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4 font-mono text-xs space-y-2">
+              <div className="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Logs de Eventos Tácticos (Tiempo Real)</div>
+              <div className="space-y-1">
+                {logSimulacion.map((log, idx) => (
+                  <div key={idx} className="text-slate-300 border-b border-slate-800/40 pb-1">{log}</div>
                 ))}
               </div>
             </div>
           )}
-
-          {/* FOOTER CORPORATIVO SUPREMO */}
-          <footer className="border-t border-slate-800/80 pt-5 pb-2 mt-8 flex flex-col md:flex-row justify-between items-start md:items-center text-[11px] font-mono gap-4 text-slate-500">
-            <div className="space-y-1.5">
-              <p className="font-bold text-slate-400">
-                INDUSYNC® Meta-OS Supreme — Titular: Indusync SpA (Reg. INAPI Chile N° 1508687).
-              </p>
-              <p className="text-slate-500/80 max-w-2xl">
-                Plataforma forjada en honor al legado minero de Chuquicamata (Jubilación con honores, Escala 19). Inteligencia artificial para la soberanía operacional.
-              </p>
-            </div>
-            <div className="text-left md:text-right space-y-1">
-              <p>Clases NCL 9 & 42</p>
-              <p className="text-cyan-600/60">SaaS Industrial de Alta Precisión</p>
-            </div>
-          </footer>
         </main>
       </div>
 
-      {/* COMMAND PALETTE MODAL */}
+      {/* COMMAND PALETTE (CTRL+K) */}
       {cmdPaletteAbierto && (
-        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-start justify-center pt-20 px-4">
-          <div className="bg-slate-900 border border-cyan-500/30 rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden space-y-3 p-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div className="fixed inset-0 z-[10001] bg-slate-950/80 backdrop-blur-sm flex items-start justify-center pt-20 p-4">
+          <div className="bg-slate-900 border border-cyan-500/40 rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden font-sans">
+            <div className="p-4 border-b border-slate-800 flex items-center gap-3 bg-slate-950/50">
+              <span className="text-cyan-400 text-lg">🔍</span>
               <input
                 type="text"
-                autoFocus
-                placeholder="Buscar módulo por nombre o código (ej: VPO, CAEX, SAP)..."
                 value={busqueda}
                 onChange={(e) => setBusqueda(e.target.value)}
-                className="w-full bg-transparent text-slate-100 placeholder-slate-500 text-sm outline-none font-mono"
+                placeholder="Navegar por submódulo o categoría..."
+                className="bg-transparent text-slate-100 placeholder-slate-500 w-full outline-none text-sm font-medium"
+                autoFocus
               />
-              <kbd className="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded border border-slate-700">ESC</kbd>
+              <button
+                type="button"
+                onClick={() => setCmdPaletteAbierto(false)}
+                className="text-xs text-slate-500 hover:text-slate-300 px-2 py-1 bg-slate-800 rounded"
+              >
+                ESC
+              </button>
             </div>
 
-            <div className="max-h-80 overflow-y-auto space-y-1">
-              {modulosFiltrados.map((m) => (
-                <button
-                  key={m.id}
-                  type="button"
-                  onClick={() => {
-                    setCategoriaActiva(m.catKey);
-                    setModuloActivo(m.id);
-                    setCmdPaletteAbierto(false);
-                    setBusqueda('');
-                  }}
-                  className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-cyan-950/40 border border-transparent hover:border-cyan-500/30 text-left transition text-xs"
-                >
-                  <div>
-                    <div className="font-bold text-slate-200">{m.label}</div>
-                    <div className="text-[10px] text-slate-500">{m.catLabel}</div>
-                  </div>
-                  <span className="text-cyan-400 font-mono text-[10px]">Abrir →</span>
-                </button>
-              ))}
+            <div className="max-h-80 overflow-y-auto p-2 space-y-1">
+              {modulosFiltradosPalette.length === 0 ? (
+                <div className="p-4 text-center text-slate-500 text-xs">Sin resultados de búsqueda</div>
+              ) : (
+                modulosFiltradosPalette.map((m) => (
+                  <button
+                    key={m.id}
+                    type="button"
+                    onClick={() => {
+                      setCategoriaActiva(m.catKey);
+                      setModuloActivo(m.id);
+                      setCmdPaletteAbierto(false);
+                      setBusqueda('');
+                    }}
+                    className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-slate-800 text-left text-xs transition group"
+                  >
+                    <span className="font-semibold text-slate-200 group-hover:text-cyan-300">{m.label}</span>
+                    <span className="text-[10px] font-mono text-slate-500 bg-slate-950 px-2 py-0.5 rounded border border-slate-800">{m.catLabel}</span>
+                  </button>
+                ))
+              )}
             </div>
           </div>
         </div>
       )}
-
-      <NotificationCenter />
     </div>
   );
 }
