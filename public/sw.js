@@ -1,21 +1,34 @@
-// public/sw.js - INDUSYNC PWA Service Worker (Offline Complete Engine)
-const CACHE_NAME = 'indusync-v3-offline-complete';
+// public/sw.js - INDUSYNC Service Worker Mobile Offline Engine
+const CACHE_NAME = 'indusync-v4-mobile-offline';
 
-// Instalación inmediata del Service Worker
+// Archivos críticos que se guardan en el disco del celular en el segundo 0 de instalación
+const PRECACHE_URLS = [
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/favicon.svg',
+  'https://cdn.tailwindcss.com'
+];
+
+// 1. INSTALACIÓN: Guardar la app shell en disco local inmediatamente
 self.addEventListener('install', (event) => {
-  console.log('⚙️ [SW] Instalando Service Worker INDUSYNC...');
-  self.skipWaiting();
+  console.log('⚙️ [SW Mobile] Precargando archivos esenciales en el celular...');
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(PRECACHE_URLS);
+    }).then(() => self.skipWaiting())
+  );
 });
 
-// Limpieza de cachés antiguas y activación inmediata
+// 2. ACTIVACIÓN: Limpiar versiones viejas del celular
 self.addEventListener('activate', (event) => {
-  console.log('⚡ [SW] Activando Service Worker INDUSYNC...');
+  console.log('⚡ [SW Mobile] Activando nuevo motor offline...');
   event.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
         keys.map((key) => {
           if (key !== CACHE_NAME) {
-            console.log('🧹 [SW] Borrando caché obsoleta:', key);
+            console.log('🧹 [SW Mobile] Borrando caché obsoleta:', key);
             return caches.delete(key);
           }
         })
@@ -24,64 +37,64 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Interceptor de peticiones de Red y Caché
+// 3. INTERCEPTOR DE RED (Cache First con Fallback a Red)
 self.addEventListener('fetch', (event) => {
   const request = event.request;
 
-  // Ignorar peticiones que no sean GET (ej. POST de datos a Supabase)
   if (request.method !== 'GET') return;
 
-  // Ignorar peticiones directas a Supabase (manejadas por el motor offlineStore)
+  // Ignorar consultas directas a la base de datos de Supabase
   if (request.url.includes('supabase.co') || request.url.includes('/rest/v1/')) {
     return;
   }
 
-  // 1. MANEJO DE NAVEGACIÓN DE PÁGINAS (HTML)
-  if (request.mode === 'navigate') {
+  // Respuesta inmediata para navegación de páginas en el móvil
+  if (request.mode === 'navigate' || request.headers.get('accept')?.includes('text/html')) {
     event.respondWith(
       fetch(request)
         .then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
-            const responseClone = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put('/index.html', responseClone));
+            const copy = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put('/', copy.clone());
+              cache.put('/index.html', copy);
+            });
           }
           return networkResponse;
         })
         .catch(() => {
-          // Si estamos en Modo Avión / Subterráneo, entregar index.html guardado
-          console.log('📡 [SW Offline] Sirviendo App Shell desde Caché');
-          return caches.match('/index.html') || caches.match('/');
+          // SI NO HAY RED EN EL CELULAR: Entregar la app shell guardada en disco
+          return caches.match('/') || caches.match('/index.html');
         })
     );
     return;
   }
 
-  // 2. MANEJO DE ASSETS (JS, CSS, Imágenes, Fuentes, Íconos)
+  // Estrategia para scripts, estilos e imágenes
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
-      // Si el archivo ya está en el caché local, entregarlo de inmediato (Ultra rápido)
       if (cachedResponse) {
-        // En segundo plano intentamos actualizar la versión en caché si hay internet
+        // Devolver inmediatamente desde el disco del celular
         fetch(request).then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             caches.open(CACHE_NAME).then((cache) => cache.put(request, networkResponse));
           }
-        }).catch(() => {/* Sin red, continuar usando el caché */});
+        }).catch(() => {/* Modo sin conexión activo */});
 
         return cachedResponse;
       }
 
-      // Si el recurso no está en caché, descargarlo de la red y GUARDARLO para la próxima
+      // Si no estaba en caché, descargarlo y guardarlo
       return fetch(request)
         .then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
-            const responseToCache = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, responseToCache));
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, responseClone));
           }
           return networkResponse;
         })
         .catch(() => {
-          console.warn('⚠️ [SW] Recurso no disponible offline:', request.url);
+          console.warn('⚠️ [SW Mobile] Recurso offline no disponible:', request.url);
         });
     })
   );
