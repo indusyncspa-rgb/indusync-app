@@ -1,71 +1,88 @@
-// public/sw.js - INDUSYNC Service Worker Offline Engine
-const CACHE_NAME = 'indusync-v2.0-offline';
-const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/favicon.ico',
-];
+// public/sw.js - INDUSYNC PWA Service Worker (Offline Complete Engine)
+const CACHE_NAME = 'indusync-v3-offline-complete';
 
-// Instalación y Precaché de Archivos
+// Instalación inmediata del Service Worker
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('📦 [Service Worker] Precaching App Shell');
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
-  );
+  console.log('⚙️ [SW] Instalando Service Worker INDUSYNC...');
   self.skipWaiting();
 });
 
-// Activación y Limpieza de Caché Antiguo
+// Limpieza de cachés antiguas y activación inmediata
 self.addEventListener('activate', (event) => {
+  console.log('⚡ [SW] Activando Service Worker INDUSYNC...');
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
+    caches.keys().then((keys) => {
       return Promise.all(
-        cacheNames.map((cache) => {
-          if (cache !== CACHE_NAME) {
-            console.log('🧹 [Service Worker] Borrando caché antiguo:', cache);
-            return caches.delete(cache);
+        keys.map((key) => {
+          if (key !== CACHE_NAME) {
+            console.log('🧹 [SW] Borrando caché obsoleta:', key);
+            return caches.delete(key);
           }
         })
       );
-    })
+    }).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-// Estrategia: Network First con fallback a Cache (Garantiza velocidad sin colgarse)
+// Interceptor de peticiones de Red y Caché
 self.addEventListener('fetch', (event) => {
-  // Ignorar peticiones que no sean GET o que sean de APIs/Supabase directo
-  if (event.request.method !== 'GET' || event.request.url.includes('/rest/v1/')) {
+  const request = event.request;
+
+  // Ignorar peticiones que no sean GET (ej. POST de datos a Supabase)
+  if (request.method !== 'GET') return;
+
+  // Ignorar peticiones directas a Supabase (manejadas por el motor offlineStore)
+  if (request.url.includes('supabase.co') || request.url.includes('/rest/v1/')) {
     return;
   }
 
+  // 1. MANEJO DE NAVEGACIÓN DE PÁGINAS (HTML)
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put('/index.html', responseClone));
+          }
+          return networkResponse;
+        })
+        .catch(() => {
+          // Si estamos en Modo Avión / Subterráneo, entregar index.html guardado
+          console.log('📡 [SW Offline] Sirviendo App Shell desde Caché');
+          return caches.match('/index.html') || caches.match('/');
+        })
+    );
+    return;
+  }
+
+  // 2. MANEJO DE ASSETS (JS, CSS, Imágenes, Fuentes, Íconos)
   event.respondWith(
-    fetch(event.request)
-      .then((networkResponse) => {
-        // Si hay red, actualizamos el caché
-        if (networkResponse && networkResponse.status === 200) {
-          const responseClone = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseClone);
-          });
-        }
-        return networkResponse;
-      })
-      .catch(() => {
-        // SI NO HAY RED (Subterráneo/Offline), entregamos el archivo desde el Caché local
-        console.log('⚡ [Service Worker] Modo Offline - Sirviendo desde Caché:', event.request.url);
-        return caches.match(event.request).then((cachedResponse) => {
-          if (cachedResponse) {
-            return cachedResponse;
+    caches.match(request).then((cachedResponse) => {
+      // Si el archivo ya está en el caché local, entregarlo de inmediato (Ultra rápido)
+      if (cachedResponse) {
+        // En segundo plano intentamos actualizar la versión en caché si hay internet
+        fetch(request).then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, networkResponse));
           }
-          // Fallback final a index.html para SPA/React Router
-          if (event.request.mode === 'navigate') {
-            return caches.match('/index.html');
+        }).catch(() => {/* Sin red, continuar usando el caché */});
+
+        return cachedResponse;
+      }
+
+      // Si el recurso no está en caché, descargarlo de la red y GUARDARLO para la próxima
+      return fetch(request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, responseToCache));
           }
+          return networkResponse;
+        })
+        .catch(() => {
+          console.warn('⚠️ [SW] Recurso no disponible offline:', request.url);
         });
-      })
+    })
   );
 });
