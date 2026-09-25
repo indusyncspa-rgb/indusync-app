@@ -6,7 +6,7 @@ import { SystemProvider } from './context/SystemContext.jsx';
 import { OfflineSyncProvider } from './context/OfflineSyncContext.jsx';
 import './index.css';
 
-// Fix para móviles: Forzar el scroll arriba desde el segundo 0
+// Fix para móviles: Forzar scroll arriba (0,0) siempre al arrancar
 if (typeof window !== 'undefined') {
   if ('scrollRestoration' in window.history) {
     window.history.scrollRestoration = 'manual';
@@ -14,12 +14,17 @@ if (typeof window !== 'undefined') {
   window.scrollTo(0, 0);
 }
 
-// Registro del Service Worker para PWA / Funcionamiento Offline
+// Registro e instalación inmediata del Service Worker en móviles
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker
       .register('/sw.js')
-      .then((reg) => console.log('✅ Service Worker listo en móvil:', reg.scope))
+      .then((reg) => {
+        console.log('✅ Service Worker listo en Android/iOS:', reg.scope);
+        if (reg.waiting) {
+          reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+        }
+      })
       .catch((err) => console.error('❌ Error registrando SW:', err));
   });
 }
