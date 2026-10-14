@@ -89,6 +89,7 @@ const modules = {
   offgrid: createLazyComponent('./features/scada/OffGridSync.jsx'),
 
   // ESG & Geotecnia
+  sernageomin_auditor: createLazyComponent('./features/esg/SERNAGEOMINAuditorView.jsx'),
   sernageomin: createLazyComponent('./features/esg/SERNAGEOMINComplianceAI.jsx'),
   water_tailings: createLazyComponent('./features/esg/TailingsWaterManagementAI.jsx'),
   slope_radar: createLazyComponent('./features/esg/GeotechnicalSlopeRadarAI.jsx'),
@@ -169,6 +170,7 @@ const categorias = {
   esg: {
     label: '💧 ESG & Geotecnia',
     modulos: [
+      { id: 'sernageomin_auditor', label: '🏛️ SERNAGEOMIN & Cero Fatalidad' },
       { id: 'sernageomin', label: 'SERNAGEOMIN Compliance' },
       { id: 'water_tailings', label: 'Agua & Relaves GISTM' },
       { id: 'slope_radar', label: 'Radar Taludes' },
@@ -219,7 +221,6 @@ const MilitaryAccessGate = ({ onAuthenticate }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // CONTRASEÑA ÚNICA DE ACCESO (Puedes cambiar 'INDUSYNC2026' por la que tú quieras)
     if (pin === 'INDUSYNC2026' || pin === '191508' || pin === 'CHUQUI2026') {
       onAuthenticate(true);
     } else {
@@ -364,9 +365,9 @@ export default function App() {
   const [favoritos, setFavoritos] = useState(() => {
     try {
       const saved = localStorage.getItem('app_fav_modules_supreme');
-      return saved ? JSON.parse(saved) : ['exec_dash', 'chancadora_interlock', 'line_of_fire'];
+      return saved ? JSON.parse(saved) : ['exec_dash', 'chancadora_interlock', 'sernageomin_auditor'];
     } catch {
-      return ['exec_dash', 'chancadora_interlock', 'line_of_fire'];
+      return ['exec_dash', 'chancadora_interlock', 'sernageomin_auditor'];
     }
   });
 
