@@ -60,6 +60,7 @@ const modules = {
   audit: createLazyComponent('./features/csuite/AuditLogs.jsx'),
 
   // Mina & Operaciones
+  chancadora_interlock: createLazyComponent('./features/mina/ChancadoraInterlockView.jsx'),
   line_of_fire: createLazyComponent('./features/mina/LineOfFireShield.jsx'),
   mine_ops: createLazyComponent('./features/mina/MineOperations.jsx'),
   dispatcher: createLazyComponent('./features/mina/AutonomousDispatcherAI.jsx'),
@@ -130,6 +131,7 @@ const categorias = {
   mina: {
     label: '⛏️ Mina & Operaciones',
     modulos: [
+      { id: 'chancadora_interlock', label: '⚡ Chancador Interlock Edge' },
       { id: 'line_of_fire', label: '🛡️ Shield IA: Línea de Fuego' },
       { id: 'mine_ops', label: 'Operaciones Mina' },
       { id: 'dispatcher', label: 'Despacho Autónomo' },
@@ -361,9 +363,9 @@ export default function App() {
   const [favoritos, setFavoritos] = useState(() => {
     try {
       const saved = localStorage.getItem('app_fav_modules_supreme');
-      return saved ? JSON.parse(saved) : ['exec_dash', 'line_of_fire', 'mine_ops'];
+      return saved ? JSON.parse(saved) : ['exec_dash', 'chancadora_interlock', 'line_of_fire'];
     } catch {
-      return ['exec_dash', 'line_of_fire', 'mine_ops'];
+      return ['exec_dash', 'chancadora_interlock', 'line_of_fire'];
     }
   });
 
@@ -453,15 +455,6 @@ export default function App() {
       const entradaLog = `✅ [${timestamp}] TELEMETRÍA NORMALIZADA: Flujo operacional al 100%. Sincronización SAP activa.`;
       setLogSimulacion((prev) => [entradaLog, ...prev.slice(0, 4)]);
     }
-  };
-
-  const simularOperacionOffline = () => {
-    setPendingSyncQueue((prev) => prev + 1);
-    const timestamp = new Date().toLocaleTimeString('es-CL');
-    setLogSimulacion((prev) => [
-      `💾 [${timestamp}] INSPECCIÓN OFF-GRID: Registro guardado en búfer local. Pendientes: ${pendingSyncQueue + 1}`,
-      ...prev.slice(0, 4)
-    ]);
   };
 
   useEffect(() => {
@@ -715,125 +708,55 @@ export default function App() {
         </aside>
 
         {/* ÁREA DE CONTENIDO PRINCIPAL */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6">
-          <div className="flex flex-wrap items-center justify-between gap-3 bg-slate-900/60 p-3 rounded-xl border border-slate-800">
-            <div className="flex items-center gap-2 overflow-x-auto text-xs">
-              <span className="text-amber-400 text-[10px] font-mono uppercase tracking-wider whitespace-nowrap">★ Favoritos:</span>
-              {favoritos.map((favId) => {
-                const modInfo = todosLosModulosAccesibles.find((m) => m.id === favId);
-                if (!modInfo) return null;
-                const esActivo = moduloActivo === favId;
-                return (
-                  <button
-                    key={favId}
-                    type="button"
-                    onClick={() => {
-                      setCategoriaActiva(modInfo.catKey);
-                      setModuloActivo(favId);
-                    }}
-                    className={`px-3 py-1 rounded-lg text-xs font-medium border transition ${
-                      esActivo
-                        ? 'bg-amber-400/20 text-amber-300 border-amber-400/50 font-bold'
-                        : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-slate-200'
-                    }`}
-                  >
-                    {modInfo.label}
-                  </button>
-                );
-              })}
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-slate-950">
+          <Suspense fallback={
+            <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4 font-mono">
+              <div className="w-10 h-10 border-4 border-cyan-500/30 border-t-cyan-400 rounded-full animate-spin" />
+              <p className="text-xs text-cyan-400 tracking-wider">CARGANDO MÓDULO INDUSTRIAL...</p>
             </div>
-
-            {/* BOTONES TÁCTICOS DE PRUEBA */}
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={simularOperacionOffline}
-                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-xs rounded-lg border border-slate-700 transition flex items-center gap-1.5"
-              >
-                📱 Simular Inspección Terreno
-              </button>
-              <button
-                type="button"
-                onClick={toggleFallaCritica}
-                className={`px-3 py-1.5 font-mono text-xs font-black rounded-lg transition uppercase tracking-wider flex items-center gap-1.5 shadow-lg ${
-                  fallaCritica
-                    ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 animate-bounce'
-                    : 'bg-rose-600 hover:bg-rose-500 text-white animate-pulse'
-                }`}
-              >
-                🚨 {fallaCritica ? 'RESTABLECER SISTEMA' : 'SIMULAR FALLA CRÍTICA'}
-              </button>
-            </div>
-          </div>
-
-          {/* CONTENEDOR DEL SUBMÓDULO ACTIVO CON SUSPENSE */}
-          <Suspense fallback={<ModuleFallback path={moduloActivo} />}>
-            <ComponenteModulo 
-              fallaCritica={fallaCritica}
-              onToggleFalla={toggleFallaCritica}
-              isOnline={isOnline}
-              userRole={user?.role}
-            />
+          }>
+            <ComponenteModulo />
           </Suspense>
-
-          {/* LOGS DE SIMULACIÓN Y AUDITORÍA */}
-          {logSimulacion.length > 0 && (
-            <div className="bg-slate-900/80 border border-slate-800 rounded-xl p-4 font-mono text-xs space-y-2">
-              <div className="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Logs de Eventos Tácticos (Tiempo Real)</div>
-              <div className="space-y-1">
-                {logSimulacion.map((log, idx) => (
-                  <div key={idx} className="text-slate-300 border-b border-slate-800/40 pb-1">{log}</div>
-                ))}
-              </div>
-            </div>
-          )}
         </main>
       </div>
 
-      {/* COMMAND PALETTE (CTRL+K) */}
+      {/* COMMAND PALETTE MODAL (Ctrl+K) */}
       {cmdPaletteAbierto && (
         <div className="fixed inset-0 z-[10001] bg-slate-950/80 backdrop-blur-sm flex items-start justify-center pt-20 p-4">
-          <div className="bg-slate-900 border border-cyan-500/40 rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden font-sans">
-            <div className="p-4 border-b border-slate-800 flex items-center gap-3 bg-slate-950/50">
-              <span className="text-cyan-400 text-lg">🔍</span>
+          <div className="w-full max-w-xl bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden font-mono">
+            <div className="p-4 border-b border-slate-800 flex items-center gap-3">
+              <span className="text-slate-400">🔍</span>
               <input
                 type="text"
                 value={busqueda}
                 onChange={(e) => setBusqueda(e.target.value)}
-                placeholder="Navegar por submódulo o categoría..."
-                className="bg-transparent text-slate-100 placeholder-slate-500 w-full outline-none text-sm font-medium"
+                placeholder="Buscar cualquier submódulo..."
+                className="w-full bg-transparent text-slate-100 placeholder-slate-500 text-sm outline-none"
                 autoFocus
               />
               <button
                 type="button"
                 onClick={() => setCmdPaletteAbierto(false)}
-                className="text-xs text-slate-500 hover:text-slate-300 px-2 py-1 bg-slate-800 rounded"
+                className="text-xs text-slate-500 hover:text-slate-300 px-2 py-1 rounded bg-slate-800"
               >
                 ESC
               </button>
             </div>
-
             <div className="max-h-80 overflow-y-auto p-2 space-y-1">
-              {modulosFiltradosPalette.length === 0 ? (
-                <div className="p-4 text-center text-slate-500 text-xs">Sin resultados de búsqueda</div>
-              ) : (
-                modulosFiltradosPalette.map((m) => (
-                  <button
-                    key={m.id}
-                    type="button"
-                    onClick={() => {
-                      setCategoriaActiva(m.catKey);
-                      setModuloActivo(m.id);
-                      setCmdPaletteAbierto(false);
-                      setBusqueda('');
-                    }}
-                    className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-slate-800 text-left text-xs transition group"
-                  >
-                    <span className="font-semibold text-slate-200 group-hover:text-cyan-300">{m.label}</span>
-                    <span className="text-[10px] font-mono text-slate-500 bg-slate-950 px-2 py-0.5 rounded border border-slate-800">{m.catLabel}</span>
-                  </button>
-                ))
-              )}
+              {modulosFiltradosPalette.map((m) => (
+                <div
+                  key={m.id}
+                  onClick={() => {
+                    setCategoriaActiva(m.catKey);
+                    setModuloActivo(m.id);
+                    setCmdPaletteAbierto(false);
+                  }}
+                  className="p-2.5 rounded-xl hover:bg-cyan-500/10 text-xs text-slate-300 hover:text-cyan-300 cursor-pointer flex justify-between items-center transition"
+                >
+                  <span className="font-bold">{m.label}</span>
+                  <span className="text-[10px] text-slate-500">{m.catLabel}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
