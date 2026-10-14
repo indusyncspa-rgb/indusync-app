@@ -213,7 +213,7 @@ const SecurityWatermark = ({ userRole }) => (
   </div>
 );
 
-// Muro de Acceso Zero-Trust Militar
+// Muro de Acceso Zero-Trust Militar con Homenaje de Legado
 const MilitaryAccessGate = ({ onAuthenticate }) => {
   const [pin, setPin] = useState('');
   const [error, setError] = useState(false);
@@ -232,7 +232,7 @@ const MilitaryAccessGate = ({ onAuthenticate }) => {
 
   return (
     <div className="fixed inset-0 z-[10000] bg-slate-950 flex items-center justify-center p-4 font-mono text-slate-100">
-      <div className="max-w-md w-full bg-slate-900/90 backdrop-blur-xl border border-cyan-500/40 rounded-2xl p-8 shadow-[0_0_50px_rgba(6,182,212,0.15)] relative overflow-hidden space-y-6">
+      <div className="max-w-lg w-full bg-slate-900/90 backdrop-blur-xl border border-cyan-500/40 rounded-2xl p-8 shadow-[0_0_50px_rgba(6,182,212,0.15)] relative overflow-hidden space-y-6">
         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 via-emerald-500 to-indigo-500 animate-pulse" />
         
         <div className="text-center space-y-3">
@@ -242,7 +242,7 @@ const MilitaryAccessGate = ({ onAuthenticate }) => {
           <h1 className="text-sm font-black tracking-[0.25em] uppercase text-slate-100">
             INDUSYNC META-OS
           </h1>
-          <p className="text-[10px] text-cyan-400 tracking-wider">
+          <p className="text-[10px] text-cyan-400 tracking-wider uppercase font-bold">
             SISTEMA OPERATIVO INDUSTRIAL CON IA • MODO SUPREMO
           </p>
         </div>
@@ -280,9 +280,17 @@ const MilitaryAccessGate = ({ onAuthenticate }) => {
           </button>
         </form>
 
-        <div className="border-t border-slate-800 pt-4 text-center text-[10px] text-slate-500 space-y-1">
-          <p className="text-slate-400 font-bold">Indusync SpA — Reg. INAPI Chile N° 1508687</p>
-          <p className="text-slate-600">Legado Minero Chuquicamata (Escala 19)</p>
+        {/* PIE DE PÁGINA EN HONOR AL LEGADO */}
+        <div className="border-t border-slate-800/80 pt-4 text-center space-y-2">
+          <p className="text-[11px] text-slate-300 italic font-sans leading-relaxed">
+            "En honor al legado e integridad de mi padre, y en memoria de cada minero que entregó su vida en faena."
+          </p>
+          <p className="text-[10px] text-cyan-400/90 font-mono font-semibold leading-relaxed">
+            INDUSYNC Meta-OS: Transformando la memoria de la industria en la barrera definitiva que protege la vida humana.
+          </p>
+          <div className="pt-2 text-[9px] text-slate-500 font-mono">
+            Indusync SpA — Reg. INAPI Chile N° 1508687
+          </div>
         </div>
       </div>
     </div>
