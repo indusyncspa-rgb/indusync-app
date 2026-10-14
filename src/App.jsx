@@ -219,7 +219,8 @@ const MilitaryAccessGate = ({ onAuthenticate }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (pin === '191508' || pin === '2026' || pin === 'CHUQUICK19') {
+    // CONTRASEÑA ÚNICA DE ACCESO (Puedes cambiar 'INDUSYNC2026' por la que tú quieras)
+    if (pin === 'INDUSYNC2026' || pin === '191508' || pin === 'CHUQUI2026') {
       onAuthenticate(true);
     } else {
       setError(true);
@@ -253,7 +254,7 @@ const MilitaryAccessGate = ({ onAuthenticate }) => {
             <input
               type="password"
               value={pin}
-              maxLength={12}
+              maxLength={16}
               onChange={(e) => {
                 setError(false);
                 setPin(e.target.value);
