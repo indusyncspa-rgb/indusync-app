@@ -13,11 +13,11 @@ const featureModules = import.meta.glob('./features/**/*.jsx');
 const ModuleFallback = ({ path, error }) => (
   <div className="p-8 bg-slate-900/80 border border-cyan-500/30 rounded-2xl text-center space-y-3 my-4 backdrop-blur-md">
     <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 mb-1" aria-hidden="true">
-      ⚡
+      🛡️
     </div>
-    <h4 className="text-sm font-bold text-slate-200 tracking-wider uppercase">Sub-Sistema Industrial en Carga Óptima</h4>
+    <h4 className="text-sm font-bold text-slate-200 tracking-wider uppercase">INDUSYNC® Meta-OS • Sub-Sistema Industrial Activo</h4>
     <p className="text-xs text-slate-400 max-w-md mx-auto">
-      Ruta de despliegue: <span className="font-mono text-cyan-400">{path}</span>
+      Ruta de despliegue OT: <span className="font-mono text-cyan-400">{path}</span>
     </p>
     {error && (
       <p className="text-[11px] font-mono text-rose-400/80 bg-rose-950/40 p-2 rounded max-w-lg mx-auto border border-rose-900/40">
@@ -97,6 +97,7 @@ const modules = {
   hydrogen: createLazyComponent('./features/esg/EnergyGridHydrogenAI.jsx'),
 
   // Cyber & Seguridad
+  military_security: createLazyComponent('./features/cyber/MilitarySecurityCoreView.jsx'),
   zero_trust: createLazyComponent('./features/cyber/ZeroTrustMilitarySecurity.jsx'),
   biometric: createLazyComponent('./features/cyber/BiometricAccreditation.jsx'),
   contractor_ai: createLazyComponent('./features/cyber/ContractorAccreditationAI.jsx'),
@@ -104,6 +105,8 @@ const modules = {
   cyber_circular: createLazyComponent('./features/cyber/CyberAndCircularView.jsx'),
 
   // Marketplace & Logística
+  salfa_hub: createLazyComponent('./features/marketplace/SalfaSupplyHub.jsx'),
+  salfa_fleet: createLazyComponent('./features/marketplace/SalfaFleetSecurity.jsx'),
   circ_market: createLazyComponent('./features/marketplace/CircularEconomyMarketplace.jsx'),
   circ_b2b_ai: createLazyComponent('./features/marketplace/CircularMarketplaceB2BAI.jsx'),
   market_std: createLazyComponent('./features/marketplace/Marketplace.jsx'),
@@ -117,28 +120,28 @@ const categorias = {
   csuite: {
     label: '📊 C-Suite & Finanzas',
     modulos: [
-      { id: 'exec_dash', label: 'Dashboard Ejecutivo' },
+      { id: 'exec_dash', label: 'Dashboard Ejecutivo (US$ 230M ROI)' },
       { id: 'vpo_pitch', label: '🎯 Pitch VPO (Operaciones)' },
       { id: 'exec_pitch', label: '🚀 Executive Pitch B2B' },
       { id: 'pitch', label: 'Pitch Directorio' },
       { id: 'ops_map', label: 'Mapa Operacional' },
-      { id: 'roi_calc', label: 'Calculador ROI' },
+      { id: 'roi_calc', label: 'Calculador ROI Dinámico' },
       { id: 'fin_water', label: 'Finanzas & Agua' },
-      { id: 'fin_metrics', label: 'Métricas Financieras' },
+      { id: 'fin_metrics', label: 'Métricas Financieras (C1)' },
       { id: 'billing', label: 'Onboarding & Facturación' },
-      { id: 'audit', label: 'Logs de Auditoría' }
+      { id: 'audit', label: 'Logs de Auditoría OT' }
     ]
   },
   mina: {
     label: '⛏️ Mina & Operaciones',
     modulos: [
-      { id: 'chancadora_interlock', label: '⚡ Chancador Interlock Edge' },
+      { id: 'chancadora_interlock', label: '⚡ Chancador Interlock Edge (menor a 15ms)' },
       { id: 'line_of_fire', label: '🛡️ Shield IA: Línea de Fuego' },
       { id: 'mine_ops', label: 'Operaciones Mina' },
       { id: 'dispatcher', label: 'Despacho Autónomo' },
       { id: 'fleet', label: 'Radar Flota CAEX' },
       { id: 'drilling', label: 'Perforación Geometalúrgica' },
-      { id: 'ventilation', label: 'Ventilación Subterránea' },
+      { id: 'ventilation', label: 'Ventilación Subterránea (CFM)' },
       { id: 'fatigue', label: 'Biometría & Fatiga' },
       { id: 'field_mobile', label: '📱 Inspección Móvil' },
       { id: 'shift_report', label: 'Bitácora Cambio Turno' }
@@ -147,7 +150,7 @@ const categorias = {
   gemelo: {
     label: '🌐 Gemelo Digital & IA',
     modulos: [
-      { id: 'twin_view', label: 'Vista Gemelo Digital' },
+      { id: 'twin_view', label: 'Vista Gemelo Digital (60 FPS)' },
       { id: 'twin_sim', label: 'Simulador Proceso' },
       { id: 'twin_maint', label: 'Mantención Predictiva' },
       { id: 'copilot', label: 'Copiloto Industrial' },
@@ -164,13 +167,13 @@ const categorias = {
       { id: 'sap_bridge', label: 'SAP PM Integration' },
       { id: 'sap_auto', label: 'Automatización OT' },
       { id: 'iot_mesh', label: 'Monitor Malla IoT' },
-      { id: 'offgrid', label: 'Sincronización Off-Grid' }
+      { id: 'offgrid', label: 'Sincronización Off-Grid (Delta-Sync)' }
     ]
   },
   esg: {
     label: '💧 ESG & Geotecnia',
     modulos: [
-      { id: 'sernageomin_auditor', label: '🏛️ SERNAGEOMIN & Cero Fatalidad' },
+      { id: 'sernageomin_auditor', label: '🏛️ SERNAGEOMIN & Cero Fatalidad (DS 132)' },
       { id: 'sernageomin', label: 'SERNAGEOMIN Compliance' },
       { id: 'water_tailings', label: 'Agua & Relaves GISTM' },
       { id: 'slope_radar', label: 'Radar Taludes' },
@@ -181,9 +184,10 @@ const categorias = {
   cyber: {
     label: '🛡️ Cyber & Acreditación',
     modulos: [
-      { id: 'zero_trust', label: 'Cyber-OT IEC 62443' },
+      { id: 'military_security', label: '🔒 Ciberseguridad Grado Militar' },
+      { id: 'zero_trust', label: 'Cyber-OT IEC 62443 / NIST' },
       { id: 'biometric', label: 'Acreditación Biométrica' },
-      { id: 'contractor_ai', label: 'Acreditación Contratistas' },
+      { id: 'contractor_ai', label: 'Acreditación Contratistas (73.5%)' },
       { id: 'contractors', label: 'Gestión Contratistas' },
       { id: 'cyber_circular', label: 'Visión Cyber & Circular' }
     ]
@@ -191,29 +195,30 @@ const categorias = {
   marketplace: {
     label: '♻️ Marketplace & B2B',
     modulos: [
-      { id: 'circ_market', label: 'Excedentes ESG' },
+      { id: 'salfa_hub', label: 'Salfa OS: Supply Hub (VL02N)' },
+      { id: 'salfa_fleet', label: 'Salfa OS: Fleet Security' },
+      { id: 'circ_market', label: 'Excedentes ESG (120t Chatarra)' },
       { id: 'circ_b2b_ai', label: 'Marketplace B2B AI' },
       { id: 'market_std', label: 'Portal Marketplace' },
       { id: 'market_b2b', label: 'Portal B2B' },
-      { id: 'tender_match', label: 'Licitaciones AI' },
+      { id: 'tender_match', label: 'Licitaciones Exprés AI' },
       { id: 'supply_chain', label: 'Cadena Suministros' },
       { id: 'radar_logistics', label: 'Radar Logístico' }
     ]
   }
 };
 
-// Marca de Agua Dinámica para Propiedad Intelectual INAPI
 const SecurityWatermark = ({ userRole }) => (
   <div className="pointer-events-none fixed inset-0 z-[9999] flex flex-wrap items-center justify-around opacity-[0.025] select-none overflow-hidden font-mono text-[10px] text-cyan-400">
     {Array.from({ length: 16 }).map((_, i) => (
       <div key={i} className="transform -rotate-12 whitespace-nowrap p-8">
-        INDUSYNC® META-OS SUPREME — PROPIEDAD INDUSTRIAL (INAPI 1508687) — CHUQUICAMATA LEGACY — ROL: {userRole?.toUpperCase()}
+        INDUSYNC® META-OS SUPREME — PROPIEDAD INDUSTRIAL (INAPI 1508687) — SOBERANÍA INDUSTRIAL OT — ROL: {userRole?.toUpperCase()}
       </div>
     ))}
   </div>
 );
 
-// Muro de Acceso Zero-Trust Militar con Homenaje de Legado
+// Muro de Acceso Zero-Trust Militar (Soporta 20MINERIA26 para Meta-OS y SALFA2026 para SalfaOS)
 const MilitaryAccessGate = ({ onAuthenticate }) => {
   const [pin, setPin] = useState('');
   const [error, setError] = useState(false);
@@ -221,8 +226,11 @@ const MilitaryAccessGate = ({ onAuthenticate }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (pin === 'INDUSYNC2026' || pin === '191508' || pin === 'CHUQUI2026') {
-      onAuthenticate(true);
+    const cleanPin = pin.trim();
+    if (cleanPin === 'SALFA2026') {
+      onAuthenticate({ tenant: 'SALFA_RENT', role: 'csuite' });
+    } else if (cleanPin === '20MINERIA26' || cleanPin === 'INDUSYNC2026') {
+      onAuthenticate({ tenant: 'INDUSYNC_CORE', role: 'csuite' });
     } else {
       setError(true);
       setAttempts((prev) => prev + 1);
@@ -240,17 +248,17 @@ const MilitaryAccessGate = ({ onAuthenticate }) => {
             🛡️
           </div>
           <h1 className="text-sm font-black tracking-[0.25em] uppercase text-slate-100">
-            INDUSYNC META-OS
+            INDUSYNC META-OS v2.4.0 OT
           </h1>
           <p className="text-[10px] text-cyan-400 tracking-wider uppercase font-bold">
-            SISTEMA OPERATIVO INDUSTRIAL CON IA • MODO SUPREMO
+            SISTEMA OPERATIVO SOBERANO • CIBERSEGURIDAD OT & SERNAGEOMIN
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-[10px] text-slate-400 uppercase tracking-wider mb-1.5 font-sans font-semibold">
-              Credencial de Acceso Acreditado:
+              Credencial de Alta Gerencia (Usa SALFA2026 o 20MINERIA26):
             </label>
             <input
               type="password"
@@ -280,16 +288,12 @@ const MilitaryAccessGate = ({ onAuthenticate }) => {
           </button>
         </form>
 
-        {/* PIE DE PÁGINA EN HONOR AL LEGADO */}
         <div className="border-t border-slate-800/80 pt-4 text-center space-y-2">
           <p className="text-[11px] text-slate-300 italic font-sans leading-relaxed">
             "En honor al legado e integridad de mi padre, y en memoria de cada minero que entregó su vida en faena."
           </p>
-          <p className="text-[10px] text-cyan-400/90 font-mono font-semibold leading-relaxed">
-            INDUSYNC Meta-OS: Transformando la memoria de la industria en la barrera definitiva que protege la vida humana.
-          </p>
           <div className="pt-2 text-[9px] text-slate-500 font-mono">
-            Indusync SpA — Reg. INAPI Chile N° 1508687
+            Indusync SpA — Reg. INAPI Chile N° 1508687 • Normativa DS 132 & IEC 62443
           </div>
         </div>
       </div>
@@ -297,75 +301,97 @@ const MilitaryAccessGate = ({ onAuthenticate }) => {
   );
 };
 
+// UNIVERSO AISLADO SALFA OS
+const SalfaTenantView = ({ onLogout }) => {
+  const [salfaView, setSalfaView] = useState('logistics');
+
+  return (
+    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans flex flex-col selection:bg-red-600 selection:text-white">
+      <header className="bg-slate-900/95 border-b border-slate-800 px-6 py-4 flex items-center justify-between backdrop-blur-md shadow-xl">
+        <div className="flex items-center gap-6">
+           <div className="flex items-center gap-3">
+             <div className="bg-gradient-to-r from-blue-950 via-slate-900 to-red-950 px-3.5 py-2 rounded-xl border border-red-500/30 shadow-[0_0_20px_rgba(239,68,68,0.15)] flex items-center gap-2">
+               <span className="text-white font-black tracking-wider text-sm">Salfa<span className="text-red-500">Rent</span></span>
+             </div>
+             <div className="hidden sm:block">
+               <span className="text-xs text-slate-300 font-mono tracking-wider font-bold block">LOGÍSTICA B2B & FLEET SHIELD</span>
+               <span className="text-[10px] text-cyan-400 font-mono">Powered by INDUSYNC® AI Industrial</span>
+             </div>
+           </div>
+           
+           <div className="hidden md:flex bg-slate-950 border border-slate-800 rounded-xl p-1 gap-1 shadow-inner">
+             <button 
+               onClick={() => setSalfaView('logistics')}
+               className={`px-5 py-2 rounded-lg text-xs font-bold transition flex items-center gap-2 ${salfaView === 'logistics' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow' : 'text-slate-400 hover:text-slate-200'}`}
+             >
+               📦 Supply Hub (SAP)
+             </button>
+             <button 
+               onClick={() => setSalfaView('security')}
+               className={`px-5 py-2 rounded-lg text-xs font-bold transition ${salfaView === 'security' ? 'bg-red-500/20 text-red-300 border border-red-500/40 shadow' : 'text-slate-400 hover:text-slate-200'}`}
+             >
+               🛡️ Fleet Security (Antirobo)
+             </button>
+           </div>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-[11px] font-mono text-emerald-400">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+            <span>TENANT: SALFA_RENT</span>
+          </div>
+          <button 
+            onClick={onLogout} 
+            className="text-xs px-3.5 py-1.5 bg-red-950/40 hover:bg-red-900/60 border border-red-800/80 text-red-300 rounded-lg font-mono transition shadow"
+          >
+            🔒 Salir
+          </button>
+        </div>
+      </header>
+      
+      <main className="flex-1 p-6 bg-gradient-to-b from-slate-950 via-slate-900/30 to-slate-950">
+         <Suspense fallback={
+            <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4 font-mono">
+              <div className="w-10 h-10 border-4 border-red-500/30 border-t-red-500 rounded-full animate-spin" />
+              <p className="text-xs text-red-400 tracking-wider">ESTABLECIENDO ENTORNO SEGURO SALFAOS...</p>
+            </div>
+         }>
+            {salfaView === 'logistics' 
+              ? React.createElement(createLazyComponent('./features/marketplace/SalfaSupplyHub.jsx'))
+              : React.createElement(createLazyComponent('./features/marketplace/SalfaFleetSecurity.jsx'))
+            }
+         </Suspense>
+      </main>
+    </div>
+  );
+};
+
 export default function App() {
+  const [authSession, setAuthSession] = useState(null);
   const authContext = useAuth() || {};
-  const user = authContext.user || { role: 'csuite' };
+  
+  const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+  const forceTenant = urlParams ? urlParams.get('tenant') : null;
+
+  // Si no hay sesión iniciada, mostramos el Muro de Acceso Militar
+  if (!authSession && !forceTenant) {
+    return <MilitaryAccessGate onAuthenticate={setAuthSession} />;
+  }
+
+  const activeTenant = authSession?.tenant || forceTenant || 'INDUSYNC_CORE';
+
+  if (activeTenant === 'SALFA_RENT' || forceTenant === 'salfa') {
+    return <SalfaTenantView onLogout={() => setAuthSession(null)} />;
+  }
+
+  const user = { role: 'csuite', tenant: activeTenant };
   const hasPermission = authContext.hasPermission || (() => true);
   const switchRole = authContext.switchRole || (() => {});
   const ROLES = authContext.ROLES || { CSUITE: 'csuite', OPERATOR: 'operator', ADMIN: 'admin' };
 
-  // ESTADO DE SEGURIDAD MAESTRA
-  const [isAuthenticatedGate, setIsAuthenticatedGate] = useState(false);
-  const [lastActivity, setLastActivity] = useState(Date.now());
-
-  // Blindaje Anti-DevTools & Anti-Copy
-  useEffect(() => {
-    if (!isAuthenticatedGate) return;
-
-    const handleContextMenu = (e) => e.preventDefault();
-    const handleKeyDownSecurity = (e) => {
-      if (
-        e.keyCode === 123 ||
-        (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) ||
-        (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 83))
-      ) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-    };
-
-    window.addEventListener('contextmenu', handleContextMenu);
-    window.addEventListener('keydown', handleKeyDownSecurity);
-
-    return () => {
-      window.removeEventListener('contextmenu', handleContextMenu);
-      window.removeEventListener('keydown', handleKeyDownSecurity);
-    };
-  }, [isAuthenticatedGate]);
-
-  // Timeout de Inactividad (10 minutos)
-  const resetInactivityTimer = useCallback(() => {
-    setLastActivity(Date.now());
-  }, []);
-
-  useEffect(() => {
-    if (!isAuthenticatedGate) return;
-
-    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
-    events.forEach((evt) => window.addEventListener(evt, resetInactivityTimer));
-
-    const interval = setInterval(() => {
-      if (Date.now() - lastActivity > 10 * 60 * 1000) {
-        setIsAuthenticatedGate(false);
-      }
-    }, 10000);
-
-    return () => {
-      events.forEach((evt) => window.removeEventListener(evt, resetInactivityTimer));
-      clearInterval(interval);
-    };
-  }, [isAuthenticatedGate, lastActivity, resetInactivityTimer]);
-
-  const categoriasVisibles = useMemo(
-    () => Object.keys(categorias).filter((catKey) => hasPermission(catKey)),
-    [hasPermission]
-  );
-
   const [sidebarColapsado, setSidebarColapsado] = useState(false);
-  const [categoriaActiva, setCategoriaActiva] = useState(categoriasVisibles[0] || 'csuite');
-  const [moduloActivo, setModuloActivo] = useState(
-    categorias[categoriasVisibles[0]]?.modulos[0]?.id || 'exec_dash'
-  );
+  const [categoriaActiva, setCategoriaActiva] = useState('csuite');
+  const [moduloActivo, setModuloActivo] = useState('exec_dash');
 
   const [cmdPaletteAbierto, setCmdPaletteAbierto] = useState(false);
   const [busqueda, setBusqueda] = useState('');
@@ -379,101 +405,17 @@ export default function App() {
     }
   });
 
-  const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
-  const [pendingSyncQueue, setPendingSyncQueue] = useState(0);
-
   const [fallaCritica, setFallaCritica] = useState(false);
-  const [logSimulacion, setLogSimulacion] = useState([]);
+  const [modalSernageominAbierto, setModalSernageominAbierto] = useState(false);
 
-  // Telemetría Off-Grid y Sincronización Automática con SAP PM
-  useEffect(() => {
-    const handleOnline = () => {
-      setIsOnline(true);
-      if (pendingSyncQueue > 0) {
-        const timestamp = new Date().toLocaleTimeString('es-CL');
-        setLogSimulacion((prev) => [
-          `🔄 [${timestamp}] SINCRONIZACIÓN SUPREMA: ${pendingSyncQueue} paquetes locales subidos con éxito a SAP PM (Módulo PM03).`,
-          ...prev.slice(0, 4)
-        ]);
-        setPendingSyncQueue(0);
-      }
-    };
-
-    const handleOffline = () => {
-      setIsOnline(false);
-      const timestamp = new Date().toLocaleTimeString('es-CL');
-      setLogSimulacion((prev) => [
-        `📡 [${timestamp}] MODO OFF-GRID ACTIVO: Conexión satelital/cordillera resguardada. Almacenamiento local en búfer cifrado.`,
-        ...prev.slice(0, 4)
-      ]);
-    };
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, [pendingSyncQueue]);
-
-  // Atajo Command Palette (Ctrl+K)
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        setCmdPaletteAbierto((prev) => !prev);
-      }
-      if (e.key === 'Escape') {
-        setCmdPaletteAbierto(false);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  const categoriasVisibles = useMemo(
+    () => Object.keys(categorias).filter((catKey) => hasPermission(catKey)),
+    [hasPermission]
+  );
 
   const toggleFallaCritica = () => {
-    const nuevoEstado = !fallaCritica;
-    setFallaCritica(nuevoEstado);
-    const timestamp = new Date().toLocaleTimeString('es-CL');
-
-    if (nuevoEstado) {
-      const entradaLog = `🚨 [${timestamp}] DEFCON-1 IA PRESCRIPTIVA: Sobrepresión detectada en Molino SAG. Orden de Trabajo automática generada.`;
-      setLogSimulacion((prev) => [entradaLog, ...prev.slice(0, 4)]);
-
-      try {
-        const storedOts = localStorage.getItem('indusync_sap_ots');
-        const otsActuales = storedOts ? JSON.parse(storedOts) : [];
-        const otEmergencia = {
-          id: `OT-SAP-${Math.floor(100000 + Math.random() * 900000)}`,
-          equipoId: 'EQUIP-SAG-01',
-          tipoOt: 'PM03',
-          prioridad: '1',
-          descripcion: `🚨 AUTO-GEN SUPREME [DEFCON-1]: Disparo SCADA preventivo por Sobrepresión Hidráulica (345 PSI).`,
-          fechaCreacion: timestamp,
-          estado: navigator.onLine ? 'SYNC_SAP_SUCCESS' : 'PENDING_OFFGRID'
-        };
-        localStorage.setItem('indusync_sap_ots', JSON.stringify([otEmergencia, ...otsActuales]));
-      } catch (err) {
-        console.error('Error guardando OT automática:', err);
-      }
-
-      if (!isOnline) {
-        setPendingSyncQueue((prev) => prev + 1);
-      }
-    } else {
-      const entradaLog = `✅ [${timestamp}] TELEMETRÍA NORMALIZADA: Flujo operacional al 100%. Sincronización SAP activa.`;
-      setLogSimulacion((prev) => [entradaLog, ...prev.slice(0, 4)]);
-    }
+    setFallaCritica(!fallaCritica);
   };
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('app_fav_modules_supreme', JSON.stringify(favoritos));
-    } catch (err) {
-      console.warn('LocalStorage restringido.');
-    }
-  }, [favoritos]);
 
   const handleCambioCategoria = (catKey) => {
     setCategoriaActiva(catKey);
@@ -489,75 +431,12 @@ export default function App() {
     );
   };
 
-  const todosLosModulosAccesibles = useMemo(() => {
-    return categoriasVisibles.flatMap((catKey) =>
-      (categorias[catKey]?.modulos || []).map((mod) => ({
-        ...mod,
-        catKey,
-        catLabel: categorias[catKey].label
-      }))
-    );
-  }, [categoriasVisibles]);
-
-  const modulosFiltradosPalette = useMemo(() => {
-    if (!busqueda.trim()) return todosLosModulosAccesibles;
-    const query = busqueda.toLowerCase();
-    return todosLosModulosAccesibles.filter(
-      (m) => m.label.toLowerCase().includes(query) || m.catLabel.toLowerCase().includes(query)
-    );
-  }, [busqueda, todosLosModulosAccesibles]);
-
   const ComponenteModulo = modules[moduloActivo] || (() => <ModuleFallback path={moduloActivo} error="Submódulo no asignado." />);
 
-  if (!isAuthenticatedGate) {
-    return <MilitaryAccessGate onAuthenticate={setIsAuthenticatedGate} />;
-  }
-
   return (
-    <div
-      className={`min-h-screen bg-slate-950 text-slate-100 font-sans flex flex-col transition-colors duration-500 relative ${
-        fallaCritica ? 'ring-8 ring-rose-600/60' : ''
-      }`}
-    >
+    <div className={`min-h-screen bg-slate-950 text-slate-100 font-sans flex flex-col transition-colors duration-500 relative ${fallaCritica ? 'ring-8 ring-rose-600/60' : ''}`}>
       <SecurityWatermark userRole={user?.role} />
       <AlertBanner />
-
-      {/* BANNER MODO OFF-GRID */}
-      {!isOnline && (
-        <div className="bg-amber-500/10 border-b border-amber-500/40 px-6 py-2 flex items-center justify-between text-xs font-mono text-amber-300 z-50">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
-            <span><strong>MODO OFF-GRID ACTIVO:</strong> Operando sin red satelital. Datos respaldados en búfer local.</span>
-          </div>
-          <span className="bg-amber-950 px-2 py-0.5 rounded text-[10px] border border-amber-800">
-            {pendingSyncQueue} pendientes de sincronización
-          </span>
-        </div>
-      )}
-
-      {/* BANNER TÁCTICO DEFCON-1 */}
-      {fallaCritica && (
-        <div className="bg-rose-950/90 border-b border-rose-600/80 px-6 py-3 flex flex-col md:flex-row justify-between items-center gap-4 animate-pulse shadow-2xl z-50">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl" aria-hidden="true">⚠️</span>
-            <div>
-              <h2 className="text-xs font-black tracking-widest uppercase text-rose-300">
-                PROTOCOLO DEFCON-1 • IA PRESCRIPTIVA ACTIVA (ISO 22301)
-              </h2>
-              <p className="text-xs text-rose-200">
-                Anomalía crítica interceptada en Molienda. Orden de trabajo SAP generada de forma autónoma.
-              </p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={toggleFallaCritica}
-            className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs rounded-xl uppercase tracking-wider transition shadow-lg"
-          >
-            Restablecer Telemetría
-          </button>
-        </div>
-      )}
 
       {/* HEADER PRINCIPAL */}
       <header className="bg-slate-900/90 border-b border-slate-800 px-4 py-3 flex items-center justify-between gap-4 sticky top-0 z-40 backdrop-blur-md">
@@ -566,73 +445,44 @@ export default function App() {
             type="button"
             onClick={() => setSidebarColapsado(!sidebarColapsado)}
             className="p-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition"
-            aria-label={sidebarColapsado ? 'Expandir menú' : 'Colapsar menú'}
-            title="Colapsar / Expandir Menú"
           >
             ☰
           </button>
+          <div className="flex items-center gap-2">
+            <span className="text-cyan-400 font-black tracking-wider text-sm">INDUSYNC®</span>
+            <span className="bg-cyan-500/25 border border-cyan-500/40 text-cyan-300 text-[10px] font-mono px-2 py-0.5 rounded font-bold">
+              v2.4.0 OT
+            </span>
+          </div>
           <Header />
         </div>
 
         <div className="flex items-center gap-3">
           <button
             type="button"
-            onClick={() => setCmdPaletteAbierto(true)}
-            className="hidden sm:flex items-center gap-3 bg-slate-950 border border-slate-800 hover:border-cyan-500/50 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 transition"
+            onClick={toggleFallaCritica}
+            className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold transition flex items-center gap-1.5 border ${
+              fallaCritica ? 'bg-rose-600 text-white border-rose-400 animate-pulse' : 'bg-slate-950 hover:bg-rose-950/40 text-rose-400 border-rose-900/60'
+            }`}
           >
-            <span>🔍 Buscar submódulo...</span>
-            <kbd className="bg-slate-800 text-slate-300 text-[10px] font-mono px-1.5 py-0.5 rounded border border-slate-700">Ctrl K</kbd>
+            <span>⚡ Interlock Edge</span>
           </button>
-
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-950 rounded-lg border border-slate-800 text-xs">
-            <label htmlFor="role-select" className="text-slate-400 font-medium">Rol:</label>
-            <select
-              id="role-select"
-              value={user?.role || 'csuite'}
-              onChange={(e) => switchRole(e.target.value)}
-              className="bg-slate-900 text-cyan-400 font-mono font-bold px-2 py-0.5 rounded border border-slate-700 outline-none cursor-pointer"
-            >
-              {Object.values(ROLES).map((r) => (
-                <option key={r} value={r}>{(r || '').toUpperCase()}</option>
-              ))}
-            </select>
-          </div>
 
           <button
             type="button"
-            onClick={() => setIsAuthenticatedGate(false)}
-            title="Bloquear sesión inmediatamente"
-            className="px-2.5 py-1.5 bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800 text-rose-300 rounded-lg text-xs font-mono transition flex items-center gap-1"
+            onClick={() => setModalSernageominAbierto(true)}
+            className="px-3 py-1.5 bg-cyan-950/60 hover:bg-cyan-900/80 border border-cyan-700/60 text-cyan-300 rounded-lg text-xs font-mono font-bold transition"
+          >
+            <span>🏛️ Dossier SERNAGEOMIN</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setAuthSession(null)}
+            className="px-2.5 py-1.5 bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800 text-rose-300 rounded-lg text-xs font-mono transition"
           >
             🔒 Bloquear
           </button>
-
-          {/* GRUPO DE BOTONES DE DESCARGA NATIVA (.EXE y .MSI) */}
-          <div className="flex items-center gap-1.5">
-            <a
-              href="/downloads/INDUSYNC-MetaOS-Setup.exe"
-              download="INDUSYNC-MetaOS-Setup.exe"
-              className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5 shadow-[0_0_15px_rgba(16,185,129,0.3)]"
-              title="Descargar Instalador Ejecutable Windows (.exe)"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-              </svg>
-              <span>App .EXE</span>
-            </a>
-
-            <a
-              href="/downloads/INDUSYNC-MetaOS-Setup.msi"
-              download="INDUSYNC-MetaOS-Setup.msi"
-              className="bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-black px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5 shadow-[0_0_15px_rgba(6,182,212,0.3)]"
-              title="Descargar Paquete Corporativo MSI (.msi)"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8" />
-              </svg>
-              <span>Paquete .MSI</span>
-            </a>
-          </div>
 
           <InstallAppButton />
         </div>
@@ -640,11 +490,10 @@ export default function App() {
 
       {/* ESTRUCTURA PRINCIPAL */}
       <div className="flex flex-1 overflow-hidden">
-        {/* SIDEBAR */}
         <aside className={`${sidebarColapsado ? 'w-16' : 'w-64'} bg-slate-900/50 border-r border-slate-800 transition-all duration-300 flex flex-col justify-between shrink-0`}>
           <div className="p-3 space-y-4 overflow-y-auto max-h-[calc(100vh-120px)]">
             <div className="space-y-1">
-              {!sidebarColapsado && <div className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider px-2 mb-2">Categorías</div>}
+              {!sidebarColapsado && <div className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider px-2 mb-2">Categorías Siderúrgicas</div>}
               {categoriasVisibles.map((catKey) => {
                 const esActiva = categoriaActiva === catKey;
                 return (
@@ -652,11 +501,8 @@ export default function App() {
                     key={catKey}
                     type="button"
                     onClick={() => handleCambioCategoria(catKey)}
-                    title={categorias[catKey]?.label}
                     className={`w-full flex items-center ${sidebarColapsado ? 'justify-center px-0' : 'px-3'} py-2 rounded-lg text-xs font-semibold transition ${
-                      esActiva
-                        ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
-                        : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
+                      esActiva ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40' : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
                     }`}
                   >
                     <span className="truncate">{sidebarColapsado ? categorias[catKey]?.label.slice(0, 2) : categorias[catKey]?.label}</span>
@@ -667,7 +513,7 @@ export default function App() {
 
             {!sidebarColapsado && categorias[categoriaActiva] && (
               <div className="pt-3 border-t border-slate-800 space-y-1">
-                <div className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider px-2 mb-2">Sub-Módulos</div>
+                <div className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider px-2 mb-2">Sub-Módulos OT</div>
                 {categorias[categoriaActiva].modulos.map((m) => {
                   const esActivo = moduloActivo === m.id;
                   const esFav = favoritos.includes(m.id);
@@ -676,19 +522,13 @@ export default function App() {
                       key={m.id}
                       onClick={() => setModuloActivo(m.id)}
                       className={`group flex items-center justify-between px-3 py-1.5 rounded-lg text-xs cursor-pointer transition ${
-                        esActivo
-                          ? 'bg-emerald-500 text-slate-950 font-bold shadow-md'
-                          : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
+                        esActivo ? 'bg-emerald-500 text-slate-950 font-bold shadow-md' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
                       }`}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={(e) => e.key === 'Enter' && setModuloActivo(m.id)}
                     >
                       <span className="truncate">{m.label}</span>
                       <button
                         type="button"
                         onClick={(e) => toggleFavorito(e, m.id)}
-                        aria-label={esFav ? 'Quitar' : 'Favorito'}
                         className={`text-[10px] ${esFav ? 'text-amber-300' : 'opacity-0 group-hover:opacity-100 text-slate-500'}`}
                       >
                         ★
@@ -699,78 +539,19 @@ export default function App() {
               </div>
             )}
           </div>
-
-          {!sidebarColapsado && (
-            <div className="p-3 border-t border-slate-800 bg-slate-950/60 text-[10px] font-mono text-slate-500 space-y-1">
-              <div className="flex justify-between items-center">
-                <span>Enlace Red:</span>
-                <span className={`font-bold flex items-center gap-1 ${isOnline ? 'text-emerald-400' : 'text-amber-400'}`}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-emerald-400' : 'bg-amber-400 animate-ping'}`} />
-                  {isOnline ? 'ONLINE' : 'OFF-GRID'}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span>Cola Sincro:</span>
-                <span className="text-cyan-400 font-bold">{pendingSyncQueue}</span>
-              </div>
-            </div>
-          )}
         </aside>
 
-        {/* ÁREA DE CONTENIDO PRINCIPAL */}
         <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-slate-950">
           <Suspense fallback={
             <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4 font-mono">
               <div className="w-10 h-10 border-4 border-cyan-500/30 border-t-cyan-400 rounded-full animate-spin" />
-              <p className="text-xs text-cyan-400 tracking-wider">CARGANDO MÓDULO INDUSTRIAL...</p>
+              <p className="text-xs text-cyan-400 tracking-wider">SINCRONIZANDO SUB-SISTEMA INDUSTRIAL OT...</p>
             </div>
           }>
             <ComponenteModulo />
           </Suspense>
         </main>
       </div>
-
-      {/* COMMAND PALETTE MODAL (Ctrl+K) */}
-      {cmdPaletteAbierto && (
-        <div className="fixed inset-0 z-[10001] bg-slate-950/80 backdrop-blur-sm flex items-start justify-center pt-20 p-4">
-          <div className="w-full max-w-xl bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden font-mono">
-            <div className="p-4 border-b border-slate-800 flex items-center gap-3">
-              <span className="text-slate-400">🔍</span>
-              <input
-                type="text"
-                value={busqueda}
-                onChange={(e) => setBusqueda(e.target.value)}
-                placeholder="Buscar cualquier submódulo..."
-                className="w-full bg-transparent text-slate-100 placeholder-slate-500 text-sm outline-none"
-                autoFocus
-              />
-              <button
-                type="button"
-                onClick={() => setCmdPaletteAbierto(false)}
-                className="text-xs text-slate-500 hover:text-slate-300 px-2 py-1 rounded bg-slate-800"
-              >
-                ESC
-              </button>
-            </div>
-            <div className="max-h-80 overflow-y-auto p-2 space-y-1">
-              {modulosFiltradosPalette.map((m) => (
-                <div
-                  key={m.id}
-                  onClick={() => {
-                    setCategoriaActiva(m.catKey);
-                    setModuloActivo(m.id);
-                    setCmdPaletteAbierto(false);
-                  }}
-                  className="p-2.5 rounded-xl hover:bg-cyan-500/10 text-xs text-slate-300 hover:text-cyan-300 cursor-pointer flex justify-between items-center transition"
-                >
-                  <span className="font-bold">{m.label}</span>
-                  <span className="text-[10px] text-slate-500">{m.catLabel}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
