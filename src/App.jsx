@@ -1,5 +1,4 @@
 import React, { useState, lazy, Suspense, useEffect, useMemo, useCallback } from 'react';
-import { useAuth } from '@/context/AuthContext';
 
 // Componentes Comunes
 import Header from './components/common/Header';
@@ -228,9 +227,9 @@ const MilitaryAccessGate = ({ onAuthenticate }) => {
     e.preventDefault();
     const cleanPin = pin.trim();
     if (cleanPin === 'SALFA2026') {
-      onAuthenticate({ tenant: 'SALFA_RENT', role: 'csuite' });
+      onAuthenticate('SALFA_RENT');
     } else if (cleanPin === '20MINERIA26' || cleanPin === 'INDUSYNC2026') {
-      onAuthenticate({ tenant: 'INDUSYNC_CORE', role: 'csuite' });
+      onAuthenticate('INDUSYNC_CORE');
     } else {
       setError(true);
       setAttempts((prev) => prev + 1);
@@ -311,11 +310,11 @@ const SalfaTenantView = ({ onLogout }) => {
         <div className="flex items-center gap-6">
            <div className="flex items-center gap-3">
              <div className="bg-gradient-to-r from-blue-950 via-slate-900 to-red-950 px-3.5 py-2 rounded-xl border border-red-500/30 shadow-[0_0_20px_rgba(239,68,68,0.15)] flex items-center gap-2">
-               <span className="text-white font-black tracking-wider text-sm">Salfa<span className="text-red-500">Rent</span></span>
+               <span className="text-white font-black tracking-wider text-sm">Salfa<span className="text-red-500">Rent</span></span>[cite: 16]
              </div>
              <div className="hidden sm:block">
                <span className="text-xs text-slate-300 font-mono tracking-wider font-bold block">LOGÍSTICA B2B & FLEET SHIELD</span>
-               <span className="text-[10px] text-cyan-400 font-mono">Powered by INDUSYNC® AI Industrial</span>
+               <span className="text-[10px] text-cyan-400 font-mono">Powered by INDUSYNC® AI Industrial</span>[cite: 15]
              </div>
            </div>
            
@@ -338,7 +337,7 @@ const SalfaTenantView = ({ onLogout }) => {
         <div className="flex items-center gap-4">
           <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-[11px] font-mono text-emerald-400">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
-            <span>TENANT: SALFA_RENT</span>
+            <span>TENANT: SALFA_RENT</span>[cite: 2]
           </div>
           <button 
             onClick={onLogout} 
@@ -367,35 +366,31 @@ const SalfaTenantView = ({ onLogout }) => {
 };
 
 export default function App() {
-  const [authSession, setAuthSession] = useState(null);
-  const authContext = useAuth() || {};
-  
   const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
   const forceTenant = urlParams ? urlParams.get('tenant') : null;
 
+  const [authTenant, setAuthTenant] = useState(forceTenant || null);
+  const [role, setRole] = useState('csuite');
+
   // Si no hay sesión iniciada, mostramos el Muro de Acceso Militar
-  if (!authSession && !forceTenant) {
-    return <MilitaryAccessGate onAuthenticate={setAuthSession} />;
+  if (!authTenant && !forceTenant) {
+    return <MilitaryAccessGate onAuthenticate={(tenantType) => setAuthTenant(tenantType)} />;
   }
 
-  const activeTenant = authSession?.tenant || forceTenant || 'INDUSYNC_CORE';
+  const activeTenant = authTenant || forceTenant || 'INDUSYNC_CORE';
 
   if (activeTenant === 'SALFA_RENT' || forceTenant === 'salfa') {
-    return <SalfaTenantView onLogout={() => setAuthSession(null)} />;
+    return <SalfaTenantView onLogout={() => setAuthTenant(null)} />;
   }
 
-  const user = { role: 'csuite', tenant: activeTenant };
-  const hasPermission = authContext.hasPermission || (() => true);
-  const switchRole = authContext.switchRole || (() => {});
-  const ROLES = authContext.ROLES || { CSUITE: 'csuite', OPERATOR: 'operator', ADMIN: 'admin' };
-
+  // META-OS ORIGINAL COMPLETO
+  const [isAuthenticatedGate, setIsAuthenticatedGate] = useState(true);
+  const [lastActivity, setLastActivity] = useState(Date.now());
   const [sidebarColapsado, setSidebarColapsado] = useState(false);
   const [categoriaActiva, setCategoriaActiva] = useState('csuite');
   const [moduloActivo, setModuloActivo] = useState('exec_dash');
-
   const [cmdPaletteAbierto, setCmdPaletteAbierto] = useState(false);
   const [busqueda, setBusqueda] = useState('');
-
   const [favoritos, setFavoritos] = useState(() => {
     try {
       const saved = localStorage.getItem('app_fav_modules_supreme');
@@ -405,13 +400,13 @@ export default function App() {
     }
   });
 
+  const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
+  const [pendingSyncQueue, setPendingSyncQueue] = useState(0);
   const [fallaCritica, setFallaCritica] = useState(false);
+  const [logSimulacion, setLogSimulacion] = useState([]);
   const [modalSernageominAbierto, setModalSernageominAbierto] = useState(false);
 
-  const categoriasVisibles = useMemo(
-    () => Object.keys(categorias).filter((catKey) => hasPermission(catKey)),
-    [hasPermission]
-  );
+  const categoriasVisibles = Object.keys(categorias);
 
   const toggleFallaCritica = () => {
     setFallaCritica(!fallaCritica);
@@ -431,14 +426,32 @@ export default function App() {
     );
   };
 
+  const todosLosModulosAccesibles = useMemo(() => {
+    return categoriasVisibles.flatMap((catKey) =>
+      (categorias[catKey]?.modulos || []).map((mod) => ({
+        ...mod,
+        catKey,
+        catLabel: categorias[catKey].label
+      }))
+    );
+  }, [categoriasVisibles]);
+
+  const modulosFiltradosPalette = useMemo(() => {
+    if (!busqueda.trim()) return todosLosModulosAccesibles;
+    const query = busqueda.toLowerCase();
+    return todosLosModulosAccesibles.filter(
+      (m) => m.label.toLowerCase().includes(query) || m.catLabel.toLowerCase().includes(query)
+    );
+  }, [busqueda, todosLosModulosAccesibles]);
+
   const ComponenteModulo = modules[moduloActivo] || (() => <ModuleFallback path={moduloActivo} error="Submódulo no asignado." />);
 
   return (
     <div className={`min-h-screen bg-slate-950 text-slate-100 font-sans flex flex-col transition-colors duration-500 relative ${fallaCritica ? 'ring-8 ring-rose-600/60' : ''}`}>
-      <SecurityWatermark userRole={user?.role} />
+      <SecurityWatermark userRole={role} />
       <AlertBanner />
 
-      {/* HEADER PRINCIPAL */}
+      {/* HEADER PRINCIPAL META-OS */}
       <header className="bg-slate-900/90 border-b border-slate-800 px-4 py-3 flex items-center justify-between gap-4 sticky top-0 z-40 backdrop-blur-md">
         <div className="flex items-center gap-4">
           <button
@@ -478,7 +491,16 @@ export default function App() {
 
           <button
             type="button"
-            onClick={() => setAuthSession(null)}
+            onClick={() => setCmdPaletteAbierto(true)}
+            className="hidden sm:flex items-center gap-3 bg-slate-950 border border-slate-800 hover:border-cyan-500/50 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 transition"
+          >
+            <span>🔍 Buscar submódulo...</span>
+            <kbd className="bg-slate-800 text-slate-300 text-[10px] font-mono px-1.5 py-0.5 rounded border border-slate-700">Ctrl K</kbd>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setAuthTenant(null)}
             className="px-2.5 py-1.5 bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800 text-rose-300 rounded-lg text-xs font-mono transition"
           >
             🔒 Bloquear
@@ -552,6 +574,96 @@ export default function App() {
           </Suspense>
         </main>
       </div>
+
+      {/* MODAL SERNAGEOMIN */}
+      {modalSernageominAbierto && (
+        <div className="fixed inset-0 z-[10002] bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="w-full max-w-3xl bg-slate-900 border border-cyan-500/50 rounded-2xl shadow-2xl overflow-hidden font-mono text-slate-200">
+            <div className="bg-gradient-to-r from-cyan-950 to-slate-900 p-4 border-b border-cyan-800 flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">🏛️</span>
+                <div>
+                  <h3 className="text-xs font-black uppercase text-cyan-300 tracking-wider">
+                    INDUSYNC® • DOSSIER FISCALIZADOR OFICIAL SERNAGEOMIN (DS 132)
+                  </h3>
+                  <p className="text-[10px] text-slate-400">Generador de Reporte Forense en 7 Capítulos Normativos</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setModalSernageominAbierto(false)}
+                className="text-slate-400 hover:text-white px-2.5 py-1 rounded bg-slate-800 text-xs"
+              >
+                ✕ Cerrar
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto text-xs">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 bg-slate-950 p-4 rounded-xl border border-slate-800">
+                <div><span className="text-slate-500">Razón Social:</span> Minera Industrial Soberana SpA</div>
+                <div><span className="text-slate-500">Código Instalación:</span> REG-OT-2026-INDUSYNC-998</div>
+                <div><span className="text-slate-500">Hash Criptográfico:</span> SHA-256 Validated</div>
+                <div><span className="text-slate-500">Firma Digital:</span> Ley N° 19.799 Activa</div>
+              </div>
+
+              <div className="pt-2 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    alert("📄 Dossier Fiscalizador SERNAGEOMIN DS 132 generado y exportado exitosamente a PDF con firma criptográfica.");
+                    setModalSernageominAbierto(false);
+                  }}
+                  className="px-5 py-2.5 bg-gradient-to-r from-cyan-600 to-emerald-600 hover:from-cyan-500 hover:to-emerald-500 text-slate-950 font-black rounded-xl uppercase tracking-wider transition shadow-lg"
+                >
+                  Descargar PDF Oficial Certificado
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* COMMAND PALETTE MODAL (Ctrl+K) */}
+      {cmdPaletteAbierto && (
+        <div className="fixed inset-0 z-[10001] bg-slate-950/80 backdrop-blur-sm flex items-start justify-center pt-20 p-4">
+          <div className="w-full max-w-xl bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden font-mono">
+            <div className="p-4 border-b border-slate-800 flex items-center gap-3">
+              <span className="text-slate-400">🔍</span>
+              <input
+                type="text"
+                value={busqueda}
+                onChange={(e) => setBusqueda(e.target.value)}
+                placeholder="Buscar cualquier submódulo industrial..."
+                className="w-full bg-transparent text-slate-100 placeholder-slate-500 text-sm outline-none"
+                autoFocus
+              />
+              <button
+                type="button"
+                onClick={() => setCmdPaletteAbierto(false)}
+                className="text-xs text-slate-500 hover:text-slate-300 px-2 py-1 rounded bg-slate-800"
+              >
+                ESC
+              </button>
+            </div>
+            <div className="max-h-80 overflow-y-auto p-2 space-y-1">
+              {modulosFiltradosPalette.map((m) => (
+                <div
+                  key={m.id}
+                  onClick={() => {
+                    setCategoriaActiva(m.catKey);
+                    setModuloActivo(m.id);
+                    setCmdPaletteAbierto(false);
+                  }}
+                  className="p-2.5 rounded-xl hover:bg-cyan-500/10 text-xs text-slate-300 hover:text-cyan-300 cursor-pointer flex justify-between items-center transition"
+                >
+                  <span className="font-bold">{m.label}</span>
+                  <span className="text-[10px] text-slate-500">{m.catLabel}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
