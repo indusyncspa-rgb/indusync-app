@@ -2,13 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { telemetryService } from '../../services/telemetryService';
 
 export default function ExecutiveConsole() {
-  const [data, setData] = useState(() => telemetryService.getCurrentData());
+  const [data, setData] = useState(() => {
+    try {
+      return telemetryService?.getCurrentData ? telemetryService.getCurrentData() : null;
+    } catch {
+      return null;
+    }
+  });
 
   useEffect(() => {
+    if (!telemetryService?.subscribe) return;
     const unsubscribe = telemetryService.subscribe((newData) => {
       setData(newData);
     });
-    return () => unsubscribe();
+    return () => {
+      if (typeof unsubscribe === 'function') unsubscribe();
+    };
   }, []);
 
   const cs = data?.csuite || {
@@ -20,8 +29,14 @@ export default function ExecutiveConsole() {
     ebitdaForecastMillion: 18.4
   };
 
-  const dailyProd = cs.dailyProductionTons ? cs.dailyProductionTons.toLocaleString() : '12,450';
-  const targetProd = cs.targetProductionTons ? cs.targetProductionTons.toLocaleString() : '13,000';
+  // Blindaje seguro con operador opcional y validación de tipo numérica
+  const dailyProd = (cs?.dailyProductionTons != null && !isNaN(cs.dailyProductionTons)) 
+    ? Number(cs.dailyProductionTons).toLocaleString() 
+    : '12,450';
+
+  const targetProd = (cs?.targetProductionTons != null && !isNaN(cs.targetProductionTons)) 
+    ? Number(cs.targetProductionTons).toLocaleString() 
+    : '13,000';
 
   return (
     <div className="p-6 bg-slate-900/80 border border-slate-800 rounded-2xl shadow-xl space-y-6">
@@ -41,7 +56,7 @@ export default function ExecutiveConsole() {
         <div className="p-4 bg-slate-950/60 border border-slate-800 rounded-xl border-l-4 border-l-amber-500">
           <span className="text-xs text-slate-400">Precio Cobre (COMEX)</span>
           <div className="text-2xl font-bold text-amber-400 font-mono mt-1">
-            USD ${cs.copperPriceLb} <span className="text-xs text-slate-500">/ lb</span>
+            USD ${cs?.copperPriceLb ?? 4.35} <span className="text-xs text-slate-500">/ lb</span>
           </div>
         </div>
 
@@ -56,14 +71,14 @@ export default function ExecutiveConsole() {
         <div className="p-4 bg-slate-950/60 border border-slate-800 rounded-xl border-l-4 border-l-emerald-500">
           <span className="text-xs text-slate-400">Costo C1 / Tonelada</span>
           <div className="text-2xl font-bold text-emerald-300 font-mono mt-1">
-            USD ${cs.costPerTonUSD}
+            USD ${cs?.costPerTonUSD ?? 1.82}
           </div>
         </div>
 
         <div className="p-4 bg-slate-950/60 border border-slate-800 rounded-xl border-l-4 border-l-purple-500">
           <span className="text-xs text-slate-400">EBITDA Proyectado (Mes)</span>
           <div className="text-2xl font-bold text-purple-300 font-mono mt-1">
-            ${cs.ebitdaForecastMillion}M <span className="text-xs text-slate-500">USD</span>
+            ${cs?.ebitdaForecastMillion ?? 18.4}M <span className="text-xs text-slate-500">USD</span>
           </div>
         </div>
       </div>

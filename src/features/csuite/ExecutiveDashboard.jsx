@@ -15,12 +15,17 @@ const useSafeContext = () => {
 
 export default function ExecutiveDashboard() {
   // Garantizamos valores por defecto si el estado aún no carga
-  const metrics = useSafeContext();
+  const metrics = useSafeContext() || {};
   const precioCobre = metrics?.precioCobreLbUsd ?? 3.90;
   const produccion = metrics?.produccionDiariaTon ?? 82500;
   const eficiencia = metrics?.eficienciaEnergetica ?? 94.2;
   const disponibilidad = metrics?.disponibilidadFlota ?? 91.8;
   const cashCost = metrics?.cashCostC1 ?? 1.26;
+
+  // Blindaje seguro para toLocaleString
+  const produccionFormateada = typeof produccion === 'number' && !isNaN(produccion) 
+    ? produccion.toLocaleString() 
+    : '82,500';
 
   return (
     <div className="space-y-6 font-sans">
@@ -36,7 +41,7 @@ export default function ExecutiveDashboard() {
         <div className="flex items-center gap-2 bg-slate-950 px-4 py-2 rounded-xl border border-slate-800">
           <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-ping" />
           <span className="text-xs font-mono font-bold text-slate-200">
-            Cu LME: <span className="text-emerald-400">${precioCobre.toFixed(2)} USD/lb</span>
+            Cu LME: <span className="text-emerald-400">${Number(precioCobre).toFixed(2)} USD/lb</span>
           </span>
         </div>
       </div>
@@ -46,7 +51,7 @@ export default function ExecutiveDashboard() {
         <div className="bg-slate-900/60 p-5 rounded-2xl border border-slate-800">
           <p className="text-xs text-slate-400 font-medium">Producción Diaria</p>
           <p className="text-2xl font-black text-white font-mono mt-2">
-            {produccion.toLocaleString()} <span className="text-xs text-slate-500 font-normal">Ton/día</span>
+            {produccionFormateada} <span className="text-xs text-slate-500 font-normal">Ton/día</span>
           </p>
           <p className="text-[11px] text-emerald-400 mt-1 font-mono">↑ 3.2% vs meta planificada</p>
         </div>
@@ -54,7 +59,7 @@ export default function ExecutiveDashboard() {
         <div className="bg-slate-900/60 p-5 rounded-2xl border border-slate-800">
           <p className="text-xs text-slate-400 font-medium">Cash Cost C1</p>
           <p className="text-2xl font-black text-cyan-400 font-mono mt-2">
-            ${cashCost.toFixed(2)} <span className="text-xs text-slate-500 font-normal">USD/lb</span>
+            ${Number(cashCost).toFixed(2)} <span className="text-xs text-slate-500 font-normal">USD/lb</span>
           </p>
           <p className="text-[11px] text-cyan-400 mt-1 font-mono">↓ -$0.042/lb optimizado</p>
         </div>

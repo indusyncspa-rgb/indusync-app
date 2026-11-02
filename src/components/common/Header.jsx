@@ -1,13 +1,6 @@
 import React from 'react';
-import { generateDossierPDF } from '../../utils/pdfGenerator';
 
 export default function Header() {
-  const handleDownloadDossier = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    generateDossierPDF();
-  };
-
   return (
     <div className="flex items-center gap-3">
       {/* LOGO & TÍTULO */}
@@ -25,20 +18,10 @@ export default function Header() {
             </span>
           </div>
           <p className="text-[10px] text-slate-400 font-mono tracking-tight hidden sm:block">
-            SOFTWARE IA INDUSTRIAL PARA LA ALTA MINERÍA
+            SOFTWARE IA INDUSTRIAL
           </p>
         </div>
       </div>
-
-      {/* BOTÓN DESCARGAR DOSSIER (CONECTADO AL PDF) */}
-      <button
-        type="button"
-        onClick={handleDownloadDossier}
-        className="ml-2 bg-slate-800/90 hover:bg-slate-700 text-cyan-300 border border-cyan-500/40 hover:border-cyan-400 px-3 py-1.5 rounded-lg text-xs font-bold font-mono transition flex items-center gap-1.5 shadow-md active:scale-95 cursor-pointer"
-        title="Descargar Dossier Ejecutivo en PDF"
-      >
-        📄 Descargar Dossier
-      </button>
     </div>
   );
 }

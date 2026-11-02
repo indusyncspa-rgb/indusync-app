@@ -15,7 +15,7 @@ const ModuleFallback = ({ path, error }) => (
     <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 mb-1" aria-hidden="true">
       ⚡
     </div>
-    <h4 className="text-sm font-bold text-slate-200 tracking-wider uppercase">Sub-Sistema Industrial en Carga Óptima</h4>
+    <h4 className="text-sm font-bold text-slate-200 tracking-wider uppercase">Sub-Sistema en Carga Óptima</h4>
     <p className="text-xs text-slate-400 max-w-md mx-auto">
       Ruta de despliegue: <span className="font-mono text-cyan-400">{path}</span>
     </p>
@@ -39,15 +39,13 @@ const createLazyComponent = (path) => {
       return { default: Component || (() => <ModuleFallback path={path} error="Estructura de exportación no válida." />) };
     } catch (err) {
       console.error(`Error sincronizando ${path}:`, err);
-      return {
-        default: () => <ModuleFallback path={path} error={err?.message || err} />
-      };
+      return { default: () => <ModuleFallback path={path} error={err?.message || err} /> };
     }
   });
 };
 
 const modules = {
-  // C-Suite & Pitches
+  // --- MÓDULOS INDUSYNC META-OS ---
   exec_dash: createLazyComponent('./features/csuite/ExecutiveDashboard.jsx'),
   pitch: createLazyComponent('./features/csuite/ExecutivePitchMode.jsx'),
   vpo_pitch: createLazyComponent('./features/pitch/ExecutivePitchDeckVPO.jsx'),
@@ -58,8 +56,6 @@ const modules = {
   fin_metrics: createLazyComponent('./features/csuite/FinancialMetrics.jsx'),
   billing: createLazyComponent('./features/csuite/ClientOnboardingBilling.jsx'),
   audit: createLazyComponent('./features/csuite/AuditLogs.jsx'),
-
-  // Mina & Operaciones
   chancadora_interlock: createLazyComponent('./features/mina/ChancadoraInterlockView.jsx'),
   line_of_fire: createLazyComponent('./features/mina/LineOfFireShield.jsx'),
   mine_ops: createLazyComponent('./features/mina/MineOperations.jsx'),
@@ -70,16 +66,12 @@ const modules = {
   fatigue: createLazyComponent('./features/mina/OperatorFatigueBiometricsAI.jsx'),
   field_mobile: createLazyComponent('./features/mina/FieldInspectionMobile.jsx'),
   shift_report: createLazyComponent('./features/mina/ShiftReportAI.jsx'),
-
-  // Gemelo Digital
   twin_view: createLazyComponent('./features/gemelo/DigitalTwinView.jsx'),
   twin_sim: createLazyComponent('./features/gemelo/DigitalTwinSimulator.jsx'),
   twin_maint: createLazyComponent('./features/gemelo/DigitalTwinPredictiveMaintAI.jsx'),
   copilot: createLazyComponent('./features/gemelo/IndustrialCopilotAI.jsx'),
   ai_copilot: createLazyComponent('./features/gemelo/AIOperationalCopilot.jsx'),
   ai_engine: createLazyComponent('./features/gemelo/AIPredictiveEngine.jsx'),
-
-  // SCADA & Mantenimiento
   scada_analytics: createLazyComponent('./features/scada/ScadaAnalyticsChart.jsx'),
   scada_telemetry: createLazyComponent('./features/scada/Telemetry.jsx'),
   pred_maint: createLazyComponent('./features/scada/PredictiveMaintenance.jsx'),
@@ -87,33 +79,36 @@ const modules = {
   sap_auto: createLazyComponent('./features/scada/SAPWorkOrderAutomation.jsx'),
   iot_mesh: createLazyComponent('./features/scada/IoTEdgeMeshMonitor.jsx'),
   offgrid: createLazyComponent('./features/scada/OffGridSync.jsx'),
-
-  // ESG & Geotecnia
   sernageomin_auditor: createLazyComponent('./features/esg/SERNAGEOMINAuditorView.jsx'),
   sernageomin: createLazyComponent('./features/esg/SERNAGEOMINComplianceAI.jsx'),
   water_tailings: createLazyComponent('./features/esg/TailingsWaterManagementAI.jsx'),
   slope_radar: createLazyComponent('./features/esg/GeotechnicalSlopeRadarAI.jsx'),
   esg_carbon: createLazyComponent('./features/esg/ESGCarbonTracker.jsx'),
   hydrogen: createLazyComponent('./features/esg/EnergyGridHydrogenAI.jsx'),
-
-  // Cyber & Seguridad
   zero_trust: createLazyComponent('./features/cyber/ZeroTrustMilitarySecurity.jsx'),
   biometric: createLazyComponent('./features/cyber/BiometricAccreditation.jsx'),
   contractor_ai: createLazyComponent('./features/cyber/ContractorAccreditationAI.jsx'),
   contractors: createLazyComponent('./features/cyber/ContractorManagement.jsx'),
   cyber_circular: createLazyComponent('./features/cyber/CyberAndCircularView.jsx'),
-
-  // Marketplace & Logística
   circ_market: createLazyComponent('./features/marketplace/CircularEconomyMarketplace.jsx'),
   circ_b2b_ai: createLazyComponent('./features/marketplace/CircularMarketplaceB2BAI.jsx'),
   market_std: createLazyComponent('./features/marketplace/Marketplace.jsx'),
   market_b2b: createLazyComponent('./features/marketplace/MarketplaceB2B.jsx'),
   tender_match: createLazyComponent('./features/marketplace/ProcurementTenderMatchAI.jsx'),
   supply_chain: createLazyComponent('./features/marketplace/SupplyChainProcurementAI.jsx'),
-  radar_logistics: createLazyComponent('./features/marketplace/RadarLogistico.jsx')
+  radar_logistics: createLazyComponent('./features/marketplace/RadarLogistico.jsx'),
+
+  // --- MÓDULOS SALFA OS ---
+  salfa_omni: createLazyComponent('./features/mina/SalfaOmniCommand.jsx'),
+  salfa_telemetry: createLazyComponent('./features/scada/SalfaTelemetryGateway.jsx'),
+  salfa_hub: createLazyComponent('./features/marketplace/SalfaSupplyHub.jsx'),
+  salfa_safety: createLazyComponent('./features/mina/SalfaSafetyCompliance.jsx')
 };
 
-const categorias = {
+// ============================================
+// 🏗️ UNIVERSO 1: INDUSYNC META-OS (Minería)
+// ============================================
+const categoriasMetaOS = {
   csuite: {
     label: '📊 C-Suite & Finanzas',
     modulos: [
@@ -202,27 +197,57 @@ const categorias = {
   }
 };
 
-// Marca de Agua Dinámica para Propiedad Intelectual INAPI
-const SecurityWatermark = ({ userRole }) => (
+// ============================================
+// 🚗 UNIVERSO 2: SALFA OS (Rent-a-car/Fleet)
+// ============================================
+const categoriasSalfaOS = {
+  salfa_security: {
+    label: '🛡️ Salfa Fleet Shield',
+    modulos: [
+      { id: 'salfa_omni', label: 'Omni-Command (Edge AI)' },
+      { id: 'salfa_telemetry', label: 'Telemetry Gateway' }
+    ]
+  },
+  salfa_logistics: {
+    label: '📦 B2B Supply Hub',
+    modulos: [
+      { id: 'salfa_hub', label: 'Licitaciones de Repuestos' }
+    ]
+  },
+  salfa_compliance: {
+    label: '🏛️ Prevención & Legal',
+    modulos: [
+      { id: 'salfa_safety', label: 'Compliance Sernageomin' }
+    ]
+  }
+};
+
+const SecurityWatermark = ({ userRole, tenant }) => (
   <div className="pointer-events-none fixed inset-0 z-[9999] flex flex-wrap items-center justify-around opacity-[0.025] select-none overflow-hidden font-mono text-[10px] text-cyan-400">
     {Array.from({ length: 16 }).map((_, i) => (
       <div key={i} className="transform -rotate-12 whitespace-nowrap p-8">
-        INDUSYNC® META-OS SUPREME — PROPIEDAD INDUSTRIAL (INAPI 1508687) — CHUQUICAMATA LEGACY — ROL: {userRole?.toUpperCase()}
+        {tenant === 'salfa' 
+          ? `SALFA OS SUPREME — POWERED BY INDUSYNC — ROL: ${userRole?.toUpperCase()}` 
+          : `INDUSYNC® META-OS SUPREME — PROPIEDAD INDUSTRIAL (INAPI 1508687) — CHUQUICAMATA LEGACY — ROL: ${userRole?.toUpperCase()}`
+        }
       </div>
     ))}
   </div>
 );
 
-// Muro de Acceso Zero-Trust Militar con Homenaje de Legado
+// Muro de Acceso Zero-Trust HÍBRIDO (Multi-Tenant)
 const MilitaryAccessGate = ({ onAuthenticate }) => {
+  const [tenant, setTenant] = useState('meta'); // 'meta' o 'salfa'
   const [pin, setPin] = useState('');
   const [error, setError] = useState(false);
   const [attempts, setAttempts] = useState(0);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (pin === 'INDUSYNC2026' || pin === '191508' || pin === 'CHUQUI2026') {
-      onAuthenticate(true);
+    if (tenant === 'meta' && (pin === 'INDUSYNC2026' || pin === '191508' || pin === 'CHUQUI2026')) {
+      onAuthenticate(true, 'meta');
+    } else if (tenant === 'salfa' && pin === 'SALFA2026') {
+      onAuthenticate(true, 'salfa');
     } else {
       setError(true);
       setAttempts((prev) => prev + 1);
@@ -230,20 +255,40 @@ const MilitaryAccessGate = ({ onAuthenticate }) => {
     }
   };
 
+  const isSalfa = tenant === 'salfa';
+
   return (
-    <div className="fixed inset-0 z-[10000] bg-slate-950 flex items-center justify-center p-4 font-mono text-slate-100">
-      <div className="max-w-lg w-full bg-slate-900/90 backdrop-blur-xl border border-cyan-500/40 rounded-2xl p-8 shadow-[0_0_50px_rgba(6,182,212,0.15)] relative overflow-hidden space-y-6">
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 via-emerald-500 to-indigo-500 animate-pulse" />
+    <div className={`fixed inset-0 z-[10000] flex items-center justify-center p-4 font-mono text-slate-100 transition-colors duration-700 ${isSalfa ? 'bg-slate-900' : 'bg-slate-950'}`}>
+      <div className={`max-w-lg w-full bg-slate-900/90 backdrop-blur-xl border rounded-2xl p-8 relative overflow-hidden space-y-6 transition-all duration-500 shadow-2xl ${isSalfa ? 'border-red-600/40 shadow-red-900/20' : 'border-cyan-500/40 shadow-cyan-900/20'}`}>
+        <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r animate-pulse ${isSalfa ? 'from-red-600 via-red-500 to-amber-500' : 'from-cyan-500 via-emerald-500 to-indigo-500'}`} />
         
+        {/* Selector de Tenant */}
+        <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800 mb-6">
+          <button
+            type="button"
+            onClick={() => { setTenant('meta'); setError(false); setPin(''); }}
+            className={`flex-1 py-2 text-[10px] sm:text-xs font-bold uppercase tracking-wider rounded-lg transition-all ${tenant === 'meta' ? 'bg-cyan-600/20 text-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.2)]' : 'text-slate-500 hover:text-slate-300'}`}
+          >
+            ⛏️ Gran Minería
+          </button>
+          <button
+            type="button"
+            onClick={() => { setTenant('salfa'); setError(false); setPin(''); }}
+            className={`flex-1 py-2 text-[10px] sm:text-xs font-bold uppercase tracking-wider rounded-lg transition-all ${tenant === 'salfa' ? 'bg-red-600/20 text-red-400 shadow-[0_0_10px_rgba(220,38,38,0.2)]' : 'text-slate-500 hover:text-slate-300'}`}
+          >
+            🚗 Salfa Rent
+          </button>
+        </div>
+
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-3xl mb-1 shadow-lg">
-            🛡️
+          <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl border text-3xl mb-1 shadow-lg transition-colors ${isSalfa ? 'bg-red-500/10 border-red-500/30 text-red-400' : 'bg-cyan-500/10 border-cyan-500/30 text-cyan-400'}`}>
+            {isSalfa ? '🚗' : '🛡️'}
           </div>
           <h1 className="text-sm font-black tracking-[0.25em] uppercase text-slate-100">
-            INDUSYNC META-OS
+            {isSalfa ? 'SALFA OS' : 'INDUSYNC META-OS'}
           </h1>
-          <p className="text-[10px] text-cyan-400 tracking-wider uppercase font-bold">
-            SISTEMA OPERATIVO INDUSTRIAL CON IA • MODO SUPREMO
+          <p className={`text-[10px] tracking-wider uppercase font-bold ${isSalfa ? 'text-red-400' : 'text-cyan-400'}`}>
+            {isSalfa ? 'FLEET SHIELD & SUPPLY HUB' : 'SISTEMA OPERATIVO INDUSTRIAL CON IA'}
           </p>
         </div>
 
@@ -261,33 +306,40 @@ const MilitaryAccessGate = ({ onAuthenticate }) => {
                 setPin(e.target.value);
               }}
               placeholder="••••••••"
-              className="w-full bg-slate-950 border border-slate-700 focus:border-cyan-500 rounded-xl px-4 py-3 text-center text-lg font-bold tracking-widest text-cyan-300 outline-none transition shadow-inner"
+              className={`w-full bg-slate-950 border focus:outline-none rounded-xl px-4 py-3 text-center text-lg font-bold tracking-widest outline-none transition shadow-inner ${isSalfa ? 'border-slate-700 focus:border-red-500 text-red-300' : 'border-slate-700 focus:border-cyan-500 text-cyan-300'}`}
               autoFocus
             />
           </div>
 
           {error && (
             <div className="p-3 bg-rose-950/60 border border-rose-800 rounded-xl text-rose-300 text-xs text-center animate-bounce">
-              ⚠️ Credencial Inválida. Intento {attempts} registrado en Audit Log (IEC 62443).
+              ⚠️ Credencial Inválida para {isSalfa ? 'SalfaOS' : 'Meta-OS'}.
             </div>
           )}
 
           <button
             type="submit"
-            className="w-full py-3 bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 text-slate-950 font-black text-xs uppercase tracking-widest rounded-xl transition shadow-[0_0_20px_rgba(6,182,212,0.4)]"
+            className={`w-full py-3 font-black text-xs uppercase tracking-widest rounded-xl transition shadow-lg text-slate-950 ${isSalfa ? 'bg-gradient-to-r from-red-600 to-red-500 hover:from-red-500 hover:to-red-400 shadow-red-500/40' : 'bg-gradient-to-r from-cyan-600 to-cyan-500 hover:from-cyan-500 hover:to-cyan-400 shadow-cyan-500/40'}`}
           >
             Autorizar Ingreso al Sistema
           </button>
         </form>
 
-        {/* PIE DE PÁGINA EN HONOR AL LEGADO */}
         <div className="border-t border-slate-800/80 pt-4 text-center space-y-2">
-          <p className="text-[11px] text-slate-300 italic font-sans leading-relaxed">
-            "En honor al legado e integridad de mi padre, y en memoria de cada minero que entregó su vida en faena."
-          </p>
-          <p className="text-[10px] text-cyan-400/90 font-mono font-semibold leading-relaxed">
-            INDUSYNC Meta-OS: Transformando la memoria de la industria en la barrera definitiva que protege la vida humana.
-          </p>
+          {isSalfa ? (
+            <p className="text-[10px] text-red-400/90 font-mono font-semibold leading-relaxed">
+              SALFA OS Powered by InduSync: Sistema de orquestación Edge AI e Inmovilización Táctica.
+            </p>
+          ) : (
+            <>
+              <p className="text-[11px] text-slate-300 italic font-sans leading-relaxed">
+                "En honor al legado e integridad de mi padre, y en memoria de cada minero que entregó su vida en faena."
+              </p>
+              <p className="text-[10px] text-cyan-400/90 font-mono font-semibold leading-relaxed">
+                INDUSYNC Meta-OS: Transformando la memoria de la industria en la barrera definitiva que protege la vida humana.
+              </p>
+            </>
+          )}
           <div className="pt-2 text-[9px] text-slate-500 font-mono">
             Indusync SpA — Reg. INAPI Chile N° 1508687
           </div>
@@ -304,200 +356,125 @@ export default function App() {
   const switchRole = authContext.switchRole || (() => {});
   const ROLES = authContext.ROLES || { CSUITE: 'csuite', OPERATOR: 'operator', ADMIN: 'admin' };
 
-  // ESTADO DE SEGURIDAD MAESTRA
   const [isAuthenticatedGate, setIsAuthenticatedGate] = useState(false);
+  const [activeTenant, setActiveTenant] = useState('meta'); // 'meta' o 'salfa'
   const [lastActivity, setLastActivity] = useState(Date.now());
 
-  // Blindaje Anti-DevTools & Anti-Copy
+  // Rutero de Categorías Basado en Tenant
+  const currentCategorias = activeTenant === 'salfa' ? categoriasSalfaOS : categoriasMetaOS;
+
+  const categoriasVisibles = useMemo(
+    () => Object.keys(currentCategorias).filter((catKey) => hasPermission(catKey)),
+    [currentCategorias, hasPermission]
+  );
+
+  const [sidebarColapsado, setSidebarColapsado] = useState(false);
+  const [categoriaActiva, setCategoriaActiva] = useState('');
+  const [moduloActivo, setModuloActivo] = useState('');
+  const [cmdPaletteAbierto, setCmdPaletteAbierto] = useState(false);
+  const [busqueda, setBusqueda] = useState('');
+
+  const handleAuthSuccess = (isAuth, tenant) => {
+    setIsAuthenticatedGate(isAuth);
+    if (isAuth) {
+      setActiveTenant(tenant);
+      const baseCats = tenant === 'salfa' ? categoriasSalfaOS : categoriasMetaOS;
+      const firstCatKey = Object.keys(baseCats)[0];
+      setCategoriaActiva(firstCatKey);
+      setModuloActivo(baseCats[firstCatKey].modulos[0].id);
+    }
+  };
+
+  const [favoritos, setFavoritos] = useState(() => {
+    try {
+      const saved = localStorage.getItem('app_fav_modules_supreme');
+      return saved ? JSON.parse(saved) : ['exec_dash', 'salfa_omni'];
+    } catch {
+      return ['exec_dash'];
+    }
+  });
+
+  const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
+  const [pendingSyncQueue, setPendingSyncQueue] = useState(0);
+  const [fallaCritica, setFallaCritica] = useState(false);
+  const [logSimulacion, setLogSimulacion] = useState([]);
+
   useEffect(() => {
     if (!isAuthenticatedGate) return;
-
     const handleContextMenu = (e) => e.preventDefault();
     const handleKeyDownSecurity = (e) => {
-      if (
-        e.keyCode === 123 ||
-        (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) ||
-        (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 83))
-      ) {
+      if (e.keyCode === 123 || (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 83))) {
         e.preventDefault();
         e.stopPropagation();
       }
     };
-
     window.addEventListener('contextmenu', handleContextMenu);
     window.addEventListener('keydown', handleKeyDownSecurity);
-
     return () => {
       window.removeEventListener('contextmenu', handleContextMenu);
       window.removeEventListener('keydown', handleKeyDownSecurity);
     };
   }, [isAuthenticatedGate]);
 
-  // Timeout de Inactividad (10 minutos)
-  const resetInactivityTimer = useCallback(() => {
-    setLastActivity(Date.now());
-  }, []);
+  const resetInactivityTimer = useCallback(() => setLastActivity(Date.now()), []);
 
   useEffect(() => {
     if (!isAuthenticatedGate) return;
-
     const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
     events.forEach((evt) => window.addEventListener(evt, resetInactivityTimer));
-
     const interval = setInterval(() => {
-      if (Date.now() - lastActivity > 10 * 60 * 1000) {
-        setIsAuthenticatedGate(false);
-      }
+      if (Date.now() - lastActivity > 10 * 60 * 1000) setIsAuthenticatedGate(false);
     }, 10000);
-
     return () => {
       events.forEach((evt) => window.removeEventListener(evt, resetInactivityTimer));
       clearInterval(interval);
     };
   }, [isAuthenticatedGate, lastActivity, resetInactivityTimer]);
 
-  const categoriasVisibles = useMemo(
-    () => Object.keys(categorias).filter((catKey) => hasPermission(catKey)),
-    [hasPermission]
-  );
-
-  const [sidebarColapsado, setSidebarColapsado] = useState(false);
-  const [categoriaActiva, setCategoriaActiva] = useState(categoriasVisibles[0] || 'csuite');
-  const [moduloActivo, setModuloActivo] = useState(
-    categorias[categoriasVisibles[0]]?.modulos[0]?.id || 'exec_dash'
-  );
-
-  const [cmdPaletteAbierto, setCmdPaletteAbierto] = useState(false);
-  const [busqueda, setBusqueda] = useState('');
-
-  const [favoritos, setFavoritos] = useState(() => {
-    try {
-      const saved = localStorage.getItem('app_fav_modules_supreme');
-      return saved ? JSON.parse(saved) : ['exec_dash', 'chancadora_interlock', 'sernageomin_auditor'];
-    } catch {
-      return ['exec_dash', 'chancadora_interlock', 'sernageomin_auditor'];
-    }
-  });
-
-  const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
-  const [pendingSyncQueue, setPendingSyncQueue] = useState(0);
-
-  const [fallaCritica, setFallaCritica] = useState(false);
-  const [logSimulacion, setLogSimulacion] = useState([]);
-
-  // Telemetría Off-Grid y Sincronización Automática con SAP PM
   useEffect(() => {
-    const handleOnline = () => {
-      setIsOnline(true);
-      if (pendingSyncQueue > 0) {
-        const timestamp = new Date().toLocaleTimeString('es-CL');
-        setLogSimulacion((prev) => [
-          `🔄 [${timestamp}] SINCRONIZACIÓN SUPREMA: ${pendingSyncQueue} paquetes locales subidos con éxito a SAP PM (Módulo PM03).`,
-          ...prev.slice(0, 4)
-        ]);
-        setPendingSyncQueue(0);
-      }
-    };
-
-    const handleOffline = () => {
-      setIsOnline(false);
-      const timestamp = new Date().toLocaleTimeString('es-CL');
-      setLogSimulacion((prev) => [
-        `📡 [${timestamp}] MODO OFF-GRID ACTIVO: Conexión satelital/cordillera resguardada. Almacenamiento local en búfer cifrado.`,
-        ...prev.slice(0, 4)
-      ]);
-    };
-
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, [pendingSyncQueue]);
+  }, []);
 
-  // Atajo Command Palette (Ctrl+K)
   useEffect(() => {
     const handleKeyDown = (e) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
         setCmdPaletteAbierto((prev) => !prev);
       }
-      if (e.key === 'Escape') {
-        setCmdPaletteAbierto(false);
-      }
+      if (e.key === 'Escape') setCmdPaletteAbierto(false);
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const toggleFallaCritica = () => {
-    const nuevoEstado = !fallaCritica;
-    setFallaCritica(nuevoEstado);
-    const timestamp = new Date().toLocaleTimeString('es-CL');
-
-    if (nuevoEstado) {
-      const entradaLog = `🚨 [${timestamp}] DEFCON-1 IA PRESCRIPTIVA: Sobrepresión detectada en Molino SAG. Orden de Trabajo automática generada.`;
-      setLogSimulacion((prev) => [entradaLog, ...prev.slice(0, 4)]);
-
-      try {
-        const storedOts = localStorage.getItem('indusync_sap_ots');
-        const otsActuales = storedOts ? JSON.parse(storedOts) : [];
-        const otEmergencia = {
-          id: `OT-SAP-${Math.floor(100000 + Math.random() * 900000)}`,
-          equipoId: 'EQUIP-SAG-01',
-          tipoOt: 'PM03',
-          prioridad: '1',
-          descripcion: `🚨 AUTO-GEN SUPREME [DEFCON-1]: Disparo SCADA preventivo por Sobrepresión Hidráulica (345 PSI).`,
-          fechaCreacion: timestamp,
-          estado: navigator.onLine ? 'SYNC_SAP_SUCCESS' : 'PENDING_OFFGRID'
-        };
-        localStorage.setItem('indusync_sap_ots', JSON.stringify([otEmergencia, ...otsActuales]));
-      } catch (err) {
-        console.error('Error guardando OT automática:', err);
-      }
-
-      if (!isOnline) {
-        setPendingSyncQueue((prev) => prev + 1);
-      }
-    } else {
-      const entradaLog = `✅ [${timestamp}] TELEMETRÍA NORMALIZADA: Flujo operacional al 100%. Sincronización SAP activa.`;
-      setLogSimulacion((prev) => [entradaLog, ...prev.slice(0, 4)]);
-    }
-  };
-
-  useEffect(() => {
-    try {
-      localStorage.setItem('app_fav_modules_supreme', JSON.stringify(favoritos));
-    } catch (err) {
-      console.warn('LocalStorage restringido.');
-    }
-  }, [favoritos]);
-
   const handleCambioCategoria = (catKey) => {
     setCategoriaActiva(catKey);
-    if (categorias[catKey]?.modulos[0]?.id) {
-      setModuloActivo(categorias[catKey].modulos[0].id);
+    if (currentCategorias[catKey]?.modulos[0]?.id) {
+      setModuloActivo(currentCategorias[catKey].modulos[0].id);
     }
   };
 
   const toggleFavorito = (e, modId) => {
     e.stopPropagation();
-    setFavoritos((prev) =>
-      prev.includes(modId) ? prev.filter((id) => id !== modId) : [...prev, modId]
-    );
+    setFavoritos((prev) => prev.includes(modId) ? prev.filter((id) => id !== modId) : [...prev, modId]);
   };
 
   const todosLosModulosAccesibles = useMemo(() => {
     return categoriasVisibles.flatMap((catKey) =>
-      (categorias[catKey]?.modulos || []).map((mod) => ({
+      (currentCategorias[catKey]?.modulos || []).map((mod) => ({
         ...mod,
         catKey,
-        catLabel: categorias[catKey].label
+        catLabel: currentCategorias[catKey].label
       }))
     );
-  }, [categoriasVisibles]);
+  }, [categoriasVisibles, currentCategorias]);
 
   const modulosFiltradosPalette = useMemo(() => {
     if (!busqueda.trim()) return todosLosModulosAccesibles;
@@ -510,141 +487,39 @@ export default function App() {
   const ComponenteModulo = modules[moduloActivo] || (() => <ModuleFallback path={moduloActivo} error="Submódulo no asignado." />);
 
   if (!isAuthenticatedGate) {
-    return <MilitaryAccessGate onAuthenticate={setIsAuthenticatedGate} />;
+    return <MilitaryAccessGate onAuthenticate={handleAuthSuccess} />;
   }
 
+  // Estilos condicionales según Tenant
+  const themeColors = activeTenant === 'salfa' 
+    ? { ring: 'ring-red-600/60', highlight: 'text-red-400', bgSide: 'bg-slate-900', borderActive: 'border-red-500/40', bgActive: 'bg-red-500/20' }
+    : { ring: 'ring-rose-600/60', highlight: 'text-cyan-400', bgSide: 'bg-slate-900/50', borderActive: 'border-cyan-500/40', bgActive: 'bg-cyan-500/20' };
+
   return (
-    <div
-      className={`min-h-screen bg-slate-950 text-slate-100 font-sans flex flex-col transition-colors duration-500 relative ${
-        fallaCritica ? 'ring-8 ring-rose-600/60' : ''
-      }`}
-    >
-      <SecurityWatermark userRole={user?.role} />
-      <AlertBanner />
+    <div className={`min-h-screen bg-slate-950 text-slate-100 font-sans flex flex-col transition-colors duration-500 relative ${fallaCritica ? `ring-8 ${themeColors.ring}` : ''}`}>
+      <SecurityWatermark userRole={user?.role} tenant={activeTenant} />
+      {activeTenant === 'meta' && <AlertBanner />}
 
-      {/* BANNER MODO OFF-GRID */}
-      {!isOnline && (
-        <div className="bg-amber-500/10 border-b border-amber-500/40 px-6 py-2 flex items-center justify-between text-xs font-mono text-amber-300 z-50">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
-            <span><strong>MODO OFF-GRID ACTIVO:</strong> Operando sin red satelital. Datos respaldados en búfer local.</span>
-          </div>
-          <span className="bg-amber-950 px-2 py-0.5 rounded text-[10px] border border-amber-800">
-            {pendingSyncQueue} pendientes de sincronización
-          </span>
-        </div>
-      )}
-
-      {/* BANNER TÁCTICO DEFCON-1 */}
-      {fallaCritica && (
-        <div className="bg-rose-950/90 border-b border-rose-600/80 px-6 py-3 flex flex-col md:flex-row justify-between items-center gap-4 animate-pulse shadow-2xl z-50">
-          <div className="flex items-center gap-3">
-            <span className="text-2xl" aria-hidden="true">⚠️</span>
-            <div>
-              <h2 className="text-xs font-black tracking-widest uppercase text-rose-300">
-                PROTOCOLO DEFCON-1 • IA PRESCRIPTIVA ACTIVA (ISO 22301)
-              </h2>
-              <p className="text-xs text-rose-200">
-                Anomalía crítica interceptada en Molienda. Orden de trabajo SAP generada de forma autónoma.
-              </p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={toggleFallaCritica}
-            className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs rounded-xl uppercase tracking-wider transition shadow-lg"
-          >
-            Restablecer Telemetría
-          </button>
-        </div>
-      )}
-
-      {/* HEADER PRINCIPAL */}
       <header className="bg-slate-900/90 border-b border-slate-800 px-4 py-3 flex items-center justify-between gap-4 sticky top-0 z-40 backdrop-blur-md">
         <div className="flex items-center gap-4">
-          <button
-            type="button"
-            onClick={() => setSidebarColapsado(!sidebarColapsado)}
-            className="p-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition"
-            aria-label={sidebarColapsado ? 'Expandir menú' : 'Colapsar menú'}
-            title="Colapsar / Expandir Menú"
-          >
-            ☰
-          </button>
+          <button type="button" onClick={() => setSidebarColapsado(!sidebarColapsado)} className="p-2 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition">☰</button>
           <Header />
         </div>
-
         <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => setCmdPaletteAbierto(true)}
-            className="hidden sm:flex items-center gap-3 bg-slate-950 border border-slate-800 hover:border-cyan-500/50 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 transition"
-          >
+          <button type="button" onClick={() => setCmdPaletteAbierto(true)} className="hidden sm:flex items-center gap-3 bg-slate-950 border border-slate-800 hover:border-cyan-500/50 px-3 py-1.5 rounded-lg text-xs text-slate-400 hover:text-slate-200 transition">
             <span>🔍 Buscar submódulo...</span>
             <kbd className="bg-slate-800 text-slate-300 text-[10px] font-mono px-1.5 py-0.5 rounded border border-slate-700">Ctrl K</kbd>
           </button>
-
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-950 rounded-lg border border-slate-800 text-xs">
-            <label htmlFor="role-select" className="text-slate-400 font-medium">Rol:</label>
-            <select
-              id="role-select"
-              value={user?.role || 'csuite'}
-              onChange={(e) => switchRole(e.target.value)}
-              className="bg-slate-900 text-cyan-400 font-mono font-bold px-2 py-0.5 rounded border border-slate-700 outline-none cursor-pointer"
-            >
-              {Object.values(ROLES).map((r) => (
-                <option key={r} value={r}>{(r || '').toUpperCase()}</option>
-              ))}
-            </select>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => setIsAuthenticatedGate(false)}
-            title="Bloquear sesión inmediatamente"
-            className="px-2.5 py-1.5 bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800 text-rose-300 rounded-lg text-xs font-mono transition flex items-center gap-1"
-          >
-            🔒 Bloquear
-          </button>
-
-          {/* GRUPO DE BOTONES DE DESCARGA NATIVA (.EXE y .MSI) */}
-          <div className="flex items-center gap-1.5">
-            <a
-              href="/downloads/INDUSYNC-MetaOS-Setup.exe"
-              download="INDUSYNC-MetaOS-Setup.exe"
-              className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5 shadow-[0_0_15px_rgba(16,185,129,0.3)]"
-              title="Descargar Instalador Ejecutable Windows (.exe)"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-              </svg>
-              <span>App .EXE</span>
-            </a>
-
-            <a
-              href="/downloads/INDUSYNC-MetaOS-Setup.msi"
-              download="INDUSYNC-MetaOS-Setup.msi"
-              className="bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-black px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5 shadow-[0_0_15px_rgba(6,182,212,0.3)]"
-              title="Descargar Paquete Corporativo MSI (.msi)"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8" />
-              </svg>
-              <span>Paquete .MSI</span>
-            </a>
-          </div>
-
+          <button type="button" onClick={() => setIsAuthenticatedGate(false)} className="px-2.5 py-1.5 bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800 text-rose-300 rounded-lg text-xs font-mono transition flex items-center gap-1">🔒 Bloquear</button>
           <InstallAppButton />
         </div>
       </header>
 
-      {/* ESTRUCTURA PRINCIPAL */}
       <div className="flex flex-1 overflow-hidden">
-        {/* SIDEBAR */}
-        <aside className={`${sidebarColapsado ? 'w-16' : 'w-64'} bg-slate-900/50 border-r border-slate-800 transition-all duration-300 flex flex-col justify-between shrink-0`}>
+        <aside className={`${sidebarColapsado ? 'w-16' : 'w-64'} ${themeColors.bgSide} border-r border-slate-800 transition-all duration-300 flex flex-col justify-between shrink-0`}>
           <div className="p-3 space-y-4 overflow-y-auto max-h-[calc(100vh-120px)]">
             <div className="space-y-1">
-              {!sidebarColapsado && <div className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider px-2 mb-2">Categorías</div>}
+              {!sidebarColapsado && <div className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider px-2 mb-2">Universo: {activeTenant === 'salfa' ? 'SALFA OS' : 'META-OS'}</div>}
               {categoriasVisibles.map((catKey) => {
                 const esActiva = categoriaActiva === catKey;
                 return (
@@ -652,125 +527,42 @@ export default function App() {
                     key={catKey}
                     type="button"
                     onClick={() => handleCambioCategoria(catKey)}
-                    title={categorias[catKey]?.label}
-                    className={`w-full flex items-center ${sidebarColapsado ? 'justify-center px-0' : 'px-3'} py-2 rounded-lg text-xs font-semibold transition ${
-                      esActiva
-                        ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
-                        : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'
-                    }`}
+                    className={`w-full flex items-center ${sidebarColapsado ? 'justify-center px-0' : 'px-3'} py-2 rounded-lg text-xs font-semibold transition ${esActiva ? `${themeColors.bgActive} ${themeColors.highlight} border ${themeColors.borderActive}` : 'text-slate-400 hover:bg-slate-800 hover:text-slate-200'}`}
                   >
-                    <span className="truncate">{sidebarColapsado ? categorias[catKey]?.label.slice(0, 2) : categorias[catKey]?.label}</span>
+                    <span className="truncate">{sidebarColapsado ? currentCategorias[catKey]?.label.slice(0, 2) : currentCategorias[catKey]?.label}</span>
                   </button>
                 );
               })}
             </div>
 
-            {!sidebarColapsado && categorias[categoriaActiva] && (
+            {!sidebarColapsado && currentCategorias[categoriaActiva] && (
               <div className="pt-3 border-t border-slate-800 space-y-1">
                 <div className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider px-2 mb-2">Sub-Módulos</div>
-                {categorias[categoriaActiva].modulos.map((m) => {
+                {currentCategorias[categoriaActiva].modulos.map((m) => {
                   const esActivo = moduloActivo === m.id;
                   const esFav = favoritos.includes(m.id);
                   return (
                     <div
                       key={m.id}
                       onClick={() => setModuloActivo(m.id)}
-                      className={`group flex items-center justify-between px-3 py-1.5 rounded-lg text-xs cursor-pointer transition ${
-                        esActivo
-                          ? 'bg-emerald-500 text-slate-950 font-bold shadow-md'
-                          : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'
-                      }`}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={(e) => e.key === 'Enter' && setModuloActivo(m.id)}
+                      className={`group flex items-center justify-between px-3 py-1.5 rounded-lg text-xs cursor-pointer transition ${esActivo ? 'bg-emerald-500 text-slate-950 font-bold shadow-md' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60'}`}
                     >
                       <span className="truncate">{m.label}</span>
-                      <button
-                        type="button"
-                        onClick={(e) => toggleFavorito(e, m.id)}
-                        aria-label={esFav ? 'Quitar' : 'Favorito'}
-                        className={`text-[10px] ${esFav ? 'text-amber-300' : 'opacity-0 group-hover:opacity-100 text-slate-500'}`}
-                      >
-                        ★
-                      </button>
+                      <button type="button" onClick={(e) => toggleFavorito(e, m.id)} className={`text-[10px] ${esFav ? 'text-amber-300' : 'opacity-0 group-hover:opacity-100 text-slate-500'}`}>★</button>
                     </div>
                   );
                 })}
               </div>
             )}
           </div>
-
-          {!sidebarColapsado && (
-            <div className="p-3 border-t border-slate-800 bg-slate-950/60 text-[10px] font-mono text-slate-500 space-y-1">
-              <div className="flex justify-between items-center">
-                <span>Enlace Red:</span>
-                <span className={`font-bold flex items-center gap-1 ${isOnline ? 'text-emerald-400' : 'text-amber-400'}`}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-emerald-400' : 'bg-amber-400 animate-ping'}`} />
-                  {isOnline ? 'ONLINE' : 'OFF-GRID'}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span>Cola Sincro:</span>
-                <span className="text-cyan-400 font-bold">{pendingSyncQueue}</span>
-              </div>
-            </div>
-          )}
         </aside>
 
-        {/* ÁREA DE CONTENIDO PRINCIPAL */}
         <main className="flex-1 overflow-y-auto p-4 md:p-6 bg-slate-950">
-          <Suspense fallback={
-            <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4 font-mono">
-              <div className="w-10 h-10 border-4 border-cyan-500/30 border-t-cyan-400 rounded-full animate-spin" />
-              <p className="text-xs text-cyan-400 tracking-wider">CARGANDO MÓDULO INDUSTRIAL...</p>
-            </div>
-          }>
+          <Suspense fallback={<div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4"><div className="w-10 h-10 border-4 border-cyan-500/30 border-t-cyan-400 rounded-full animate-spin" /></div>}>
             <ComponenteModulo />
           </Suspense>
         </main>
       </div>
-
-      {/* COMMAND PALETTE MODAL (Ctrl+K) */}
-      {cmdPaletteAbierto && (
-        <div className="fixed inset-0 z-[10001] bg-slate-950/80 backdrop-blur-sm flex items-start justify-center pt-20 p-4">
-          <div className="w-full max-w-xl bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden font-mono">
-            <div className="p-4 border-b border-slate-800 flex items-center gap-3">
-              <span className="text-slate-400">🔍</span>
-              <input
-                type="text"
-                value={busqueda}
-                onChange={(e) => setBusqueda(e.target.value)}
-                placeholder="Buscar cualquier submódulo..."
-                className="w-full bg-transparent text-slate-100 placeholder-slate-500 text-sm outline-none"
-                autoFocus
-              />
-              <button
-                type="button"
-                onClick={() => setCmdPaletteAbierto(false)}
-                className="text-xs text-slate-500 hover:text-slate-300 px-2 py-1 rounded bg-slate-800"
-              >
-                ESC
-              </button>
-            </div>
-            <div className="max-h-80 overflow-y-auto p-2 space-y-1">
-              {modulosFiltradosPalette.map((m) => (
-                <div
-                  key={m.id}
-                  onClick={() => {
-                    setCategoriaActiva(m.catKey);
-                    setModuloActivo(m.id);
-                    setCmdPaletteAbierto(false);
-                  }}
-                  className="p-2.5 rounded-xl hover:bg-cyan-500/10 text-xs text-slate-300 hover:text-cyan-300 cursor-pointer flex justify-between items-center transition"
-                >
-                  <span className="font-bold">{m.label}</span>
-                  <span className="text-[10px] text-slate-500">{m.catLabel}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

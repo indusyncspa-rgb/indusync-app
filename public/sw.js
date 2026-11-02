@@ -1,12 +1,11 @@
 // public/sw.js - INDUSYNC Service Worker Ultra-Resiliente (Android / iOS / PC)
-const CACHE_NAME = 'indusync-v7-android-fixed';
+const CACHE_NAME = 'indusync-v9-clean';
 
 const CORE_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/favicon.svg',
-  'https://cdn.tailwindcss.com'
+  '/favicon.svg'
 ];
 
 // 1. INSTALACIÓN: Precarga del App Shell
@@ -39,9 +38,15 @@ self.addEventListener('activate', (event) => {
 // 3. INTERCEPTOR DE RED (Garantiza respuesta SIEMPRE a Chrome Android)
 self.addEventListener('fetch', (event) => {
   const request = event.request;
+  const url = request.url;
+
+  // 🛡️ BLINDAJE CRÍTICO: Ignorar esquemas que no sean HTTP/HTTPS (como chrome-extension://)
+  if (!url.startsWith('http')) {
+    return;
+  }
 
   // Omitir peticiones que no sean GET o que vayan a Supabase DB
-  if (request.method !== 'GET' || request.url.includes('supabase.co')) {
+  if (request.method !== 'GET' || url.includes('supabase.co')) {
     return;
   }
 
@@ -50,7 +55,6 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       (async () => {
         try {
-          // Si hay red, descargar la versión más reciente y actualizar caché
           const networkResponse = await fetch(request);
           if (networkResponse && networkResponse.status === 200) {
             const cache = await caches.open(CACHE_NAME);
@@ -62,7 +66,6 @@ self.addEventListener('fetch', (event) => {
           console.log('📡 [SW Offline Android] Cargando desde memoria del celular...');
         }
 
-        // SI NO HAY RED (Modo Avión / Subterráneo): Buscar en memoria interna
         const cache = await caches.open(CACHE_NAME);
         const cachedIndex = (await cache.match('/index.html')) || (await cache.match('/')) || (await cache.match(request));
 
@@ -70,7 +73,6 @@ self.addEventListener('fetch', (event) => {
           return cachedIndex;
         }
 
-        // Fallback garantizado para evitar la pantalla "No tienes conexión" de Android
         return new Response('<html><body style="background:#090d16;color:#fff;font-family:sans-serif;padding:20px;text-align:center;"><h2>INDUSYNC Meta-OS</h2><p>Por favor abre la app 1 vez con internet para inicializar el almacenamiento offline.</p></body></html>', {
           headers: { 'Content-Type': 'text/html' }
         });
@@ -79,14 +81,13 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // B) MANEJO DE RECURSOS (JavaScript, CSS, CDN, Imágenes)
+  // B) MANEJO DE RECURSOS (JavaScript, CSS, Imágenes)
   event.respondWith(
     (async () => {
       const cache = await caches.open(CACHE_NAME);
       const cachedResponse = await cache.match(request);
 
       if (cachedResponse) {
-        // Entregar respuesta local al instante y actualizar en segundo plano si hay red
         fetch(request).then((netRes) => {
           if (netRes && netRes.status === 200) {
             cache.put(request, netRes);
@@ -102,7 +103,6 @@ self.addEventListener('fetch', (event) => {
         }
         return networkResponse;
       } catch (err) {
-        // Responder con un objeto neutro para que Chrome no rompa la ejecución
         return new Response('', { status: 200, statusText: 'OK (Offline Fallback)' });
       }
     })()
